@@ -1,26 +1,31 @@
-# scheduler
-# Ajankohtasuunnittelukalenteri
+# scheduler - aikatauluapulainen
 
-Sovellus sopii erityisesti harrasteryhmille esim. pelien sopimiseen (beach volley, padel, jne.).
-Sovelluksen avulla voidaan etsiä käyttäjien omiin aikatauluihin sopivat tapahtuma-ajankohdat, 
-niin että sama ajankohta sopii riittävän monelle.
-Jokainen käyttäjä merkitsee itselleen sopivat ajankohdat kahden viikon kalenterinäkymään.
-Kalenterinäkymässä näkyy seuraavan viikon osallistujatilanne ja jo toteutuvat tapahtumat.
+1. välipalautus:
+Tällä hetkellä sovellus on vielä täysin hahmotteluvaiheessa;
+osa toiminnoista puuttuu, syötteiden tarkastaminen on puutteellista kuten myös
+poikkeuksien käsitteleminen ja käyttöoikeuden tarkastaminen,
+myös kyselyt ovat osittain löyhästi sinnepäin.
+..joten tekemistä riittää vielä
+Tiedostoista jossain määrin tarkastelua kestänee; schema.sql, app.py, db.py, users.py
+loput aiheuttanevat tässä vaiheessa vain tutkijalleen harmaita hiuksia.
 
-Sovelluksen ominaisuuksia ovat:
+Sovelluksen kuvaus:
 
-    • käyttäjä voi perustaa ryhmän, jolloin rekisteröityy samalla pääkäyttäjäksi tai
-      käyttäjä voi rekisteröityä olemassa olevaan ryhmään 
+Sovelluksen avulla voidaan etsiä käyttäjien omiin aikatauluihin sopivat ajankohdat
+tapahtumille, niin että sama ajankohta sopii riittävän monelle.
+Sovellus on ajateltu erityisesti harrasteryhmien käyttöön esim. pelien (beach volley, padel, jne.)
+ajankohdan sopimiseen.
+Jokainen käyttäjä voi sovelluksessa merkitä itselleen sopivat ajankohdat kahdeksi viikoksi eteenpäin.
+"Kalenterinäkymässä" näkyy seuraavien päivien osallistujatilanne viikon verran eteenpäin.
+
+Tällä hetkellä
+sovelluksen ominaisuuksia ovat:
+    • käyttäjä voi rekisteröityä olemassa olevaan ryhmään
     • käyttäjä voi kirjautua sisään ja ulos
     • käyttäjä voi ilmoittaa kalenterissa itselleen sopivat tapahtuma-ajankohdat kaksi viikkoa 
       eteenpäin ja halutessaan myös kommentoida
-    • käyttäjä näkee kalenterinäkymässä seuraavan viikon osallistujatilanteen ja jo toteutuvien 
-      tapahtumien ajankohdat
-    • käyttäjä voi määrittää osallistumiseensa välipäiviä (lepopäiviä), jotka kalenteri huomioi 
-      automaattisesti
-    • käyttäjä voi ilmoittaa vakio osallistumisajankohtia, jotka kalenteri huomioi automaattisesti
-    • käyttäjä voi ilmoittaa ekstraosallistujan tapahtumaan mukaan ryhmän ulkopuolelta
+    • käyttäjä näkee kalenterinäkymässä viikon osallistujatilanteen ja hahmotelmaa seuraavasta viikosta
+    • admin voi luoda uusia tapahtumia
 
-    • pääkäyttäjä hallinnoi käyttäjiä ja voi tarvittaessa poistaa käyttäjän tai poistaa käyttäjältä 
-      oikeuksia (esim. oikeuden kommentoida tai lisätä ekstraosallistujia)
-    • pääkäyttäjä voi määritellä vähimmäis- ja enimmäisosallistujamäärät tapahtumalle
+Sovellus on testattavissa [Herokussa](https://hobby-event-scheduler.herokuapp.com/).
+
