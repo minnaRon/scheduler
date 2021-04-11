@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<!--TÄHÄN MYÖS ADMIN HALLINTA MITÄ KAIKKEA IF ELSE..
+ryhmäni:lista
+lisäasetukset:
+vakio osallistumis viikonpäivät ja ajat:
+Lisää: alasveto matike aika 00:00  lisää
+näkyy listana jo lisätyt
+tasot joilla pelaan check 1 2 3 (ne joille admin antanut oikeudet)-->
+
+RAPORTTI osallistumisista tietty ajanjakso päiväväli ?kalenteri, valitut tapahtumatyypit (checkbox)
+<form action="/settings" method="POST">
+<h2>Omat tiedot hallinta, keskeneräinen..</h2>
+#               ..tämä sivu kesken, ei toimi vielä.. ..paitsi admininä tapahtuman luominen alempana
+<p>
+Kalenterissa näkyvä nimi: <br><input type="text" name="name" minlength="2" maxlength="30">
+<p>
+Yhteystiedot (puhelinnro/email): <br> <input type="text" name="info">
+<p>
+Salasanan vaihto: <br>
+Vanha salasana: <input type="password" name="old_password">
+<p>
+Uusi salasana: <input type="password" name="new_password1"> 
+<p>
+Uusi uudelleen: <input type="password" name="new_password2">
+<p>
+TÄHÄN:
+Muutan kalenteriin näkyviä tapahtumia (checkbox tähän); tapahtumat, millä tasolla näkyviin???
+Tapahtuman nimi:
+
+<select name="events">
+    {% for event in events %}
+    <option value="{{event[0]}}">event[1]
+    {% endfor %}    
+</select>
+<p>
+    TÄHÄN raporttipyyntö osallistumisista ... 
+RAPORTTI tapahtumannimi..ajalta pvm - pvm
+<p>
+{% if session["user_role"] == 1 %}
+<hr>
+<h2>TÄSSÄ vvv testailua varten tapahtuman luominen vvv (nimi, kuvaus)</h2>
+<h2>Admin tapahtuman luominen:</h2>
+Anna tapahtuman nimi: <input type="text" name="event_name" maxlength="30"> <br>
+Anna tapahtuman kuvaus: <input type="textarea" name="description" maxlength="150"><br>
+<!--loput syötteet..min, max infona osallistujille, ei vaikuta hakuihin rajaavasti, css..<br>
+Anna minimiosallistujamäärä: <input type="number" name="min_participants" min="0"><br>
+Anna maksimiosallistujamäärä: <input type="number" name="max_participants" min="0"><br>
+##kts.tämä vielä vaiheessa...Anna tapahtumaan vaadittava (taito)taso: input type="number" name="level"><br>
+-->
+<p>
+    <input type="submit" value="Perusta tapahtuma">
+<p>
+<p>
+<h4>Ryhmän tapahtumat ei tasomääritystä:</h4>
+<ul>
+    {% for event in events %}
+    <li> nimi: {{event[1]}}, kuvaus: {{event[2]}}</li>
+    {% endfor %}
+</ul>
+
+<hr>
+TÄHÄN adminille näkyvät ryhmän hallintaan
+* tapahtumatyyppien lisääminen
+* jäsenen oikeudet
+{% endif %}
+<p>
+</form>
+
+TÄHÄN jäsenen eroaminen ryhmästä
+{% endblock %}

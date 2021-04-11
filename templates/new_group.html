@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>Rekisteröidy</h2>
+
+<form action="/register" method="POST">
+<p>
+Tunnus: <br><input type="text" name="username" minlength="1" maxlength="35">
+<p>
+Salasana: <br><input type="password" name="password1">
+<p>
+Salasana uudestaan: <br><input type="password" name="password2">
+<p>
+<hr>
+
+    <h2> Perustan uuden ryhmän</h2>
+    <p>
+    Ryhmän nimi: <input type="text" name="group_name" minlength="5" maxlength="20">
+    <p>
+    Ryhmän kuvaus: <br><textarea name ="group_description" rows="3" cols="50" maxlength="400">
+    </textarea>
+    <p>
+    Ryhmään liittymissalasana: <br><input type="password" name="password_newgroup1">
+    <p>
+    Ryhmään liittymissalasana uudestaan: <br><input type="password" name="password_newgroup2">
+    <p> 
+    <input type="submit" value="Lähetä rekisteröinti ja tallenna uusi ryhmä">
+    <input type="hidden" name="group_reg" value="new_group">
+</form>   
+
+{% endblock %}

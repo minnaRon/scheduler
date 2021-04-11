@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Ilmoittautuminen</h2>
+<form action="/entry/{{day}}" method="POST">
+<p>
+<!--listalla: e.id, e.name, e.description, e.min_participants, e.max_participants, e.event_level-->
+<h4>tapahtumaan {{date.strftime('%d. %m.')}}</h4>
+<p>
+<select name="event_id">
+    {% for event in events %}
+    <option value={{event[0]}}> {{event[1]}}
+    {% endfor %}            
+</select>
+<p>
+Osallistun klo:    
+<input type="time" name="time1">
+<input type="time" name="time2">
+<p>
+TÄHÄN vielä ekstrojen ilmoittautuminen
+<p>
+TÄHÄN viikottainen vakioaika?
+<p>
+Lisää lyhyt kommentti: <br>
+<input type="text" name="comment" maxlength="150">
+<p> 
+Osallistujat tänään:
+<ul>
+    {% for participant in participants %}
+        <li> TÄHÄN osallistujan nimi, osallistujan aloitusaika  - lopetusaika</li>
+    {% endfor %}
+</ul>
+<p>
+<input type="submit" value="Tallenna ilmoittautuminen">
+</form>
+<!--
+Valittu: tähän pvm
+Osallistun klo 00:00 - 00:00 valitse
+
+tai valitse vakioajoistasi klo 17:15 - 19:00 valitse
+                                20:00 - 21:00 valitse
+
+tänään osallistumassa:
+lista osallistujista ja ajoista...
+-->
+{% endblock %}

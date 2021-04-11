@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% block content %}
+<!--lyoutissa: Kirjautuneena <b>{{  session.user_name  }}</b> 
+ |  <a href="/settings">Omat asetukset</a>  |  <a href="/logout">Kirjaudu ulos</a> -->
+<p>
+<hr>
+<h2> {{group_info[0]|upper}}</h2>
+<form action="/calendar" method="POST">
+Ohje: alla voit ilmoittaa mahdollisuudestasi osallistua ryhmän tapahtumiin <br>
+itsellesi sopivana ajankohtana <br>
+tapahtumien ajankohdat muodostetaan ilmoittautumisien perusteella.<br>
+<!--#kts.ohjeelle sopiva esitystapa-->
+<b>Ilmoittele tässä osallistumismahdollisuuksistasi viikko eteenpäin <br>
+    alkaen tänään:</b>
+<!--Sanakirja: päivänumerointi:[[alkuaika, tapahtuman nimi, dow, osallistujia, loppuaika],...,[päivämäärä]]-->
+{% for i in range(7) %}
+<p>
+    kts.vkpv {{days[week[i][-1].strftime("%w")]}} {{week[i][-1].strftime("%d.%m.")}} 
+    
+    {% if not week[i][1] %}
+        <select name="no_entries">
+            <option> ei ilmoittautumisia vielä 
+        </select>
+        <a href="/entry/{{i}}">osallistun</a>
+    {% else: %}
+        <select name="entries">
+        {% for event in week[i][:-1] %}
+            {% for time in event %}
+                <option> {{time[1]}} | klo {{time[0]}} - {{time[4]}} | osallistujia {{time[3]}}
+            {% endfor %} 
+        {% endfor %} 
+        </select>
+        <a href="/entry/{{i}}">osallistun</a>
+    {% endif %}
+{% endfor %} 
+
+<!--Lista: date, event.name, alkuaika, loppuaika, dow-->
+<p>
+    <h3> Kaikki osallistumiseni seuraava seitsemän päivää: </h3>
+        <ul>
+            {% for entry in all_event_entries %}
+        <li>{{days[entry[4]]}} {{entry[0].strftime('%d.%m.')}}
+            {{entry[1]}} 
+            klo {{entry[2].strftime('%H:%M')}} - {{entry[3].strftime('%H:%M')}} 
+            <a href="/entry/{{entry[5]}}">muuta</a>
+            {% endfor %}
+        </ul>
+<p>   
+<a href="/plan"><h4>Suunnittele seuraava viikko</h4></a>
+<p>
+Lisää lyhyt viesti:<br>
+<input type="text" name="comment" minlength="1" maxlength="150">
+<input type="submit" value="Lähetä">
+
+<!--Lista: user_name, content, sent_at-->
+{% if messages %}
+<p> 
+kts. jos ehdit tarkenna hakua
+<!--div style="width:150px;height:150px;overflow:auto;padding:5px;"-->
+<ul>
+{% for message in messages %}
+ <li>{{message[0]}} {{message[1]}} {{message[2].strftime('%d/%m')}} {{message[2].strftime('%H:%M')}}
+{% endfor %}
+</ul>
+<!--/div-->
+</form>
+{% endif %}
+{% endblock %}
