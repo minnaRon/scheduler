@@ -9,6 +9,25 @@ def add_entry(date, user_id, event_id, time1, time2):
     db.session.commit()
     return entry_id
 
+def add_weekly_entry(user_id, event_id, time_start, time_end, dow):
+    try:
+        sql = """INSERT INTO entries (user_id, event_id, start_time, finish_time, weekly) 
+                VALUES (:user_id, :event_id, :time_start, :time_end, :dow)"""
+        db.session.execute(sql, {"user_id":user_id, "event_id":event_id, "time_start":time_start, "time_end":time_end, "dow":dow})
+        db.session.commit()
+        return True
+    except:
+        return False
+
+
+def get_weekly_entries_for_user(user_id):
+    sql = """SELECT en.weekly, e.id, e.name, en.start_time, en.finish_time, en.id
+                FROM entries en LEFT JOIN events e ON en.event_id=e.id
+                WHERE en.user_id=:user_id
+                AND en.weekly IS NOT NULL
+                ORDER BY en.weekly """
+    return db.session.execute(sql, {"user_id":user_id})
+
 ###Tämän funktiohässäkän tilalle suora vastaus tietokannasta, onkohan mahdollista? 
 #Saako vastauksen jaoteltua, kun nyt tarvitaan sanakirja ja listoja HTML:ssä?
 #kts.jos ehtii..
@@ -68,8 +87,8 @@ def get_week(user_id:int, week_wanted:int) -> dict:
             store_events = week[day][:-1] 
             store_day = week[day][-1]
             week[day] = [store_events[:]+calc_participants(sorted(times_and_changes))]+[store_day]
-    print("---week",week)
-    print("---entries_all_events", entries_all_events)
+    #print("---week",week)
+    #print("---entries_all_events", entries_all_events)
     return week, sorted(entries_all_events) 
 
 #TÄMÄ KYSELY KESKENERÄINEN

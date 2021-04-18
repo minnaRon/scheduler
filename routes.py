@@ -71,11 +71,19 @@ def register():
                 return redirect("/calendar")
             else:
                 group.delete()
-                users.delete(username)
+                users.delete_user(username)
         #...tähän asti uuden ryhmän perustaminen
         return render_template("error.html", message="Rekisteröinti ei onnistunut")
 
-#         
+@app.route("/logout")
+def logout():
+    users.logout()
+    return redirect("/")
+
+#####################################################################
+###kalenteri omaksi route tiedostoksi??
+#####################################################################
+         
 @app.route("/calendar", methods=["GET","POST"])
 def calendar():
     username = session["user_name"]
@@ -96,11 +104,11 @@ def calendar():
 
 @app.route("/entry/<day>", methods=["GET","POST"])
 def entry(day):
-    print("-- entry")
+    #print("-- entry")
     day = int(float(day))
     user_id = session["user_id"]
     date = datetime.datetime.today() + datetime.timedelta(days=day)
-    print("--edelleen..")
+    #print("--edelleen..")
     if request.method == "GET":
         event_list = events.get_events(user_id)
         return render_template("entry.html", events=event_list, date=date, day=day)
@@ -137,8 +145,8 @@ def plan():
         finish_times = request.form.getlist("time_finish")
         days = request.form.getlist("day")
         
-        print("--len",len(event_indices))
-        print("---listat",event_indices, start_times, finish_times)
+        #print("--len",len(event_indices))
+        #print("---listat",event_indices, start_times, finish_times)
         if len(event_indices) == len(start_times) and len(start_times) == len(finish_times):
             for i in range(len(event_indices)-1):
                 if start_times[i] < finish_times[i]:
@@ -151,24 +159,251 @@ def plan():
         else:
             return render_template("error.html", message="Tapahtumien lisäys ei onnistunut, tarkista valitsemasi ajat")
         return redirect("/plan")
+#########################################################################
+##########################################################################
+##settings omaksi routes tiedostoksi?
+####################################################
+#############################################################
 
-@app.route("/settings", methods=["GET","POST"])
+
+
+@app.route("/settings")
 def settings():
-    if request.method == "GET":
-        return render_template("settings.html", events=events.get_all_0_level_events())
+    user_id = session["user_id"]
+    events_with_own_level = events.get_all_events_for_user(user_id)
+    #    sql = """SELECT e.id, e.name, e.description, e.min_participants, e.max_participants, e.event_level, ue.role
+    #print("----events with own level", events_with_own_level)
+    own_weekly_entries = entries.get_weekly_entries_for_user(user_id)
+    #    sql = """SELECT en.weekly, e.id, e.name, en.start_time, en.finish_time, en.id
+    managing_friends = users.get_friends_all_info(user_id)
+    #    sql = """SELECT u.id, u.name, f.active, f.user_id1
+    weekdays = {0:"SU", 1:"MA", 2:"TI", 3:"KE", 4:"TO", 5:"PE", 6:"LA"}
+    user_info = users.get_user_info(user_id)
+    #    sql = """SELECT username, name, contact_info FROM users"""
+    if session["user_role"] == 1:
+        all_events = events.get_all_events()
+    #    sql = """SELECT *
+        return render_template("settings.html", all_events=all_events, user_info=user_info, days=weekdays, events_with_own_level=events_with_own_level, own_weekly_entries= own_weekly_entries, managing_friends=managing_friends)
+    else:
+        return render_template("settings.html", user_info=user_info,  days=weekdays, events_with_own_level=events_with_own_level, own_weekly_entries= own_weekly_entries, managing_friends=managing_friends)
+
+@app.route("/settings/change_user_name", methods=["POST"])
+def change_name():
+    user_id = session["user_id"]  
+    changed_name = request.form["name"]
+    #print("---name",changed_name)
+    if changed_name:
+        if len(changed_name) < 1 or len(changed_name) > 35:
+            return render_template("error.html", message="Nimen tulee sisältää 1-35 merkkiä")
+        if not users.change_name(user_id, changed_name):
+            return render_template("error.html", message="Nimen vaihtaminen ei onnistunut, nimi on jo käytössä")
+    #print("---name onnistui")
+    return redirect("/settings")
+
+@app.route("/settings/change_contact_info", methods=["POST"])
+def change_contact_info():
+    user_id = session["user_id"]
+    changed_contact_info = request.form["contact_info"]
+    if not users.change_contact_info(user_id, changed_contact_info):
+        return render_template("error.html", message="Yhteystietojen päivittäminen ei onnistunut")
+    #print("---info onnistui")
+    return redirect("/settings")
+
+@app.route("/settings/change_password", methods=["POST"])
+def change_password():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+    user_id = session["user_id"]
+    changing_password = [request.form["old_password"], request.form["new_password1"], request.form["new_password2"]]
+    #print("---changing password", changing_password)
+    if not users.check_password(user_id, changing_password[0]):
+        return render_template("error.html", message="Vanha salasana meni väärin, tarkista salasana")
+    if changing_password[1] != changing_password[2]:
+        return render_template("error.html", message="Uusissa salasanoissa oli eroa")
+    if changing_password[1] == "":
+        return render_template("error.html", message="Uusi salasana oli tyhjä")
+    if not users.change_password(user_id, changing_password[1]):
+        return render_template("error.html", message="Uuden salasanan rekisteröinti ei onnistunut")
+    #print("---password onnistui")
+    return redirect("/settings")
+    
+@app.route("/settings/weekly_entries", methods=["POST"])
+def weekly_entries():
+    if entries.add_weekly_entry(session["user_id"], request.form["weekly_event"], request.form["weekly_time_start"], request.form["weekly_time_end"], request.form["weekly_dow"]):
+        return redirect("/settings")
+    return render_template("error.html", message="Uuden vakioajan lisääminen ei onnistunut")
+
+######kysy tähän ohje kuinka checked ainoastaan muuttuneet voi muuttaa, kun active/not active
+#nyt kysely muuttaa kaikki not active ja lisää muuttuneet activeksi ..en rustaile tätä valmiiksi näin
+@app.route("/settings/change_calendarview", methods=["POST"])
+def change_calendarview():
+    events = request.form.getlist("event_pick")
+    if users.update_calendarview(session["user_id"], events):
+        return redirect("/settings")
+    return render_template("error.html", message="Kalenterissa näkyvien tapahtumien päivittäminen ei onnistunut")
+
+@app.route("/settings/friends", methods=["POST"])
+def friends():
+    #print("--req f", request.form["friend"])
+    if users.add_friend_request(session["user_id"], request.form["friend"]):
+        return redirect("/settings")
+    return render_template("error.html", message="Kaveripyyntö ei onnistunut")
+ 
+@app.route("/settings/change_group_name", methods=["POST"])
+def change_group_name():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+    if group.change_group_name(request.form["name_group"]):
+        return redirect("/settings")
+    return render_template("error.html", message="Nimenvaihto ei onnistunut")
+ 
+@app.route("/settings/change_group_description", methods=["POST"])
+def change_group_description():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+    if group.change_group_description(request.form["group_description"]):
+        return redirect("/settings")
+    return render_template("error.html", message="Ryhmän kuvauksen vaihto ei onnistunut")
+ 
+@app.route("/settings/change_group_password", methods=["POST"])
+def change_group_password():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+    new_password = request.form["new_password1"]
+    if  new_password != request.form["new_password2"]:
+        return render_template("error.html", message="Uusissa salasanoissa oli eroa")
+    if new_password == "":
+        return render_template("error.html", message="Uusi salasana oli tyhjä")
+    if group.change_group_password(new_password, request.form["old_password"]):
+        return redirect("/settings")
+    return render_template("error.html", message="Uuden salasanan rekisteröinti ei onnistunut")
+    
+@app.route("/settings/add_new_event", methods=["POST"])
+def add_new_event():
+    event_info = {1:request.form["new_event_name"], 2:"", 3:0, 4:0, 5:0}
+    if request.form["new_event_description"]:
+        event_info[2] = request.form["new_event_description"]
+    if request.form["new_event_min_participants"]:
+        event_info[3] = request.form["new_event_min_participants"]
+    if request.form["new_event_max_participants"]:
+        event_info[4] = request.form["new_event_max_participants"]
+    if request.form["new_event_level"]:
+        event_info[5] = request.form["new_event_level"]
+    print("---event_info", event_info)
+    if event_info[3] > event_info[4]:
+        return render_template("error.html", message="Tapahtuman lisäys ei onnistunut, tarkista minimi- ja maksimiosallistujamäärät")
+    event_id = events.add_new_event(event_info)
+    print("---event_id", event_id)
+    if event_id == - 1:
+        return render_template("error.html", message="Tapahtuman lisäys ei onnistunut")
+    if users.add_event_for_everyone(event_id):
+        return redirect("/settings")
+    return render_template("error.html", message="Uuden tapahtuman rekisteröinti jäsenille ei onnistunut")
+###pitäisikö tässä poistaa tapahtuma kokonaan, jos ei rekisteröi jäsenille vai näkyykö valittavissa silti???
+
+@app.route("/settings/change_event_info", methods=["POST"])
+def change_event_info():
+    action = request.form["event_action"]
+    event_id = request.form["event_pick"]
+    print("---change", action, event_id)
+    if action == "1":
+        if events.delete_event(event_id):
+            return redirect("/settings")
+        else:
+            return render_template("error.html", message="Tapahtuman poistaminen ei onnistunut")
+    elif action == "2":
+        if request.form["event_name"]:
+            if events.change_name(event_id, request.form["event_name"]):
+                return redirect("/settings")
+    elif action == "3":
+        if request.form["event_description"]:
+            if events.change_description(event_id, request.form["event_description"]):
+                return redirect("/settings")
+    elif action == "4":
+        if request.form["number_value"]:
+            if events.change_min_participants(event_id, request.form["number_value"]):
+                return redirect("/settings")
+    elif action == "5":
+        if request.form["number_value"]:
+            if events.change_max_participants(event_id, request.form["number_value"]):
+                return redirect("/settings")
+    elif action == "6":
+        if request.form["number_value"]:
+            if events.change_level(event_id, request.form["number_value"]):
+                return redirect("/settings")
+    return render_template("error.html", message="Tapahtuman muuttaminen ei onnistunut")
+
+@app.route("/settings/admin/message", methods=["POST"])
+def admin_message():
+    if group.add_admin_message(request.form["admin_info"]):
+        return redirect("/settings")
+    return render_template("error.html", message="viestin tallentaminen ei onnistunut")
+
+
+
+
+
+
+
+    #adding_weekly_entry = [[request.form["weekly_dow"], request.form["weekly_time_start"], request.form["weekly_time_end"]]
+#TÄMÄ lisää vielä, keskeneräinen html:ssä; changing_weekly_events = 
+#TÄMÄ lisää vielä kaveripyynnöt
+  #  changing_events = request.form.getlist("event_pick")
+## tee allaoleviin metodihakuihin metodit vvvvv
+  #  if changing_name:
+  #      users.change_name(user_id, changing_name)
+   # if changing_contact_info:
+    #    users.changing_contact_info(user_id, contact_info)
+ #   if changing_password[1]:
+#TÄHÄN VANHAN SALASANAN TARKISTUS
+ #       if changing_password[1] != changing_password[2]:
+  #          return render_template("error.html", message="Salasanoissa oli eroa")
+   #     if changing_password[1] == "":
+    #        return render_template("error.html", message="Salasana oli tyhjä")
+#    if adding_weekly_event[1]:
+#        users.add_weekly_entry(user_id, adding_weekly_entry) 
+#<form action="/settings/weekly_entries" method="POST">
+#<form action="/settings/change_calendarview" method="POST">
+#<form action="/settings/friends" method="POST">
+#<form action="/settings/report_entries" method="POST"> 
+#<form action="/settings/admin/change_groupinfo" method="POST">
+#<form action="/settings/admin/events" method="POST">
+#<form action="/settings/admin/message" method="POST">
+#<form action="/settings/admin/management_users" method="POST">
+#VALMIS! :)
+
+
 #KESKENERÄINEN vain tapahtuman nimi, kuvaus viedään tietokantaan testailua varten
-    if request.method == "POST":
-        event_id = events.add_event(request.form["event_name"], request.form["description"])
-        print("event_id", event_id)
-        users.add_event(event_id, session["user_id"], 1)
-        userlist = users.get_all_users_id_name()
-        for user in userlist:
-            users.add_event(event_id, user[0], 4)
+############################################################################
+#tämä toimiva pelkkä tapahtumanluonti
+###################################################
+#####################################
+#poistettu kommentiksi tästä alkaen:
+  #  if request.method == "POST":
+  #      event_id = events.add_event(request.form["event_name"], request.form["description"])
+  #      print("event_id", event_id)
+  #      users.add_event(event_id, session["user_id"], 1)
+  #      userlist = users.get_all_users_id_name()
+  #      for user in userlist:
+   #         users.add_event(event_id, user[0], 4)
 #roolina 4, niin ei näy suoraan omissa tapahtumissa, asetuksista sitten uusia tapahtumia näkyviin näkymiin...
 
-        return redirect("/settings")
+   #     return redirect("/settings")
+#...tähän asti
+######################################################################################
+##########################################################################
+########################################################################
 
-@app.route("/logout")
-def logout():
-    users.logout()
-    return redirect("/")
+#@app.route("/entry_report", methods = ["POST"])
+#    return render_template("entry_report.html", get_report(session["user_id"], request.form["date_start"], request.form["date_end"]))
+
+#@app.route("/settings/admin", methods = ["POST"])
+    ##TÄHÄN vielä jatkoa nämä kaksi 
+
+#@app.route("/settings/admin/user_changes", methods = ["POST"])
+
+
+
+
+
+

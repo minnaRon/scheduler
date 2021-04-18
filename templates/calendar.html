@@ -6,17 +6,19 @@
 <hr>
 <h2> {{group_info[0]|upper}}</h2>
 <form action="/calendar" method="POST">
-Ohje: alla voit ilmoittaa mahdollisuudestasi osallistua ryhmän tapahtumiin <br>
-itsellesi sopivana ajankohtana <br>
-tapahtumien ajankohdat muodostetaan ilmoittautumisien perusteella.<br>
+Ohje: Alla voit ilmoittaa mahdollisuudestasi osallistua ryhmän tapahtumiin <br>
+itsellesi sopivana ajankohtana. <br>
+Tapahtumien ajankohdat muodostetaan ilmoittautumisien perusteella.<br>
 <!--#kts.ohjeelle sopiva esitystapa-->
-<b>Ilmoittele tässä osallistumismahdollisuuksistasi viikko eteenpäin <br>
+<b>Ilmoittele tässä osallistumismahdollisuuksistasi viikoksi eteenpäin <br>
     alkaen tänään:</b>
 <!--Sanakirja: päivänumerointi:[[alkuaika, tapahtuman nimi, dow, osallistujia, loppuaika],...,[päivämäärä]]-->
 {% for i in range(7) %}
 <p>
-    kts.vkpv {{days[week[i][-1].strftime("%w")]}} {{week[i][-1].strftime("%d.%m.")}} 
-    
+<!--tämä alkup. rivi alle kts.vkpv {{days[week[i][-1].strftime("%w")]}} {{week[i][-1].strftime("%d.%m.")}} 
+-->
+#kts.vkpv {{week[i][-1].strftime("%w")}} {{week[i][-1].strftime("%d.%m.")}} 
+
     {% if not week[i][1] %}
         <select name="no_entries">
             <option> ei ilmoittautumisia vielä 
@@ -51,18 +53,24 @@ tapahtumien ajankohdat muodostetaan ilmoittautumisien perusteella.<br>
 Lisää lyhyt viesti:<br>
 <input type="text" name="comment" minlength="1" maxlength="150">
 <input type="submit" value="Lähetä">
+<p>
+<!------------------------------>
+{{group_info[2]}}
 
 <!--Lista: user_name, content, sent_at-->
 {% if messages %}
 <p> 
-kts. jos ehdit tarkenna hakua
+#....jos ehdit, tarkenna hakua..
+Viimeisimmät viestit:
 <!--div style="width:150px;height:150px;overflow:auto;padding:5px;"-->
 <ul>
 {% for message in messages %}
- <li>{{message[0]}} {{message[1]}} {{message[2].strftime('%d/%m')}} {{message[2].strftime('%H:%M')}}
+ <li>{{message[1]}} | {{message[0]}} {{message[2].strftime('%d/%m')}} {{message[2].strftime('%H:%M')}}
 {% endfor %}
 </ul>
+{% endif %}
+
 <!--/div-->
 </form>
-{% endif %}
+
 {% endblock %}
