@@ -83,7 +83,7 @@ def logout():
 #####################################################################
 ###kalenteri omaksi route tiedostoksi??
 #####################################################################
-         
+
 @app.route("/calendar", methods=["GET","POST"])
 def calendar():
     username = session["user_name"]
@@ -398,7 +398,7 @@ def admin_message():
 #    return render_template("entry_report.html", get_report(session["user_id"], request.form["date_start"], request.form["date_end"]))
 
 #@app.route("/settings/admin", methods = ["POST"])
-    ##TÄHÄN vielä jatkoa nämä kaksi 
+    ##TÄHÄN vielä jatkoa nämä kaksi
 
 #@app.route("/settings/admin/user_changes", methods = ["POST"])
 

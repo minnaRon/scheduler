@@ -27,10 +27,10 @@ def set_founder(user_id):
     db.session.execute(sql, {"user_id":user_id})
     db.session.commit()
     return
- 
+
 def change_group_name(name:str):
     try:
-        sql = """UPDATE group_info 
+        sql = """UPDATE group_info
                     SET name=:name"""
         db.session.execute(sql, {"name":name})
         db.session.commit()
@@ -40,7 +40,7 @@ def change_group_name(name:str):
 
 def change_group_description(description:str):
     try:
-        sql = """UPDATE group_info 
+        sql = """UPDATE group_info
                     SET description=:description"""
         db.session.execute(sql, {"description":description})
         db.session.commit()
@@ -53,7 +53,7 @@ def change_group_password(new_password:str, old_password:str):
         sql = """SELECT password FROM group_info"""
         password = db.session.execute(sql).fetchone()[0]
         if check_password_hash(password, old_password):
-            sql = """UPDATE group_info 
+            sql = """UPDATE group_info
                         SET password=:new_password"""
             db.session.execute(sql, {"new_password":new_password})
         db.session.commit()
@@ -62,7 +62,7 @@ def change_group_password(new_password:str, old_password:str):
         return False
 
 def add_admin_message(admin_info):
-    try: 
+    try:
         sql = """UPDATE group_info SET admin_info=:admin_info"""
         db.session.execute(sql, {"admin_info":admin_info})
         db.session.commit()

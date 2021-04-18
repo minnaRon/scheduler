@@ -97,7 +97,7 @@ def update_calendarview(user_id, events:list):
         db.session.execute(sql, {"user_id":user_id, "event_id":event_id})
         for event_id in events:
             sql = """UPDATE users_in_events SET role=2
-                    WHERE user_id=:user_id 
+                    WHERE user_id=:user_id
                     AND event_id=:event_id"""
             db.session.execute(sql, {"user_id":user_id, "event_id":event_id, "role":role})
         db.session.commit()
@@ -108,7 +108,7 @@ def update_calendarview(user_id, events:list):
 def get_friends_all_info(user_id):
     sql = """SELECT u.id, u.name, f.active, f.user_id1
                 FROM friends f, users u
-                WHERE ((f.user_id1=:user_id AND f.active=1) 
+                WHERE ((f.user_id1=:user_id AND f.active=1)
                 OR (f.user_id2=:user_id AND f.active=0))
                 AND u.id <> :user_id
                 ORDER BY u.name
@@ -133,7 +133,7 @@ def add_friend_request(user_id, friend_calendarname):
 
 
 def get_user_info(user_id):
-    sql = """SELECT username, name, contact_info 
+    sql = """SELECT username, name, contact_info
                 FROM users
                 WHERE id=:user_id"""
     return db.session.execute(sql, {"user_id":user_id}).fetchone()

@@ -11,7 +11,7 @@ def add_entry(date, user_id, event_id, time1, time2):
 
 def add_weekly_entry(user_id, event_id, time_start, time_end, dow):
     try:
-        sql = """INSERT INTO entries (user_id, event_id, start_time, finish_time, weekly) 
+        sql = """INSERT INTO entries (user_id, event_id, start_time, finish_time, weekly)
                 VALUES (:user_id, :event_id, :time_start, :time_end, :dow)"""
         db.session.execute(sql, {"user_id":user_id, "event_id":event_id, "time_start":time_start, "time_end":time_end, "dow":dow})
         db.session.commit()

@@ -15,9 +15,9 @@ Tapahtumien ajankohdat muodostetaan ilmoittautumisien perusteella.<br>
 <!--Sanakirja: päivänumerointi:[[alkuaika, tapahtuman nimi, dow, osallistujia, loppuaika],...,[päivämäärä]]-->
 {% for i in range(7) %}
 <p>
-<!--tämä alkup. rivi alle kts.vkpv {{days[week[i][-1].strftime("%w")]}} {{week[i][-1].strftime("%d.%m.")}} 
+<!--tämä alkup. rivi alle kts.vkpv {{days[week[i][-1].strftime("%w")]}} {{week[i][-1].strftime("%d.%m.")}}
 -->
-#kts.vkpv {{week[i][-1].strftime("%w")}} {{week[i][-1].strftime("%d.%m.")}} 
+#kts.vkpv {{week[i][-1].strftime("%w")}} {{week[i][-1].strftime("%d.%m.")}}
 
     {% if not week[i][1] %}
         <select name="no_entries">

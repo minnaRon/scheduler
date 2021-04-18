@@ -8,7 +8,7 @@ def add_new_event(event_info:dict):
         sql = """INSERT INTO events (name, description, min_participants, max_participants, event_level)
                     VALUES (:name, :description, :min, :max, :level) RETURNING id"""
         event_id = db.session.execute(sql, {"name":event_info[1], "description":event_info[2], "min":event_info[3], "max":event_info[4], "level":event_info[5]}).fetchone()[0]
-        db.session.commit()  
+        db.session.commit()
         return event_id
     except:
         return -1
@@ -47,14 +47,14 @@ def get_all_events_for_user(user_id):
 #poistettu rajoitus AND ue.role < 4 ...hakee nyt kaikki johon taso oikeuttaa
     try:
         sql = """SELECT DISTINCT e.id, e.name, e.description, e.min_participants, e.max_participants, e.event_level, ue.role
-                    FROM users u 
+                    FROM users u
                     LEFT JOIN users_in_events ue ON u.id=ue.user_id
                     LEFT JOIN events e ON e.id=ue.event_id
-                    WHERE u.id=:user_id 
+                    WHERE u.id=:user_id
                     AND ue.user_id=:user_id
                     AND e.event_level <= ue.user_level
                     ORDER BY e.name, e.event_level"""
-        return db.session.execute(sql, {"user_id":user_id}).fetchall()  
+        return db.session.execute(sql, {"user_id":user_id}).fetchall()
     except:
         return []
 
