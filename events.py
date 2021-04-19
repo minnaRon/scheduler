@@ -13,17 +13,6 @@ def add_new_event(event_info:dict):
     except:
         return -1
 
-#keskeneräinen, poista kun yläp. toimii..
-def add_event(event_name:str, description:str):
-    try:
-        sql = """INSERT INTO events (name, description, min_participants, max_participants, event_level)
-                    VALUES (:name, :description, 0, 100, 0) RETURNING id"""
-        event_id = db.session.execute(sql, {"name":event_name, "description":description}).fetchone()[0]
-        db.session.commit()  
-        return event_id
-    except:
-        return render_template("error.html", message="Tapahtuman lisäys ei onnistunut")
-
 def get_all_0_level_events():
     try:
         sql = """SELECT id, name, description, min_participants, max_participants
@@ -140,4 +129,3 @@ def delete(group_id):
     db.session.execute(sql, {"group_id":group_id})
     db.session.commit()
     return
-

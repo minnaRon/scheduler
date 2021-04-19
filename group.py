@@ -93,8 +93,8 @@ def get_all_users_in_events_info_dict() -> dict:
     for u_id in user_id_list:
         user = u_id[0]
         print("---user_id", user)
-        sql = """SELECT e.name, e.event_level, ue.user_level, ue.role 
-                    FROM events e LEFT JOIN users_in_events ue ON e.id = ue.event_id 
+        sql = """SELECT e.name, e.event_level, ue.user_level, ue.role
+                    FROM events e LEFT JOIN users_in_events ue ON e.id = ue.event_id
                     WHERE ue.user_id=:user_id
                     ORDER BY e.name"""
         info[user] = db.session.execute(sql, {"user_id":user}).fetchall()

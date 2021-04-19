@@ -4,9 +4,9 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import os
 
 def login(username, password):
-    sql = """SELECT id, password, name, role 
-            FROM users
-            WHERE username=:username"""
+    sql = """SELECT id, password, name, role
+                FROM users
+                WHERE username=:username"""
     result = db.session.execute(sql, {"username":username})
     user = result.fetchone()
     if not user:
@@ -31,7 +31,7 @@ def logout():
 def register(username, password, role):
     hash_value = generate_password_hash(password)
     try:
-        sql = """INSERT INTO users (username, name, password, founded, role) 
+        sql = """INSERT INTO users (username, name, password, founded, role)
                     VALUES (:username, :username, :password, NOW(), :role)"""
         db.session.execute(sql, {"username":username, "password":hash_value, "role":role})
         db.session.commit()
@@ -213,8 +213,3 @@ def delete_user(username):
              WHERE username=:username"""
     db.session.execute(sql, {"username":username})
     db.session.commit()
-
-
-
-
-
