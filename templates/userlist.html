@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+{% block content %}
+<form action="/settings/admin/userlist" method="POST">
+    <p><!--#Tähän jäsenlista ja hakuominaisuuksia:
+    #sql = """SELECT u.id, username, u.name, u.contact_info, u.role, u.founded
+<p>users_in_events_list id, event_id, user_id, user_level, role<p>-->
+<b>Valitse toiminto:</b>
+<select name="action">
+    <option value="1">1. muuta jäsenen taso -tapahtumakohtainen
+    <option value="2">2. vaihda rooli admin/jäsen jäsen/admin
+    <option value="3">3. resetoi salasana samaksi kuin tunnus
+    <option value="4">4. poista jäsen tapahtumasta
+    <option value="5">5. palauta jäsen tapahtumaan
+    <option value="6">6. estä jäsen kaikista tapahtumista
+    <option value="7">7. palauta jäsenen oikeudet kaikkiin tapahtumiin
+</select>
+<p>
+<b>..valitse lisätiedot:</b>
+<ul>
+    <li>kohtaan 1; jäsenen tason muuttaminen tapahtumaan sopivaksi,<br>
+        valitse tapahtuma:
+        <select name="event_on">
+        {% for event in all_events %}
+        <option value="{{event[0]}}">tapahtuman nimi: {{event[1]}} vaadittava taso: {{event[5]}}
+            {% endfor %} 
+        </select>
+        <p>
+    <li>kohtaan 4 ja 5; poista/palauta jäsen tiettyyn tapahtumaan,<br>
+        valitse tapahtuma:
+        <select name="event_off">
+            {% for event in all_events %}
+            <option value="{{event[0]}}">tapahtuman nimi: {{event[1]}} taso: {{event[5]}}
+                {% endfor %} 
+            </select>
+</ul>
+<p>
+<b>..ja valitse muuttuvat jäsenet:</b>
+    <table>
+        <th>valinta</th>
+        <th> rooli </th>
+        <th> tunnus </th>
+        <th> kalenterinimi </th>
+        <th> yhteystiedot </th>
+        <th> liittynyt </th>
+        {% for user in userlist %}
+        <tr>
+         <td><input type="checkbox" name="user_id" value="{{user[0]}}"></td>
+         <td> {{user[4]}} </td>
+         <td> {{user[1]}} </td>
+         <td> {{user[2]}} </td>
+         <td> {{user[3]}} </td>
+         <td> {{user[5].strftime("%d.%m.%Y")}} </td>
+        </tr>
+        {% endfor %}
+    </table>
+    </ul>
+    <input type="submit" value="Tallenna muutokset">
+</form>
+<hr>
+<p>
+<p>
+###keskeneräinen jäsenlista, kts. kuntoon...<br>
+<p>
+Jäsenten tarkat tiedot osallistumisoikeuksineen:<br>
+rooli 1 = admin<br>
+rooli 2 = jäsen<br>
+tunnus = kirjautumistunnus<br>
+kalenterinimi = kalenterissa näkyvä nimi<br>
+yhteystiedot = yhteystiedot adminin tietoon<br>
+liittynyt = ryhmäänliittymispäivämäärä<br>
+tapahtuma = tapahtuma<br>
+vaadittava taso = tapahtumaan vaadittava tason<br>
+jäsenen taso tapahtumaan = jäsenen taso tapahtumaan, jos pienempi kuin vaadittava taso, niin ei näy jäsenelle ja ei voi ilmoittautua tapahtumaan<br>
+aktiivisuus tapahtumaan 2 = tapahtuma näkyy jäsenen kalenterinäkymässä ja voi ilmoittautua mukaan<br>
+aktiivisuus tapahtumaan 4 = jäsen poistanut kalenterinäkymästä, ei osallistu tapahtumaan<br>
+aktiivisuus tapahtumaan 5 = admin poistanut jäseneltä oikeuden osallistua, tapahtuma ei näy jäsenelle ja ei voi ilmoittatua
+<table>
+    <th> rooli </th>
+    <th> tunnus </th>
+    <th> kalenterinimi </th>
+    <th> yhteystiedot </th>
+    <th> liittynyt </th>
+    <th> tapahtuma </th>
+    <th> vaadittava taso </th>
+    <th> jäsenen taso tapahtumaan </th>
+    <th> aktiivisuus tapahtumaan </th>
+    {% for user in userlist %}
+    <tr>
+     <td> {{user[4]}} </td>
+     <td> {{user[1]}} </td>
+     <td> {{user[2]}} </td>
+     <td> {{user[3]}} </td>
+     <td> {{user[5].strftime("%d.%m.%Y")}} </td>
+     <td> 
+     <!-------------saako tämän toteutettua jotenkin jinjalla?
+           <li> users_in_events_info [ user [0] ] [0]  
+            ..sanakirja users_in_events, josta userlistin user[0]:n (user_id), kohdalta löytyy tapahtuman nimi 
+            (välit, kaaret pois kääntäjän takia, lukee kommenteistakin..)
+------------------------------------------------------------------------------------->
+     </td>
+    </tr>
+    {% endfor %}
+</table>
+</ul>
+{% endblock %}

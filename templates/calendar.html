@@ -26,6 +26,7 @@ Tapahtumien ajankohdat muodostetaan ilmoittautumisien perusteella.<br>
         <a href="/entry/{{i}}">osallistun</a>
     {% else: %}
         <select name="entries">
+<!--kts nimeäminen vvv time voisi olla ?? time[0] alkuaika time[1] tapahtuma time[2] dow? time[3] osallistujien määrä time[4] loppuaika-->
         {% for event in week[i][:-1] %}
             {% for time in event %}
                 <option> {{time[1]}} | klo {{time[0]}} - {{time[4]}} | osallistujia {{time[3]}}

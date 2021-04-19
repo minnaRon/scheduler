@@ -3,6 +3,17 @@
 <h2>Ilmoittautuminen</h2>
 <form action="/entry/{{day}}" method="POST">
 <p>
+<!--@app.route("/entry/<day>", methods=["GET","POST"])
+def entry(day):
+    #print("-- entry")
+    day = int(float(day))
+    user_id = session["user_id"]
+    date = datetime.datetime.today() + datetime.timedelta(days=day)
+    #print("--edelleen..")
+    if request.method == "GET":
+        event_list = events.get_events(user_id)
+        return render_template("entry.html", events=event_list, date=date, day=day)
+-->
 <!--listalla: e.id, e.name, e.description, e.min_participants, e.max_participants, e.event_level-->
 <h4>tapahtumaan {{date.strftime('%d. %m.')}}</h4>
 <p>

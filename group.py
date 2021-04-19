@@ -70,12 +70,66 @@ def add_admin_message(admin_info):
     except:
         return False
 
+#Tähän onko mahdollista saada parametriksi haettava järjestys jollakin lailla?
+def get_all_users_info_for_userlist():
+    sql = """SELECT id, username, name, contact_info, role, founded
+                FROM users
+                ORDER BY role, name"""
+    return db.session.execute(sql).fetchall()
+
+def get_all_users_in_events_info():
+    sql = """SELECT *
+                FROM users_in_events"""
+    return db.session.execute(sql).fetchall()
+
+
+def get_all_users_in_events_info_dict() -> dict:
+    info = {}
+    sql = """SELECT id
+                FROM users
+                ORDER BY name"""
+    user_id_list = db.session.execute(sql).fetchall()
+    print("---user_id lista", user_id_list)
+    for u_id in user_id_list:
+        user = u_id[0]
+        print("---user_id", user)
+        sql = """SELECT e.name, e.event_level, ue.user_level, ue.role 
+                    FROM events e LEFT JOIN users_in_events ue ON e.id = ue.event_id 
+                    WHERE ue.user_id=:user_id
+                    ORDER BY e.name"""
+        info[user] = db.session.execute(sql, {"user_id":user}).fetchall()
+        print("---info[user]",info[user])
+        print("---info", info)
+    return info
 
 #keskeneräinen
 def get_admin_info() -> list:
     sql = """SELECT admin_info
                 FROM group_info"""
     return db.session.execute(sql).fetchone()
+
+def change_participation_rights(users_changing, event_id, role):
+    try:
+        for user_id in users_changing:
+            sql = """UPDATE users_in_events SET role=:role
+                        WHERE user_id=:user_id
+                        AND event_id=:event_id"""
+            db.session.execute(sql, {"user_id":user_id, "event_id":event_id, "role":role})
+        db.session.commit()
+        return True
+    except:
+        return False
+
+def change_all_participation_rights(users_changing, role):
+    try:
+        for user_id in users_changing:
+            sql = """UPDATE users_in_events SET role=:role
+                        WHERE user_id=:user_id"""
+            db.session.execute(sql, {"user_id":user_id, "role":role})
+        db.session.commit()
+        return True
+    except:
+        return False
 
 #jos perustaa uuden ryhmän ja rekisteröityminen ei onnistu kokonaisuudessaan
 #silloin ryhmä poistetaan tietokannasta tällä

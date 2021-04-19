@@ -66,7 +66,7 @@ def register():
                 return render_template("error.html", message="Liittymissalasana oli tyhjä")
             
             group_id = group.add(group_name, group_description, group_password1)
-            if users.register(username, password1, 1):
+            if users.register(username, password1, 0):
                 group.set_founder(session["user_id"])
                 return redirect("/calendar")
             else:
@@ -339,7 +339,62 @@ def admin_message():
         return redirect("/settings")
     return render_template("error.html", message="viestin tallentaminen ei onnistunut")
 
+@app.route("/settings/admin/userlist", methods=["GET", "POST"])
+def userlist():
+    if request.method == "GET":
+        all_events = events.get_all_events()       
+        userlist = group.get_all_users_info_for_userlist()
+        print("---userlist",userlist)
+        users_in_events_list = group.get_all_users_in_events_info()
+        users_in_events_info = group.get_all_users_in_events_info_dict()
+        print("---users_in...", users_in_events_info)
+        return render_template("userlist.html", users_in_events_info=users_in_events_info, all_events=all_events, userlist=userlist, users_in_events_list=users_in_events_list)
+#sql = """SELECT u.id, u.name, u.contact_info, u.role, u.founded, ue.event_id, ue.role
+    if request.method == "POST":
+        action = request.form["action"]
+        users_changing = request.form.getlist("user_id")
+        if action == "1":
+            print("---1", users_changing, request.form["event_on"])
+            if users.change_level(users_changing, request.form["event_on"]):
+                return redirect("/settings/admin/userlist")
+        elif action == "2":
+            print("---2", users_changing)
+            if users.change_role(users_changing):
+                return redirect("/settings/admin/userlist")
+        elif action == "3":
+            print("---3", users_changing)
+            if users.reset_password(users_changing):
+                return redirect("/settings/admin/userlist")
+        elif action == "4":
+            print("---4", users_changing, request.form["event_off"])
+            if group.change_participation_rights(users_changing, request.form["event_off"], 5):
+                return redirect("/settings/admin/userlist")
+        elif action == "5":
+            print("---5", users_changing, request.form["event_off"])
+            if group.change_participation_rights(users_changing, request.form["event_off"], 2):
+                return redirect("/settings/admin/userlist")
+        elif action == "6":
+            print("---6", users_changing)
+            if group.change_all_participation_rights(users_changing, 5):
+                return redirect("/settings/admin/userlist")
+        elif action == "7":
+            print("---7", users_changing)
+            if group.change_all_participation_rights(users_changing, 2):
+                return redirect("/settings/admin/userlist")
+        return render_template("error.html", message="muutoksen tallentaminen ei onnistunut")
 
+    
+###########JATKA TÄSTÄ USERLIST KAIKKI TIEDOT SEURAAVAKSI#################
+
+
+
+
+
+           # <option value="1">1. muuta jäsenen taso -tapahtumakohtainen
+#    <option value="2">2. vaihda rooli admin/jäsen jäsen/admin
+ #   <option value="3">3. resetoi salasana samaksi kuin tunnus
+  #  <option value="4">4. poista jäsen tapahtumasta
+   # <option value="5">5. estä jäsen kaikista tapahtumista
 
 
 

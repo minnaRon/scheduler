@@ -159,6 +159,55 @@ def add_event_for_everyone(event_id):
     except:
         return False
 
+def change_level(users_changing, event_id):
+    try:
+        sql = """SELECT event_level FROM events
+                    WHERE id=:event_id"""
+        level = db.session.execute(sql, {"event_id":event_id}).fetchone()[0]
+        print("---level", level, users_changing, event_id)
+        for user_id in users_changing:
+            sql = """UPDATE users_in_events SET user_level=:event_level
+                        WHERE user_id=:user_id
+                        AND event_id=:event_id"""
+            db.session.execute(sql, {"user_id":user_id, "event_id":event_id, "event_level":level})
+        db.session.commit()
+        return True
+    except:
+        return False
+
+def change_role(users_changing):
+    try:
+        for user_id in users_changing:
+            sql = """SELECT role FROM users
+                        WHERE id=:user_id"""
+            role = db.session.execute(sql, {"user_id":user_id}).fetchone()[0]
+            if role == 1:
+                role = 2
+            elif role == 2:
+                role = 1
+            sql = """UPDATE users SET role=:role
+                        WHERE id=:user_id"""
+            db.session.execute(sql, {"user_id":user_id, "role":role})
+        db.session.commit()
+        return True
+    except:
+        return False
+
+def reset_password(users_changing):
+    try:
+        for user_id in users_changing:
+            sql = """SELECT username FROM users
+                        WHERE id=:user_id"""
+            username = db.session.execute(sql, {"user_id":user_id}).fetchone()[0]
+            hash_value = generate_password_hash(username)
+            sql = """UPDATE users SET password=:password
+                        WHERE id=:user_id"""
+            db.session.execute(sql, {"user_id":user_id, "password":hash_value})
+        db.session.commit()
+        return True
+    except:
+        return False
+
 def delete_user(username):
     sql = """DELETE FROM users 
              WHERE username=:username"""
