@@ -11,13 +11,13 @@
     <option value="3">3. resetoi salasana samaksi kuin tunnus
     <option value="4">4. poista jäsen tapahtumasta
     <option value="5">5. palauta jäsen tapahtumaan
-    <option value="6">6. estä jäsen kaikista tapahtumista
+    <option value="6">6. estä jäsen kaikista tapahtumistaan
     <option value="7">7. palauta jäsenen oikeudet kaikkiin tapahtumiin
 </select>
 <p>
 <b>..valitse lisätiedot:</b>
 <ul>
-    <li>kohtaan 1; jäsenen tason muuttaminen tapahtumaan sopivaksi,<br>
+    <li>kohtaan <b>1</b>; jäsenen tason muuttaminen tapahtumaan sopivaksi,<br>
         valitse tapahtuma:
         <select name="event_on">
         {% for event in all_events %}
@@ -25,7 +25,7 @@
             {% endfor %} 
         </select>
         <p>
-    <li>kohtaan 4 ja 5; poista/palauta jäsen tiettyyn tapahtumaan,<br>
+    <li>kohtaan <b>4</b> ja <b>5</b>; poista/palauta jäsen tiettyyn tapahtumaan,<br>
         valitse tapahtuma:
         <select name="event_off">
             {% for event in all_events %}
@@ -80,24 +80,21 @@ aktiivisuus tapahtumaan 5 = admin poistanut jäseneltä oikeuden osallistua, tap
     <th> kalenterinimi </th>
     <th> yhteystiedot </th>
     <th> liittynyt </th>
-    <th> tapahtuma </th>
-    <th> vaadittava taso </th>
-    <th> jäsenen taso tapahtumaan </th>
-    <th> aktiivisuus tapahtumaan </th>
-    {% for user in userlist %}
+    <th> tapahtuma </th> 
+    <th> vaadittava taso </th> 
+    <th> jäsenen taso </th>
+    <th> jäsenen aktiivisuus </th>
+    {% for user_info in users_in_events_info %}
     <tr>
-     <td> {{user[4]}} </td>
-     <td> {{user[1]}} </td>
-     <td> {{user[2]}} </td>
-     <td> {{user[3]}} </td>
-     <td> {{user[5].strftime("%d.%m.%Y")}} </td>
-     <td> 
-     <!-------------saako tämän toteutettua jotenkin jinjalla?
-           <li> users_in_events_info [ user [0] ] [0]  
-            ..sanakirja users_in_events, josta userlistin user[0]:n (user_id), kohdalta löytyy tapahtuman nimi 
-            (välit, kaaret pois kääntäjän takia, lukee kommenteistakin..)
-------------------------------------------------------------------------------------->
-     </td>
+     <td> {{user_info[0]}} </td>
+     <td> {{user_info[1]}} </td>
+     <td> {{user_info[2]}} </td>
+     <td> {{user_info[3]}} </td>
+     <td> {{user_info[4].strftime("%d.%m.%Y")}} </td>
+     <td> {{user_info[5]}} </td>
+     <td> {{user_info[6]}} </td>
+     <td> {{user_info[7]}} </tr>
+     <td> {{user_info[8]}} </td>
     </tr>
     {% endfor %}
 </table>

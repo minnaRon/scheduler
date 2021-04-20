@@ -49,13 +49,14 @@ def change_group_description(description:str):
         return False
 
 def change_group_password(new_password:str, old_password:str):
+    hash_value = generate_password_hash(new_password)
     try:
         sql = """SELECT password FROM group_info"""
         password = db.session.execute(sql).fetchone()[0]
         if check_password_hash(password, old_password):
             sql = """UPDATE group_info
                         SET password=:new_password"""
-            db.session.execute(sql, {"new_password":new_password})
+            db.session.execute(sql, {"new_password":hash_value})
         db.session.commit()
         return True
     except:
@@ -77,17 +78,25 @@ def get_all_users_info_for_userlist():
                 ORDER BY role, name"""
     return db.session.execute(sql).fetchall()
 
+#tarviiko?vvv
 def get_all_users_in_events_info():
     sql = """SELECT *
                 FROM users_in_events"""
     return db.session.execute(sql).fetchall()
 
+def get_all_users_in_events_info_list() -> list:
+    sql = """SELECT DISTINCT u.role, u.username, u.name, u.contact_info, u.founded, e.name, e.event_level, ue.user_level, ue.role
+                    FROM users u LEFT JOIN users_in_events ue ON u.id=ue.user_id
+                    LEFT JOIN events e ON e.id = ue.event_id
+                    ORDER BY u.role, u.name"""
+    return db.session.execute(sql).fetchall()
 
+#tarviiko?VVVVV
 def get_all_users_in_events_info_dict() -> dict:
     info = {}
     sql = """SELECT id
                 FROM users
-                ORDER BY name"""
+                ORDER BY role, name"""
     user_id_list = db.session.execute(sql).fetchall()
     print("---user_id lista", user_id_list)
     for u_id in user_id_list:

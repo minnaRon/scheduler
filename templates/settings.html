@@ -9,12 +9,12 @@
 <p>
 Tunnuksesi on: {{ user_info[0] }}<br>
 Kalenterissa näkyvä nimesi on: {{ user_info[1] }}<br>
-Yhteystietosi adminille: {{user_info[2] }}<br>
+Yhteystietosi adminille: {{ user_info[2] }}<br>
 <p>
-<b>Vaihda kalenterissa näkyvä nimi*</b> <br>
+<b>Vaihda kalenterissa näkyvä nimesi*</b> <br>
 Anna uusi nimi:<br>
 <input type="text" name="name" minlength="2" maxlength="30">
-<br>*Oletuksena muille jäsenille näkyy rekisteröinnissä antamasi tunnus nimenäsi.<br>
+<br>*Huom! tunnus ei muutu, vain kalenterissa näkyvä nimi muuttuu. Oletuksena muille jäsenille näkyy rekisteröinnissä antamasi tunnus nimenäsi.<br>
 Voit halutessasi vaihtaa kalenterissa näkyvää nimeäsi, kirjautumistunnuksesi säilyy silti ennallaan.<br>
 Nimi päivittyy heti uusiin viesteihin ja ilmoittautumisiin, ja ylhäälle näkymään seuraavassa sisäänkirjautumisessa.
 <p>
@@ -97,9 +97,9 @@ Tapahtuman nimi:
     {% for event in events_with_own_level %}
     <!-- vvvvv saako tähän on pienempi kuin neljä vvvvv miten escape-->
     {% if event[6] == 2 %}
-    <input type="checkbox" name="event_pick" value="{{event[0]}}" checked >{{event[1]}} taso {{event[5]}} {{event[2]}}<br>
+    <input type="checkbox" name="event_pick" value="{{event[0]}}" checked > <label for="event_pick"> {{event[1]}} taso {{event[5]}} {{event[2]}} </label><br>
     {% else %}
-    <input type="checkbox" name="event_pick" value="{{event[0]}}" >{{event[1]}} taso {{event[5]}} {{event[2]}}<br>
+    <input type="checkbox" name="event_pick" value="{{event[0]}}" > <label for="event_pick"> {{event[1]}} taso {{event[5]}} {{event[2]}} </label><br>
     {% endif %}
     {% endfor %}    
 </select>
@@ -113,23 +113,24 @@ Tapahtuman nimi:
 <form action="/settings/friends" method="POST">
 <h2>Lisää kavereita</h2>
 Voit seurata kavereidesi alustavia toisen viikon suunnitelmia.
-Lähetä kaveripyyntö, anna kaverisi kalenterissa oleva nimi tähän: <br>
+<b>Lähetä kaveripyyntö, anna kaverisi kalenterissa oleva nimi: <b><br>
 <input type="text" name="friend">
 <p>
-    {% if managing_friends %}
-    <!--sql = """SELECT u.id, u.name, f.active, f.user_id1-->
-    {% for friend in managing_friends %}
-    {% if friend[2]==0 %}
-    <input type="checkbox" name="friends" value="{{friend[0]}}" >{{friend[1]}} <br>
-    {% endif %}
-    {% endfor %}
-##näyttää nyt liikaa kavereina, kts. kuntoon
-    {% for friend in managing_friends %}
-    {% if friend[2]==1 %}
+#tämä vielä kesken..
+<b>Hyväksy kaveripyyntöjä ja poista kavereita: </b>
+    {% if friend_requests %}
+  Kaveripyynnöt:<br>
+  {% for friend_asking in friend_requests %}
+      <input type="checkbox" name="friends" value="{{friend_asking[0]}}" >{{friend_asking[1]}} <br>
+  {% endfor %}
+{% endif %}
+
+{% if friends %}
+  Kaverisi:<br>
+  {% for friend in friends %}
     <input type="checkbox" name="friends" value="{{friend[0]}}" checked >{{friend[1]}} <br>
-    {% endif %}
-    {% endfor %}
-    {% endif %}
+{% endfor %}
+{% endif %}
 <p>
 <input type="submit" value="Tallenna muutokset">
 <p>
@@ -155,6 +156,8 @@ Hae ajalta: <input type="date" name="date_start"> - <input type="date" name="dat
 
     <h2>Ryhmän hallinta -admin</h2>
 <p>
+    <hr>
+    <p>
     <b>Muuta ryhmän nimi</b> <br>
     Anna uusi nimi:<br>
     <input type="text" name="name_group" minlength="2" maxlength="30">
@@ -182,11 +185,11 @@ Hae ajalta: <input type="date" name="date_start"> - <input type="date" name="dat
 
     <b>Salasanan vaihto:</b>
     <p>
-    Vanha salasana:<br><input type="password" name="old_password">
+    Oma kirjautumissalasanasi:<br><input type="password" name="old_password">
     <p>
-    Uusi salasana:<br><input type="password" name="new_password1">
+    Uusi ryhmän salasana:<br><input type="password" name="new_password1">
     <p>
-    Uusi salasana uudelleen: <br><input type="password" name="new_password2">
+    Uusi ryhmän salasana uudelleen: <br><input type="password" name="new_password2">
     <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
     <p>
     <input type="submit" value="Tallenna muutos">
@@ -196,12 +199,12 @@ Hae ajalta: <input type="date" name="date_start"> - <input type="date" name="dat
 <!--------------------------------------------------------------------------->
 <form action="/settings/add_new_event" method="POST">
 <h2>Uuden tapahtuman luominen:</h2>
-Anna tapahtuman nimi: <input type="text" name="new_event_name" maxlength="30">
+<b>Anna tapahtuman nimi: <input type="text" name="new_event_name" minlength="1" maxlength="30"></b>
 <p>
 <b>..voit halutessasi antaa lisätietoa:</b>
 <p>
-###kts. rajaukset kuntoon<br>
-Anna tapahtuman kuvaus: <input type="textarea" name="new_event_description" maxlength="150">
+Anna tapahtuman kuvaus: <textarea name="new_event_description" rows="2" cols="50" maxlength="150">
+</textarea>
 <p>
 Anna minimiosallistujamäärä: <input type="number" name="new_event_min_participants" min="0" max="99999">
 <p>
@@ -209,46 +212,49 @@ Anna maksimiosallistujamäärä: <input type="number" name="new_event_max_partic
 <p>
 <b>..ja rajata osallistujille oman taitotason tapahtumia:</b>
 <p>
-Anna tapahtumaan vaadittava (taito)taso*: <input type="number" name="new_event_level"><br>
-*jäsenillä on oletuksena oikeus ilmoittautua nollatason tapahtumiin.
-Jos käytät tapahtumissasi tasomäärittelyä, määrittele myös jäsenille oikeus
-osallistua oman tasonsa tapahtumiin.
-esim. jos määrittelet jäsenelle tason 5, niin jäsen näkee kaikki tapahtumat tasoilla 0-5
-ja voi omissa asetuksissaan valita näistä tapahtumista itselleen sopivat kalenterissa näytettäväksi.
+Anna tapahtumaan vaadittava (taito)taso: <input type="number" name="new_event_level" min="0" max="99"><br>
+<p>
+    Huom! Mikäli käytit tasoasetuksia, päivitä tapahtuman kohderyhmän jäsenille riittävä taso tapahtumaan 
+    jäsenten asetuksissa tapahtuman tietojen tallentamisen jälkeen <br>
+    <a href="/settings/admin/userlist">pääset tästä jäsenten asetuksiin</a>
+    <p>Jäsenillä on oletuksena oikeus ilmoittautua nollatason tapahtumiin.
+    Esim. jos määrittelet jäsenelle tason 5, niin jäsen näkee kaikki tapahtumat tasoilla 0-5
+    ja voi omissa asetuksissaan valita näistä tapahtumista itselleen sopivat tapahtumat kalenterissa näytettäväksi.
 <p>
     <input type="submit" value="Tallenna uuden tapahtuman tiedot">
     <p>
     </form>
-<p>
-Mikäli käytit tasoasetuksia, päivitä tapahtuman kohderyhmän jäsenille riittävä taso tapahtumaan jäsenten asetuksissa, <br>
-<a href="/settings/admin/user_changes">jäsenten asetuksiin tästä</a>
-<p>
+
 <!------------------------------------------------------------------------------------------------>
 <form action="/settings/change_event_info" method="POST">
-<h2>Tapahtuman muuttaminen tai poistaminen</h2>
+<h2>Tapahtuman muuttaminen tai poistaminen käytöstä</h2>
 <p>
-<p>valitse tapahtuma:
+<p><b>valitse tapahtuma:</b>
 <select name="event_pick">
     {% for event in all_events %}
 <option value="{{event[0]}}"> {{event[1]}} | taso {{event[5]}}
     {% endfor %}
 </select>
-  valitse toiminto:
+  <b>valitse toiminto:</b>
 <select name="event_action">
-<option value="1"> poista
 <option value="2"> muuta nimi
 <option value="3"> muuta kuvaus
 <option value="4"> muuta minimiosallistujamäärä
 <option value="5"> muuta maksimiosallistujamäärä
 <option value="6"> muuta tasomääritys
+<option value="1"> poista käytöstä*
 </select>
 <p>
-    ###kts. tähän rajaukset<br>
-    #poisto ei vielä toimi, cascade vai active? vai vain event_level yli muiden?
-<br>Täytä vain valintaasi vastaava kenttä:<br>
-muuta nimi: <input type="text" name="event_name"><br>
-muuta kuvaus: <input type="textarea" name="event_description"><br>
-muuta taso, minimi- tai maksimiosallistujamäärä: <input type="number" name="number_value">
+    *käytöstä poistetut tapahtumat (taso 100) voidaan ottaa uudelleen käyttöön muuttamalla tasomääritys normaaliksi, myös muita tapahtuman tietoja voi muutella.
+<br><b>Täytä vain valintaasi vastaava kenttä:</b><br>
+muuta nimi: <input type="text" name="event_name" minlength="1" maxlength="35">
+<p>
+muuta kuvaus: <textarea name="event_description" rows="2" cols="50" maxlength="150">
+</textarea>
+<p>
+minimi- tai maksimiosallistujamäärä: <input type="number" name="number_value1" min="0" max="99999">
+<p>
+muuta taso: <input type="number" name="number_value2" min="0" max="99">
 <p>
 <input type="submit" value="Tallenna muutokset">
 <p>

@@ -166,17 +166,18 @@ def settings():
     #    sql = """SELECT e.id, e.name, e.description, e.min_participants, e.max_participants, e.event_level, ue.role
     own_weekly_entries = entries.get_weekly_entries_for_user(user_id)
     #    sql = """SELECT en.weekly, e.id, e.name, en.start_time, en.finish_time, en.id
-    managing_friends = users.get_friends_all_info(user_id)
+    friends = users.get_friends(user_id)
     #    sql = """SELECT u.id, u.name, f.active, f.user_id1
+    friend_requests = users.get_friends_open_requests(user_id)
     weekdays = {0:"SU", 1:"MA", 2:"TI", 3:"KE", 4:"TO", 5:"PE", 6:"LA"}
     user_info = users.get_user_info(user_id)
     #    sql = """SELECT username, name, contact_info FROM users"""
     if session["user_role"] == 1:
         all_events = events.get_all_events()
     #    sql = """SELECT *
-        return render_template("settings.html", all_events=all_events, user_info=user_info, days=weekdays, events_with_own_level=events_with_own_level, own_weekly_entries= own_weekly_entries, managing_friends=managing_friends)
+        return render_template("settings.html", all_events=all_events, user_info=user_info, days=weekdays, events_with_own_level=events_with_own_level, own_weekly_entries= own_weekly_entries, friends=friends, friend_requests=friend_requests)
     else:
-        return render_template("settings.html", user_info=user_info,  days=weekdays, events_with_own_level=events_with_own_level, own_weekly_entries= own_weekly_entries, managing_friends=managing_friends)
+        return render_template("settings.html", user_info=user_info,  days=weekdays, events_with_own_level=events_with_own_level, own_weekly_entries= own_weekly_entries, friends=friends, friend_requests=friend_requests)
 
 @app.route("/settings/change_user_name", methods=["POST"])
 def change_name():
@@ -224,14 +225,20 @@ def weekly_entries():
 @app.route("/settings/change_calendarview", methods=["POST"])
 def change_calendarview():
     events = request.form.getlist("event_pick")
+    print("--events calendar", events)
     if users.update_calendarview(session["user_id"], events):
         return redirect("/settings")
     return render_template("error.html", message="Kalenterissa näkyvien tapahtumien päivittäminen ei onnistunut")
 
 @app.route("/settings/friends", methods=["POST"])
 def friends():
-    if users.add_friend_request(session["user_id"], request.form["friend"]):
-        return redirect("/settings")
+    if request.form["friend"]:
+        if users.add_friend_request(session["user_id"], request.form["friend"]):
+            return redirect("/settings")
+    elif request.form["friends"]:
+        print("---friends", request.form.getlist("friends"))   
+        if users.change_friends(session["user_id"], request.form.getlist("friends")):
+            return redirect("/settings")
     return render_template("error.html", message="Kaveripyyntö ei onnistunut")
  
 @app.route("/settings/change_group_name", methods=["POST"])
@@ -265,6 +272,8 @@ def change_group_password():
     
 @app.route("/settings/add_new_event", methods=["POST"])
 def add_new_event():
+    if events.old_events_with_level_100(5):
+        return render_template("error.html", message="Uuden tapahtuman lisäys ei onnistu. Saat luotua uuden tapahtuman muuttamalla yhden käytöstä poistamasi tapahtuman kohdassa Tapahtuman muuttaminen tai poistaminen käytöstä.")
     event_info = {1:request.form["new_event_name"], 2:"", 3:0, 4:0, 5:0}
     if request.form["new_event_description"]:
         event_info[2] = request.form["new_event_description"]
@@ -289,7 +298,7 @@ def change_event_info():
     action = request.form["event_action"]
     event_id = request.form["event_pick"]
     if action == "1":
-        if events.delete_event(event_id):
+        if events.change_level(event_id, 100):
             return redirect("/settings")
         else:
             return render_template("error.html", message="Tapahtuman poistaminen ei onnistunut")
@@ -302,16 +311,16 @@ def change_event_info():
             if events.change_description(event_id, request.form["event_description"]):
                 return redirect("/settings")
     elif action == "4":
-        if request.form["number_value"]:
-            if events.change_min_participants(event_id, request.form["number_value"]):
+        if request.form["number_value1"]:
+            if events.change_min_participants(event_id, request.form["number_value1"]):
                 return redirect("/settings")
     elif action == "5":
-        if request.form["number_value"]:
-            if events.change_max_participants(event_id, request.form["number_value"]):
+        if request.form["number_value1"]:
+            if events.change_max_participants(event_id, request.form["number_value1"]):
                 return redirect("/settings")
     elif action == "6":
-        if request.form["number_value"]:
-            if events.change_level(event_id, request.form["number_value"]):
+        if request.form["number_value2"]:
+            if events.change_level(event_id, request.form["number_value2"]):
                 return redirect("/settings")
     return render_template("error.html", message="Tapahtuman muuttaminen ei onnistunut")
 
@@ -326,9 +335,11 @@ def userlist():
     if request.method == "GET":
         all_events = events.get_all_events()
         userlist = group.get_all_users_info_for_userlist()
-        users_in_events_list = group.get_all_users_in_events_info()
-        users_in_events_info = group.get_all_users_in_events_info_dict()
-        return render_template("userlist.html", users_in_events_info=users_in_events_info, all_events=all_events, userlist=userlist, users_in_events_list=users_in_events_list)
+        #users_in_events_list = group.get_all_users_in_events_info()
+        #users_in_events_info = group.get_all_users_in_events_info_dict()
+        users_in_events_info = group.get_all_users_in_events_info_list()
+        print("---ue list", users_in_events_info)
+        return render_template("userlist.html", users_in_events_info=users_in_events_info, all_events=all_events, userlist=userlist)
 #sql = """SELECT u.id, u.name, u.contact_info, u.role, u.founded, ue.event_id, ue.role
     if request.method == "POST":
         action = request.form["action"]

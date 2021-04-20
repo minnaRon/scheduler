@@ -93,26 +93,34 @@ def update_calendarview(user_id, events:list):
     try:
         sql = """UPDATE users_in_events SET role=4
                     WHERE user_id=:user_id
-                    AND role<>5"""
-        db.session.execute(sql, {"user_id":user_id, "event_id":event_id})
+                    AND role <> 5"""
+        db.session.execute(sql, {"user_id":user_id})
         for event_id in events:
             sql = """UPDATE users_in_events SET role=2
                     WHERE user_id=:user_id
                     AND event_id=:event_id"""
-            db.session.execute(sql, {"user_id":user_id, "event_id":event_id, "role":role})
+            db.session.execute(sql, {"user_id":user_id, "event_id":event_id})
         db.session.commit()
         return True
     except:
         return False
 
-def get_friends_all_info(user_id):
-    sql = """SELECT u.id, u.name, f.active, f.user_id1
-                FROM friends f, users u
-                WHERE ((f.user_id1=:user_id AND f.active=1)
-                OR (f.user_id2=:user_id AND f.active=0))
-                AND u.id <> :user_id
-                ORDER BY u.name
-                """
+def get_friends_open_requests(user_id):
+    sql = """SELECT u.id, u.name, fr.active, fr.user_id1
+                FROM (SELECT * FROM friends f
+                        WHERE ((f.user_id1=:user_id AND f.active=1) 
+                        OR (f.user_id2=:user_id AND f.active=0))) fr JOIN users u ON user_id1=u.id                    
+                WHERE u.id <> :user_id
+                ORDER BY u.name"""
+    return db.session.execute(sql, {"user_id":user_id}).fetchall()
+
+def get_friends(user_id):
+    sql = """SELECT u.id, u.name, fr.active, fr.user_id1
+                FROM (SELECT * FROM friends f
+                        WHERE ((f.user_id1=:user_id AND f.active=1) 
+                        OR (f.user_id2=:user_id AND f.active=0))) fr JOIN users u ON user_id2=u.id
+                WHERE u.id <> :user_id
+                ORDER BY u.name"""
     return db.session.execute(sql, {"user_id":user_id}).fetchall()
 
 def add_friend_request(user_id, friend_calendarname):
@@ -131,7 +139,22 @@ def add_friend_request(user_id, friend_calendarname):
     except:
         return False
 
-
+def change_friends(user_id, friends):
+    try:
+        sql = """UPDATE friends SET active=0
+                    WHERE (user_id1 = :user_id OR user_id2 = :user_id)
+                    AND active=1"""
+        db.session.execute(sql, {"user_id":user_id})
+        for friend in friends:
+            sql = """UPDATE friends SET active=1
+                    WHERE (user_id1=:user_id AND user_id2=:friend)
+                        OR (user_id1=:friend AND user_id2=:user_id)"""
+            db.session.execute(sql, {"user_id":user_id, "friend":friend})
+        db.session.commit()
+        return True
+    except:
+        return False
+        
 def get_user_info(user_id):
     sql = """SELECT username, name, contact_info
                 FROM users
