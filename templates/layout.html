@@ -7,7 +7,7 @@
 <h4>scheduler - aikatauluapulainen</h4>
 <hr>
 {% if session.user_name %}
-Kirjautuneena nimellä <b>{{  session.user_name  }}</b>  |  <a href="/settings">Omat asetukset</a>  |  <a href="/logout">Kirjaudu ulos</a>
+Kirjautuneena nimellä <b>{{  session.user_name  }}</b>  |  <a href="/settings">Omat asetukset</a>  |  <a href="/logout">Kirjaudu ulos</a> | <a href="/calendar">Kalenterisivu</a>
 {% endif %}
 {% block content %}
 {% endblock %}

@@ -21,7 +21,8 @@ def register():
     
     if request.method == "GET":
         group_info = group.get_info()
-        event_list = events.get_all_0_level_events()
+        #event_list = events.get_all_0_level_events()
+        event_list = events.get_all_events_for_register()
         if not group_info:
             return render_template("new_group.html")
         return render_template("register.html", group_info=group_info, events=event_list)
@@ -44,7 +45,8 @@ def register():
                 if users.register(username, password1, 2):
                     events_checked = request.form.getlist("event_checked")
                     for event in events_checked:
-                        users.add_event(event[0], session["user_id"], 2)
+                        print("events reg", event)
+                        users.add_event(event, session["user_id"], 2)
                     return redirect("/calendar")
         
         #tämä käytössä vain kerran, kun perustaja tallentaa ryhmän tiedot..
@@ -88,17 +90,22 @@ def calendar():
     user_id = session["user_id"]
     today = datetime.date.today()
     week, all_event_entries = entries.get_week(user_id, 1)
+    all_own_entries = entries.get_all_own_entries_dict(all_event_entries)
 ## v KESKENERÄINEN haku, jos ehtii niin tarkenna vielä v
     message_list =  messages.get_newest(25, user_id)
     group_info = group.get_info()
     days = {0:"SU", 1:"MA", 2:"TI", 3:"KE", 4:"TO", 5:"PE", 6:"LA"}
+    days_i = entries.change_days_dow_to_i_dict(days, today)
         
     if request.method =="GET":
-        return render_template("calendar.html", messages=message_list, group_info=group_info, days=days, week=week, all_event_entries=all_event_entries, today=today)
+        return render_template("calendar.html", messages=message_list, days_i=days_i, all_own_entries=all_own_entries, group_info=group_info, days=days, week=week, all_event_entries=all_event_entries, today=today)
     
     if request.method == "POST":
-        messages.add(user_id, request.form["comment"])
-        return redirect("/calendar")
+        if len(request.form["comment"]) > 0:
+            if messages.add(user_id, request.form["comment"]):
+                return redirect("/calendar")
+        return render_template("error.html", message="Viestin lisäys ei onnistunut")
+
 
 @app.route("/entry/<day>", methods=["GET","POST"])
 def entry(day):
@@ -163,6 +170,7 @@ def plan():
 def settings():
     user_id = session["user_id"]
     events_with_own_level = events.get_all_events_for_user(user_id)
+    #print("--own level", events_with_own_level)
     #    sql = """SELECT e.id, e.name, e.description, e.min_participants, e.max_participants, e.event_level, ue.role
     own_weekly_entries = entries.get_weekly_entries_for_user(user_id)
     #    sql = """SELECT en.weekly, e.id, e.name, en.start_time, en.finish_time, en.id
@@ -225,18 +233,20 @@ def weekly_entries():
 @app.route("/settings/change_calendarview", methods=["POST"])
 def change_calendarview():
     events = request.form.getlist("event_pick")
-    print("--events calendar", events)
+    #print("--events calendar", events)
     if users.update_calendarview(session["user_id"], events):
         return redirect("/settings")
     return render_template("error.html", message="Kalenterissa näkyvien tapahtumien päivittäminen ei onnistunut")
 
+
+##tämä keskeneräinen..kaverit ei poistu.. :D
 @app.route("/settings/friends", methods=["POST"])
 def friends():
     if request.form["friend"]:
         if users.add_friend_request(session["user_id"], request.form["friend"]):
             return redirect("/settings")
-    elif request.form["friends"]:
-        print("---friends", request.form.getlist("friends"))   
+    if request.form.getlist("friends"):
+        #print("---friends", request.form.getlist("friends"))
         if users.change_friends(session["user_id"], request.form.getlist("friends")):
             return redirect("/settings")
     return render_template("error.html", message="Kaveripyyntö ei onnistunut")
@@ -278,11 +288,11 @@ def add_new_event():
     if request.form["new_event_description"]:
         event_info[2] = request.form["new_event_description"]
     if request.form["new_event_min_participants"]:
-        event_info[3] = request.form["new_event_min_participants"]
+        event_info[3] = int(request.form["new_event_min_participants"])
     if request.form["new_event_max_participants"]:
-        event_info[4] = request.form["new_event_max_participants"]
+        event_info[4] = int(request.form["new_event_max_participants"])
     if request.form["new_event_level"]:
-        event_info[5] = request.form["new_event_level"]
+        event_info[5] = int(request.form["new_event_level"])
     if event_info[3] > event_info[4]:
         return render_template("error.html", message="Tapahtuman lisäys ei onnistunut, tarkista minimi- ja maksimiosallistujamäärät")
     event_id = events.add_new_event(event_info)

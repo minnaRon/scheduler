@@ -108,8 +108,7 @@ def update_calendarview(user_id, events:list):
 def get_friends_open_requests(user_id):
     sql = """SELECT u.id, u.name, fr.active, fr.user_id1
                 FROM (SELECT * FROM friends f
-                        WHERE ((f.user_id1=:user_id AND f.active=1) 
-                        OR (f.user_id2=:user_id AND f.active=0))) fr JOIN users u ON user_id1=u.id                    
+                        WHERE (f.user_id2=:user_id AND f.active=0)) fr JOIN users u ON user_id1=u.id
                 WHERE u.id <> :user_id
                 ORDER BY u.name"""
     return db.session.execute(sql, {"user_id":user_id}).fetchall()
@@ -117,14 +116,14 @@ def get_friends_open_requests(user_id):
 def get_friends(user_id):
     sql = """SELECT u.id, u.name, fr.active, fr.user_id1
                 FROM (SELECT * FROM friends f
-                        WHERE ((f.user_id1=:user_id AND f.active=1) 
-                        OR (f.user_id2=:user_id AND f.active=0))) fr JOIN users u ON user_id2=u.id
+                        WHERE ((f.user_id1=:user_id AND f.active=1)
+                        OR (f.user_id2=:user_id AND f.active=1))) fr JOIN users u ON user_id2=u.id OR user_id1=u.id
                 WHERE u.id <> :user_id
                 ORDER BY u.name"""
     return db.session.execute(sql, {"user_id":user_id}).fetchall()
 
 def add_friend_request(user_id, friend_calendarname):
-    print("--f cal",friend_calendarname)
+    #print("--f cal",friend_calendarname)
     try:
         sql = """SELECT id
                     FROM users
@@ -145,16 +144,17 @@ def change_friends(user_id, friends):
                     WHERE (user_id1 = :user_id OR user_id2 = :user_id)
                     AND active=1"""
         db.session.execute(sql, {"user_id":user_id})
-        for friend in friends:
-            sql = """UPDATE friends SET active=1
-                    WHERE (user_id1=:user_id AND user_id2=:friend)
-                        OR (user_id1=:friend AND user_id2=:user_id)"""
-            db.session.execute(sql, {"user_id":user_id, "friend":friend})
+        if friends:
+            for friend in friends:
+                sql = """UPDATE friends SET active=1
+                        WHERE (user_id1=:user_id AND user_id2=:friend)
+                            OR (user_id1=:friend AND user_id2=:user_id)"""
+                db.session.execute(sql, {"user_id":user_id, "friend":friend})
         db.session.commit()
         return True
     except:
         return False
-        
+
 def get_user_info(user_id):
     sql = """SELECT username, name, contact_info
                 FROM users
@@ -165,14 +165,12 @@ def get_all_users_id_name():
     sql = """SELECT id, name FROM users"""
     return db.session.execute(sql)
 
-#tarvitaanko tätä? missä tapahtumakohtainen user level määrittely jos ei tässä?
-#pitäisikö ohjata lisäämään usereille sopivat levelit heti?
 def add_event_for_everyone(event_id):
     try:
         sql = """SELECT id
                     FROM users"""
         users = db.session.execute(sql).fetchall()
-        print("---id:t", users)
+        #print("---id:t", users)
         for user in users:
             sql = """INSERT INTO users_in_events (event_id, user_id)
                         VALUES (:event_id, :user_id)"""
@@ -187,7 +185,7 @@ def change_level(users_changing, event_id):
         sql = """SELECT event_level FROM events
                     WHERE id=:event_id"""
         level = db.session.execute(sql, {"event_id":event_id}).fetchone()[0]
-        print("---level", level, users_changing, event_id)
+        #print("---level", level, users_changing, event_id)
         for user_id in users_changing:
             sql = """UPDATE users_in_events SET user_level=:event_level
                         WHERE user_id=:user_id

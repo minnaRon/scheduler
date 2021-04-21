@@ -23,6 +23,16 @@ def get_all_0_level_events():
     except:
         return []
 
+def get_all_events_for_register():
+    try:
+        sql = """SELECT id, name, description, min_participants, max_participants
+                    FROM events
+                    WHERE event_level < 100
+                    ORDER BY name"""
+        return db.session.execute(sql).fetchall()
+    except:
+        return []
+
 def get_all_events():
     try:
         sql = """SELECT *
@@ -40,6 +50,7 @@ def get_all_events_for_user(user_id):
                     LEFT JOIN users_in_events ue ON u.id=ue.user_id
                     LEFT JOIN events e ON e.id=ue.event_id
                     WHERE u.id=:user_id
+                    AND ue.role < 5
                     AND ue.user_id=:user_id
                     AND e.event_level <= ue.user_level
                     ORDER BY e.name, e.event_level"""
@@ -60,7 +71,7 @@ def get_events(user_id):
         return db.session.execute(sql, {"user_id":user_id}).fetchall()  
     except:
         return []
-    
+
 def old_events_with_level_100(allowed_amount):
     sql = """SELECT COUNT(event_level) FROM events
                 WHERE event_level=100"""
@@ -74,7 +85,7 @@ def delete_event(event_id):
                     WHERE id=:event_id"""
         db.session.execute(sql,{"event_id":event_id})
         db.session.commit()
-        print("---tämä on true")
+        #print("---tämä on true")
         return True
     except:
         return False

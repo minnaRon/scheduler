@@ -46,7 +46,7 @@ def get_week(user_id:int, week_wanted:int) -> dict:
                         OR en.weekly IS NOT NULL)
                 AND ue.role < 4
                 AND en.active > 0
-                AND ev.event_level <= ue.user_level
+                AND (ev.event_level <= ue.user_level AND ue.user_id=:user_id)
                 ORDER BY dow, en.event_id"""
 #näyttää kaikki ryhmät, suodata; vain user_id:n valitsemat, kts. kuntoon kunhan ehtii..
     result = db.session.execute(sql, {"user_id":user_id, "first_day":first_day, "last_day":last_day}).fetchall()
@@ -57,8 +57,8 @@ def get_week(user_id:int, week_wanted:int) -> dict:
     entries_all_events = []
     for i in range(len(result)):
         if user_id == result[i][2]:
-            today = datetime.datetime.today()                    #pvm, event.name, alkuaika, loppuaika, dow, day
-            entries_all_events.append(((today + datetime.timedelta(days=match_day_to_dict_week7i(result[i][3]))), result[i][1], result[i][4], result[i][5], result[i][3], match_day_to_dict_week7i(result[i][3])))
+            today = datetime.datetime.today()                    #pvm, event.name, alkuaika, loppuaika, dow, day, event_id
+            entries_all_events.append(((today + datetime.timedelta(days=match_day_to_dict_week7i(result[i][3]))), result[i][1], result[i][4], result[i][5], result[i][3], match_day_to_dict_week7i(result[i][3]), result[i][0]))
         if dow != result[i][3] or event_id != result[i][0]:
             day = match_day_to_dict_week7i(dow)
             store_events = week[day][:-1] 
@@ -90,6 +90,15 @@ def get_week(user_id:int, week_wanted:int) -> dict:
     #print("---week",week)
     #print("---entries_all_events", entries_all_events)
     return week, sorted(entries_all_events) 
+
+def get_all_own_entries_dict(all_entries:list) -> dict:
+    #print("---all_entries", all_entries)
+    all_own_entries = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]}
+    for entry in all_entries:
+        all_own_entries[entry[5]].append(entry)
+    #print("---all own entries", all_own_entries)
+    return all_own_entries
+
 
 #TÄMÄ KYSELY KESKENERÄINEN
 def friends_planning(user_id):
@@ -131,7 +140,23 @@ def calc_participants(sorted_times_and_changes:list) -> list:
         sorted_times_and_changes[i].append(sorted_times_and_changes[i+1][0])
     sorted_times_and_changes.pop(-1)
     times_and_changes = []
+    i = 0
     for row in sorted_times_and_changes:
-        if row[0] != row[4]:
+        if row[0] != row[4] and row[3] != 0:
+            row.append(i)
             times_and_changes.append(row)
+            i += 1
     return times_and_changes
+
+def find_entry(all_event_entries, entry_i):
+    for entry in all_event_entries:
+        if entry[7] == entry_i:
+            return entry
+        
+def change_days_dow_to_i_dict(days, today):
+    days_i = {}
+    for i in range(7):
+        dow_wanted = (today + datetime.timedelta(days=i)).strftime("%w")
+        days_i[i] = days[int(dow_wanted)]
+    #print("--days_i", days_i)
+    return days_i

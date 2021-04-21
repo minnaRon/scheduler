@@ -113,11 +113,11 @@ Tapahtuman nimi:
 <form action="/settings/friends" method="POST">
 <h2>Lisää kavereita</h2>
 Voit seurata kavereidesi alustavia toisen viikon suunnitelmia.
-<b>Lähetä kaveripyyntö, anna kaverisi kalenterissa oleva nimi: <b><br>
+<b>Lähetä kaveripyyntö, anna kaverisi kalenterissa oleva nimi: </b><br>
 <input type="text" name="friend">
 <p>
-#tämä vielä kesken..
-<b>Hyväksy kaveripyyntöjä ja poista kavereita: </b>
+#tämä vielä kesken.. friends forever! .. :D<br>
+<b>Hyväksy kaveripyyntöjä ja poista kavereita: </b><br>
     {% if friend_requests %}
   Kaveripyynnöt:<br>
   {% for friend_asking in friend_requests %}
@@ -246,6 +246,7 @@ Anna tapahtumaan vaadittava (taito)taso: <input type="number" name="new_event_le
 </select>
 <p>
     *käytöstä poistetut tapahtumat (taso 100) voidaan ottaa uudelleen käyttöön muuttamalla tasomääritys normaaliksi, myös muita tapahtuman tietoja voi muutella.
+<!--tässä bugivaara.. jos tapahtuma muutetaan kokonaan toiseksi, niin siihen täytyy olla vielä lisäkäsittelyä, joten erikseen toimintoihin vielä-->
 <br><b>Täytä vain valintaasi vastaava kenttä:</b><br>
 muuta nimi: <input type="text" name="event_name" minlength="1" maxlength="35">
 <p>

@@ -6,24 +6,31 @@
 <hr>
 <h2> {{group_info[0]|upper}}</h2>
 <form action="/calendar" method="POST">
-Ohje: Alla voit ilmoittaa mahdollisuudestasi osallistua ryhmän tapahtumiin <br>
-itsellesi sopivana ajankohtana. <br>
-Tapahtumien ajankohdat muodostetaan ilmoittautumisien perusteella.<br>
-<!--#kts.ohjeelle sopiva esitystapa-->
-<b>Ilmoittele tässä osallistumismahdollisuuksistasi viikoksi eteenpäin <br>
-    alkaen tänään:</b>
+
+Tapahtumien ajankohdat muodostuvat ilmoittautumisien perusteella (tapahtuma toteutuu, kun sopivasti osallistujia).<br>
+
+<h2>Päiväkohtaisesti ryhmän jäsenien osallistumistilanne tapahtumissa:</h2> 
+<p>
+    <hr>   
 <!--Sanakirja: päivänumerointi:[[alkuaika, tapahtuman nimi, dow, osallistujia, loppuaika],...,[päivämäärä]]-->
 {% for i in range(7) %}
 <p>
 <!--tämä alkup. rivi alle kts.vkpv {{days[week[i][-1].strftime("%w")]}} {{week[i][-1].strftime("%d.%m.")}}
 -->
-#kts.vkpv {{week[i][-1].strftime("%w")}} {{week[i][-1].strftime("%d.%m.")}}
+{{days_i[i]}} {{week[i][-1].strftime("%d/%m.")}} 
+Oma mahdollinen osallistumiseni päivälle:
+<ul>
+{% for entry in all_own_entries[i] %}
+    <li>{{entry[1]}} klo {{entry[2].strftime('%H:%M')}} - {{entry[3].strftime('%H:%M')}}
+{% endfor %}
+</ul>
 
+{{group_info[0]}} kaikkien jäsenien mahdolliset osallistumiset päivälle:
     {% if not week[i][1] %}
         <select name="no_entries">
-            <option> ei ilmoittautumisia vielä 
-        </select>
-        <a href="/entry/{{i}}">osallistun</a>
+            <option> ei ilmoittautumisia vielä<br> 
+        </select><br>
+        <a href="/entry/{{i}}">Ehdit ekana! ..ilmoita oma mahdollinen aikataulusi päivälle tapahtumiin täällä</a>
     {% else: %}
         <select name="entries">
 <!--kts nimeäminen vvv time voisi olla ?? time[0] alkuaika time[1] tapahtuma time[2] dow? time[3] osallistujien määrä time[4] loppuaika-->
@@ -32,26 +39,16 @@ Tapahtumien ajankohdat muodostetaan ilmoittautumisien perusteella.<br>
                 <option> {{time[1]}} | klo {{time[0]}} - {{time[4]}} | osallistujia {{time[3]}}
             {% endfor %} 
         {% endfor %} 
-        </select>
-        <a href="/entry/{{i}}">osallistun</a>
+        </select><br>
+        
+        <a href="/entry/{{i}}">ehdin myös ..ilmoita täällä mihin tapahtumaan ja milloin</a>
     {% endif %}
+    <hr>
 {% endfor %} 
 
-<!--Lista: date, event.name, alkuaika, loppuaika, dow-->
-<p>
-    <h3> Kaikki osallistumiseni seuraava seitsemän päivää: </h3>
-        <ul>
-            {% for entry in all_event_entries %}
-        <li>{{days[entry[4]]}} {{entry[0].strftime('%d.%m.')}}
-            {{entry[1]}} 
-            klo {{entry[2].strftime('%H:%M')}} - {{entry[3].strftime('%H:%M')}} 
-            <a href="/entry/{{entry[5]}}">muuta</a>
-            {% endfor %}
-        </ul>
-<p>   
 <a href="/plan"><h4>Suunnittele seuraava viikko</h4></a>
 <p>
-Lisää lyhyt viesti:<br>
+Viestittele tässä muiden ryhmän jäsenien kanssa tapahtumiin liittyen:<br>
 <input type="text" name="comment" minlength="1" maxlength="150">
 <input type="submit" value="Lähetä">
 <p>
@@ -61,12 +58,11 @@ Lisää lyhyt viesti:<br>
 <!--Lista: user_name, content, sent_at-->
 {% if messages %}
 <p> 
-#....jos ehdit, tarkenna hakua..
 Viimeisimmät viestit:
 <!--div style="width:150px;height:150px;overflow:auto;padding:5px;"-->
 <ul>
 {% for message in messages %}
- <li>{{message[1]}} | {{message[0]}} {{message[2].strftime('%d/%m')}} {{message[2].strftime('%H:%M')}}
+ <li>{{message[2].strftime('%d/%m')}} {{message[2].strftime('%H:%M')}}  {{message[1]}} t. {{message[0]}} 
 {% endfor %}
 </ul>
 {% endif %}
