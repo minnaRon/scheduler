@@ -9,26 +9,26 @@
 
 Tapahtumien ajankohdat muodostuvat ilmoittautumisien perusteella (tapahtuma toteutuu, kun sopivasti osallistujia).<br>
 
-<h2>Päiväkohtaisesti ryhmän jäsenien osallistumistilanne tapahtumissa:</h2> 
+<h2>Päiväkohtaisesti ryhmän jäsenien osallistumistilanne tapahtumissa:</h2>
 <p>
-    <hr>   
+    <hr>
 <!--Sanakirja: päivänumerointi:[[alkuaika, tapahtuman nimi, dow, osallistujia, loppuaika],...,[päivämäärä]]-->
 {% for i in range(7) %}
 <p>
 <!--tämä alkup. rivi alle kts.vkpv {{days[week[i][-1].strftime("%w")]}} {{week[i][-1].strftime("%d.%m.")}}
 -->
-{{days_i[i]}} {{week[i][-1].strftime("%d/%m.")}} 
+{{days_i[i]}} {{week[i][-1].strftime("%d/%m.")}}
 Oma mahdollinen osallistumiseni päivälle:
 <ul>
 {% for entry in all_own_entries[i] %}
-    <li>{{entry[1]}} klo {{entry[2].strftime('%H:%M')}} - {{entry[3].strftime('%H:%M')}}
+    <li><a href="/entry/delete_entry/{{entry[7]}}">peru</a> {{entry[1]}} klo {{entry[2].strftime('%H:%M')}} - {{entry[3].strftime('%H:%M')}}
 {% endfor %}
 </ul>
 
 {{group_info[0]}} kaikkien jäsenien mahdolliset osallistumiset päivälle:
     {% if not week[i][1] %}
         <select name="no_entries">
-            <option> ei ilmoittautumisia vielä<br> 
+            <option> ei ilmoittautumisia vielä<br>
         </select><br>
         <a href="/entry/{{i}}">Ehdit ekana! ..ilmoita oma mahdollinen aikataulusi päivälle tapahtumiin täällä</a>
     {% else: %}
@@ -62,7 +62,7 @@ Viimeisimmät viestit:
 <!--div style="width:150px;height:150px;overflow:auto;padding:5px;"-->
 <ul>
 {% for message in messages %}
- <li>{{message[2].strftime('%d/%m')}} {{message[2].strftime('%H:%M')}}  {{message[1]}} t. {{message[0]}} 
+ <li>{{message[2].strftime('%d/%m')}} {{message[2].strftime('%H:%M')}}  {{message[1]}} t. {{message[0]}}
 {% endfor %}
 </ul>
 {% endif %}

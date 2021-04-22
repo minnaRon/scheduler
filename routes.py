@@ -111,22 +111,53 @@ def calendar():
 def entry(day):
     day = int(float(day))
     user_id = session["user_id"]
-    date = datetime.datetime.today() + datetime.timedelta(days=day)
+    week, all_event_entries = entries.get_week(user_id, 1)
+    all_own_entries = entries.get_all_own_entries_dict(all_event_entries)
+    today = datetime.datetime.today()
+    date = today + datetime.timedelta(days=day)
     if request.method == "GET":
+        participants = entries.get_participants(date)
+        #print("---participants", participants)
         event_list = events.get_events(user_id)
-        return render_template("entry.html", events=event_list, date=date, day=day)
+        days = {0:"SU", 1:"MA", 2:"TI", 3:"KE", 4:"TO", 5:"PE", 6:"LA"}
+        days_i = entries.change_days_dow_to_i_dict(days, today)
+    
+        return render_template("entry.html", participants=participants, events=event_list, days_i=days_i, date=date, day=day)
     
     if request.method == "POST":
         content = request.form["comment"]
-        start_time = request.form["time1"]
-        finish_time = request.form["time2"]
-        if start_time < finish_time:
-            entry_id = entries.add_entry(date, user_id, request.form["event_id"], start_time, finish_time)
+        #muodonmuutos vertailua varten
+        start_time = datetime.datetime.strptime(request.form["time1"], "%H:%M").time()
+        finish_time = datetime.datetime.strptime(request.form["time2"], "%H:%M").time()
+        #print("finish_time", finish_time)
+        if request.form["extra_participants"]:
+            extras = request.form["extra_participants"]
         else:
-            return render_template("error.html", message="Tapahtuman lisäys ei onnistunut, tarkista valitsemasi ajat")
+            extras = 0
+        if start_time < finish_time:
+            if all_own_entries[day]:
+                #print("---all_own_entries", all_own_entries)
+                for earlier_entry in all_own_entries[day]:
+                    start = earlier_entry[2]
+                    end = earlier_entry[3]
+                    if not (start_time >= end or finish_time <= start):
+                        return render_template("error.html", message="Aika menee päällekkäin päivän toisen ilmoittautumisesi kanssa, peru ilmoittautumisia tarvittaessa")
+            entry_id = entries.add_entry_with_extras(date, user_id, request.form["event_id"], start_time, finish_time, extras)
+            if entry_id == -1:
+                return render_template("error.html", message="Osallistumisesi lisäys ei onnistunut, tarkista valitsemasi ajat")
+        else:
+            return render_template("error.html", message="Osallistumisesi lisäys ei onnistunut, tarkista valitsemasi ajat")
         if len(content) > 0:
+                       ##katso tänne poikkeukset VVVVVVVVVV
+            content = " [" + request.form["event_id"] + "] " + content
             messages.add_entry_comment(user_id, entry_id, request.form["event_id"], content)
         return redirect("/calendar")
+
+@app.route("/entry/delete_entry/<entry_id>") 
+def delete_entry(entry_id):
+    if entries.delete_own_entry(entry_id):
+        return redirect("/calendar")
+    return render_template("error.html", message="Ilmoittautumisesi peruminen ei onnistunut")
 
 @app.route("/plan", methods=["GET","POST"])
 def plan():
@@ -137,8 +168,10 @@ def plan():
     friends_plans = entries.friends_planning(user_id)
     week, all_event_entries = entries.get_week(user_id, 2)
     today = datetime.date.today().strftime("%d.%m.")
+    #today1 = datetime.date.today()
     days = {0:"SU", 1:"MA", 2:"TI", 3:"KE", 4:"TO", 5:"PE", 6:"LA"}
-        
+    #days_i = entries.change_days_dow_to_i_dict(days, today1)
+     #lisää days_i alle templateen kun lisäät tämän
     if request.method == "GET":
         return render_template("plan.html", friends_plans=friends_plans,group_info=group_info, events=event_list, days=days, week=week, all_event_entries=all_event_entries, today=today)
 #KESKENERÄINEN

@@ -59,13 +59,16 @@
 <a href="/calendar"><h4>Takaisin</h4></a>
 <p>
 
-#TÄHÄN LISTANA KAVERIEN ALUSTAVAT SUUNNITELMAT
+#TÄHÄN LISTANA KAVERIEN ALUSTAVAT SUUNNITELMAT, keskeneräinen
 <h4>Kaverien alustavat suunnitelmat:</h4>
 <!--  pvm:n mukaan, alajaottelu tapahtuman mukaan
+        sql = """SELECT DISTINCT u.name, e.name, en.start_time, en.finish_time, dow, event_id, en.date, en.weekly
+                ORDER BY dow, en.event_id, u.name"""
+
 -->
 <ul>
-    {% for entry in friends_plans %}
-    <li> kaverin nimi klo alku - loppu 
+    {% for friend in friends_plans %}
+    <li> {{friend[6]}} {{friend[7]}} {{friend[5]}} {{friend[0]}} klo {{friend[2]}} - {{friend[3]}}
     {% endfor %}
 </ul>
 
