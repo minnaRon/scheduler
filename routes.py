@@ -91,6 +91,8 @@ def calendar():
     today = datetime.date.today()
     week, all_event_entries = entries.get_week(user_id, 1)
     all_own_entries = entries.get_all_own_entries_dict(all_event_entries)
+    #print("--all_own_entries", all_own_entries)
+    #print("---week",week)
 ## v KESKENERÄINEN haku, jos ehtii niin tarkenna vielä v
     message_list =  messages.get_newest(25, user_id)
     group_info = group.get_info()
@@ -192,6 +194,21 @@ def plan():
         else:
             return render_template("error.html", message="Tapahtumien lisäys ei onnistunut, tarkista valitsemasi ajat")
         return redirect("/plan")
+
+        #  TÄHÄN YLÖS    lisää aikojen tarkistus ettei ole jo ..tai muuta kysely putsaamaan pöytä
+
+
+        #start_time = datetime.datetime.strptime(request.form["time1"], "%H:%M").time()
+        #finish_time = datetime.datetime.strptime(request.form["time2"], "%H:%M").time()
+        #print("finish_time", finish_time)
+        #if all_own_entries[day]:
+        #    print("---all_own_entries", all_own_entries)
+        #    for earlier_entry in all_own_entries[day]:
+        #        start = earlier_entry[2]
+        #        end = earlier_entry[3]
+        #        if start < start_time < end < finish_time or start_time < start < finish_time < end or start < start_time < finish_time < end or start_time < start < end < finish_time:
+        #            return render_template("error.html", message="Aika menee päällekkäin päivän toisen ilmoittautumisesi kanssa, muuta ilmoittautumisia tarvittaessa")
+      
 
 #########################################################################
 ##########################################################################

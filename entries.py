@@ -39,16 +39,17 @@ def get_weekly_entries_for_user(user_id):
                 ORDER BY en.weekly """
     return db.session.execute(sql, {"user_id":user_id})
 
-###Tämän funktiohässäkän tilalle suora vastaus tietokannasta, onkohan mahdollista? 
-#Saako vastauksen jaoteltua, kun nyt tarvitaan sanakirja ja listoja HTML:ssä?
-#kts.jos ehtii..
-
+#-------------------------------------------------------------------------------------------------
+#hakee tietokannasta kaikkien osallistumiset kaikille päiville niistä tapahtumista, joita käyttäjä seuraa
+#sekä erittelee käyttäjän omat ilmoittautumiset
+#ja jakaa tiedon tietorakenteeseen, jolla kalenterisivu toimii.
+#ajatuksena että taulujen skannaus tarvitaan vain kerran sivua avattaessa.
 def get_week(user_id:int, week_wanted:int) -> dict:
     first_day = 0 if week_wanted == 1 else 6
     last_day = 6 if week_wanted == 1 else 13
     sql = """SELECT DISTINCT ev.id, ev.name, en.user_id,
                         COALESCE(weekly, (SELECT DATE_PART('dow', en.date))) dow,
-                        en.start_time, en.finish_time, en.extra_participants, en.event_id
+                        en.start_time, en.finish_time, en.extra_participants, en.event_id, en.id
                 FROM users_in_events ue 
                 LEFT JOIN events ev ON ue.event_id=ev.id 
                 LEFT JOIN entries en ON ev.id=en.event_id
@@ -59,8 +60,10 @@ def get_week(user_id:int, week_wanted:int) -> dict:
                 AND en.active > 0
                 AND (ev.event_level <= ue.user_level AND ue.user_id=:user_id)
                 ORDER BY dow, en.event_id"""
-#näyttää kaikki ryhmät, suodata; vain user_id:n valitsemat, kts. kuntoon kunhan ehtii..
     result = db.session.execute(sql, {"user_id":user_id, "first_day":first_day, "last_day":last_day}).fetchall()
+    return add_structure(result, user_id, week_wanted)
+
+def add_structure(result, user_id, week_wanted):
     week = prepare_dict_with_days(week_wanted)
     times_and_changes = []
     dow = 0 if not result else result[0][3] 
@@ -101,32 +104,6 @@ def get_week(user_id:int, week_wanted:int) -> dict:
     #print("---week",week)
     #print("---entries_all_events", entries_all_events)
     return week, sorted(entries_all_events) 
-
-def get_all_own_entries_dict(all_entries:list) -> dict:
-    #print("---all_entries", all_entries)
-    all_own_entries = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]}
-    for entry in all_entries:
-        all_own_entries[entry[5]].append(entry)
-    #print("---all own entries", all_own_entries)
-    return all_own_entries
-
-
-#TÄMÄ KYSELY KESKENERÄINEN
-def friends_planning(user_id):
-    first_day = 7
-    last_day = 13
-    sql = """SELECT u.name, e.name, en.start_time, en.finish_time, 
-                COALESCE(weekly, (SELECT DATE_PART('dow', en.date))) dow
-                FROM users_in_events ue, friends f, entries en, users u, events e
-                WHERE ue.user_id=:user_id
-                AND ue.role < 4
-                AND ((en.date BETWEEN ((SELECT CURRENT_DATE) + INTEGER ':first_day') AND ((SELECT CURRENT_DATE) + INTEGER ':last_day'))
-                        OR en.weekly IS NOT NULL)
-                AND (f.user_id1=:user_id OR f.user_id2=:user_id)
-                AND f.active=1
-                AND en.active > 0
-                ORDER BY dow, en.event_id, u.name"""
-    return db.session.execute(sql, {"user_id":user_id, "first_day":first_day, "last_day":last_day}).fetchall()
 
 def prepare_dict_with_days(week_wanted:int) -> dict:
     today = datetime.date.today()
