@@ -5,7 +5,6 @@
 <p>
 <hr>
 <h2> {{group_info[0]|upper}}</h2>
-<form action="/calendar" method="POST">
 
 Tapahtumien ajankohdat muodostuvat ilmoittautumisien perusteella (tapahtuma toteutuu, kun sopivasti osallistujia).<br>
 
@@ -17,7 +16,7 @@ Tapahtumien ajankohdat muodostuvat ilmoittautumisien perusteella (tapahtuma tote
 <p>
 <!--tämä alkup. rivi alle kts.vkpv {{days[week[i][-1].strftime("%w")]}} {{week[i][-1].strftime("%d.%m.")}}
 -->
-{{days_i[i]}} {{week[i][-1].strftime("%d/%m.")}}
+{{days_i[i]}} {{week[i][-1].strftime("%d/%m")}}
 Oma mahdollinen osallistumiseni päivälle:
 <ul>
 {% for entry in all_own_entries[i] %}

@@ -11,7 +11,7 @@ def add_entry(date, user_id, event_id, time1, time2):
 
 def add_entry_with_extras(date, user_id, event_id, time1, time2, extras):
     try:
-        sql = """INSERT INTO entries (user_id, event_id, date, start_time, finish_time, extra_participants) 
+        sql = """INSERT INTO entries (user_id, event_id, date, start_time, finish_time, extra_participants)
                 VALUES (:user_id, :event_id, :date, :time1, :time2, :extras)
                 RETURNING id"""
         entry_id = db.session.execute(sql, {"user_id":user_id, "event_id":event_id, "date":date, "time1":time1, "time2":time2, "extras":extras}).fetchone()[0]
@@ -94,11 +94,11 @@ def add_structure(result, user_id, week_wanted):
                     week[day] = store_events[:]+calc_participants(sorted(times_and_changes))+[store_day]
                     times_and_changes = []
                     event_id = result[i][0]  
-        times_and_changes.append([result[i][4].strftime("%H:%M"), result[i][1], result[i][3], result[i][6] + 1])
-        times_and_changes.append([result[i][5].strftime("%H:%M"), result[i][1], result[i][3], - (result[i][6] + 1)])
+        times_and_changes.append([result[i][4].strftime("%H:%M"), result[i][1], result[i][3], result[i][6] + 1, result[i][0]])
+        times_and_changes.append([result[i][5].strftime("%H:%M"), result[i][1], result[i][3], - (result[i][6] + 1), result[i][0]])
         if i == len(result) - 1:
             day = match_day_to_dict_week7i(dow)
-            store_events = week[day][:-1] 
+            store_events = week[day][:-1]
             store_day = week[day][-1]
             week[day] = [store_events[:]+calc_participants(sorted(times_and_changes))]+[store_day]
     #print("---week",week)
@@ -128,12 +128,10 @@ def calc_participants(sorted_times_and_changes:list) -> list:
         sorted_times_and_changes[i].append(sorted_times_and_changes[i+1][0])
     sorted_times_and_changes.pop(-1)
     times_and_changes = []
-    i = 0
     for row in sorted_times_and_changes:
-        if row[0] != row[4] and row[3] != 0:
-            row.append(i)
+        if row[0] != row[5] and row[3] != 0:
             times_and_changes.append(row)
-            i += 1
+    print("---times and changes", times_and_changes)
     return times_and_changes
 #--------------------------------------------------------------------------------
 
@@ -147,8 +145,9 @@ def get_all_own_entries_dict(all_entries:list) -> dict:
     return all_own_entries
 
 def delete_own_entry(entry_id):
+    print("---",entry_id)
     try:
-        sql = """DELETE FROM entries WHERE entries.id=:entry_id"""
+        sql = """DELETE FROM entries WHERE id=:entry_id"""
         db.session.execute(sql, {"entry_id":entry_id})
         db.session.commit()
         return True
@@ -159,9 +158,9 @@ def delete_own_entry(entry_id):
 def friends_planning(user_id):
     first_day = 7
     last_day = 13
-    sql = """SELECT DISTINCT u.name, e.name, en.start_time, en.finish_time, 
+    sql = """SELECT DISTINCT u.name, e.name, en.start_time, en.finish_time,
                 COALESCE(weekly, (SELECT DATE_PART('dow', en.date))) dow, en.event_id, en.date, en.weekly
-                FROM users_in_events ue 
+                FROM users_in_events ue
                 JOIN friends f ON ue.user_id=f.user_id1 OR ue.user_id=f.user_id2
                 JOIN entries en ON en.user_id=f.user_id1 OR ue.user_id=f.user_id2
                 JOIN users u ON u.id=en.user_id
@@ -193,7 +192,7 @@ def change_days_dow_to_i_dict(days, today):
 def get_participants(date) -> list:
     sql = """SELECT e.name, u.name, en.start_time, en.finish_time, extra_participants, m.content
                 FROM entries en JOIN users u ON en.user_id=u.id
-                JOIN events e ON en.event_id=e.id 
+                JOIN events e ON en.event_id=e.id
                 JOIN messages m ON en.id=m.entries_id
                 WHERE (en.date=:date OR en.weekly=(SELECT DATE_PART('dow', :date)))
                 AND en.active=1

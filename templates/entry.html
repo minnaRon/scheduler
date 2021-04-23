@@ -16,7 +16,7 @@ def entry(day):
       return render_template("entry.html", events=event_list, date=date, day=day)
 
 listalla: e.id, e.name, e.description, e.min_participants, e.max_participants, e.event_level-->
-<h4>{{days_i[day]}} {{date.strftime('%d/%m.')}}</h4>
+<h4>{{days_i[day]}} {{date.strftime('%d/%m')}}</h4>
 <!--#pvm, event.name, alkuaika, loppuaika, dow, day, i-->
 <b>valitse tapahtuma:</b>
 <select name="event_id">
