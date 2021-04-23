@@ -31,29 +31,37 @@ Oma mahdollinen osallistumiseni päivälle:
         </select><br>
         <a href="/entry/{{i}}">Ehdit ekana! ..ilmoita oma mahdollinen aikataulusi päivälle tapahtumiin täällä</a>
     {% else: %}
-        <select name="entries">
-<!--kts nimeäminen vvv time voisi olla ?? time[0] alkuaika time[1] tapahtuma time[2] dow? time[3] osallistujien määrä time[4] loppuaika-->
-        {% for event in week[i][:-1] %}
-            {% for time in event %}
-                <option> {{time[1]}} | klo {{time[0]}} - {{time[4]}} | osallistujia {{time[3]}}
+<!--ilmoittautuminen kun valittu valikosta----------------------------------------------------------------------------------------------------------------------------------------------->
+    <form action="/calendar" method="POST">
+        <select name="calendar_pick">
+        {% for j in range(week[i][:-1] | length) %}
+            {% for k in range(week[i][:-1][j] | length) %}
+                <option value="{{week[i][:-1][j][k]}}"> {{week[i][:-1][j][k][1]}} | klo {{week[i][:-1][j][k][0]}} - {{week[i][:-1][j][k][5]}} | osallistujia {{week[i][:-1][j][k][3]}}</option>
             {% endfor %} 
-        {% endfor %} 
-        </select><br>
+        {% endfor %}
+                <input type="hidden" name="date" value="{{week[i][-1]}}">
+                
+        </select><input type="submit" value="mukana!"><br>
         
-        <a href="/entry/{{i}}">ehdin myös ..ilmoita täällä mihin tapahtumaan ja milloin</a>
+    </form>
+<!-----------
+---------------------------------------------------------------------------------------------------------------------------------------------------->        
+        <a href="/entry/{{i}}">ehdin myös.. ilmoita täällä mihin tapahtumaan ja milloin</a>
     {% endif %}
     <hr>
 {% endfor %} 
 
 <a href="/plan"><h4>Suunnittele seuraava viikko</h4></a>
+<!---------------------------------------------------------------------------------------------------------------------------------------------->
+<form action="/calendar_message" method="POST">
 <p>
 Viestittele tässä muiden ryhmän jäsenien kanssa tapahtumiin liittyen:<br>
 <input type="text" name="comment" minlength="1" maxlength="150">
 <input type="submit" value="Lähetä">
 <p>
-<!------------------------------>
+{% if group_info[2] %}
 {{group_info[2]}}
-
+{% endif %}
 <!--Lista: user_name, content, sent_at-->
 {% if messages %}
 <p> 

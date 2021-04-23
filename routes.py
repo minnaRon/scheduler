@@ -231,7 +231,7 @@ def plan():
         #        end = earlier_entry[3]
         #        if start < start_time < end < finish_time or start_time < start < finish_time < end or start < start_time < finish_time < end or start_time < start < end < finish_time:
         #            return render_template("error.html", message="Aika menee päällekkäin päivän toisen ilmoittautumisesi kanssa, muuta ilmoittautumisia tarvittaessa")
-      
+
 
 #########################################################################
 ##########################################################################
@@ -421,7 +421,7 @@ def userlist():
         #users_in_events_list = group.get_all_users_in_events_info()
         #users_in_events_info = group.get_all_users_in_events_info_dict()
         users_in_events_info = group.get_all_users_in_events_info_list()
-        print("---ue list", users_in_events_info)
+        #print("---ue list", users_in_events_info)
         return render_template("userlist.html", users_in_events_info=users_in_events_info, all_events=all_events, userlist=userlist)
 #sql = """SELECT u.id, u.name, u.contact_info, u.role, u.founded, ue.event_id, ue.role
     if request.method == "POST":
