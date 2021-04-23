@@ -131,7 +131,7 @@ def calc_participants(sorted_times_and_changes:list) -> list:
     for row in sorted_times_and_changes:
         if row[0] != row[5] and row[3] != 0:
             times_and_changes.append(row)
-    print("---times and changes", times_and_changes)
+    #print("---times and changes", times_and_changes)
     return times_and_changes
 #--------------------------------------------------------------------------------
 
@@ -145,7 +145,7 @@ def get_all_own_entries_dict(all_entries:list) -> dict:
     return all_own_entries
 
 def delete_own_entry(entry_id):
-    print("---",entry_id)
+    #print("---",entry_id)
     try:
         sql = """DELETE FROM entries WHERE id=:entry_id"""
         db.session.execute(sql, {"entry_id":entry_id})

@@ -99,7 +99,7 @@ def calendar():
     group_info = group.get_info()
     days = {0:"SU", 1:"MA", 2:"TI", 3:"KE", 4:"TO", 5:"PE", 6:"LA"}
     days_i = entries.change_days_dow_to_i_dict(days, today)
-    
+
     if request.method == "GET":
         return render_template("calendar.html", messages=message_list, days_i=days_i, all_own_entries=all_own_entries, group_info=group_info, days=days, week=week, all_event_entries=all_event_entries, today=today)
     
@@ -179,7 +179,7 @@ def entry(day):
 
 @app.route("/entry/delete_entry/<entry_id>")
 def delete_entry(entry_id):
-    print("---entry id", entry_id)
+    #print("---entry id", entry_id)
     if entries.delete_own_entry(entry_id):
         return redirect("/calendar")
     return render_template("error.html", message="Ilmoittautumisesi peruminen ei onnistunut")

@@ -31,4 +31,3 @@ def get_newest(number:int, user_id:int) -> list:
                 ORDER BY m.id DESC
                 LIMIT :number"""
     return db.session.execute(sql, {"number":number,"user_id":user_id}).fetchall()
-    
