@@ -1,70 +1,63 @@
 {% extends "layout.html" %}
 {% block content %}
-
 <p>
 <hr>
-<h3>TÄHÄN RYHMÄN NIMI {{group_info[0]}}</h3>
-<form action="/plan" method="POST">
+<h3>{{group_info[0]|upper}}</h3>
 
-<b>viikon päästä:</b>
+<b>Suunnittele seuraavia osallistumisia</b>
 <p>
-    suunnittele ja tallenna ilmoittautumisia
-{% for i in range(7) %}
+  Lisää tapahtuman kohdalle osallistumisaika ja tallenna yksitellen tai päivän kaikki osallistumiset kerralla.<br>
+  Tapahtuman peruminen hukkaa tallentamattomat ajat, joten tallenna ennen perumista.
+<hr>
+  {% for i in range(7) %}
 <p>
-    # TÄHÄN viikonpäivä {{days[week[i][-1].strftime("%w")]}} {{week[i][-1].strftime("%d.%m.")}} 
-    <ul>
+  {{days_i[i]}} {{week[i][-1].strftime("%d/%m")}}
+  Oma mahdollinen osallistumiseni päivälle:
+<ul>
+  {% for entry in all_own_entries[i] %}
+    <li><a href="/entry/delete_entry/plan/{{entry[7]}}">peru</a> {{entry[1]}} klo {{entry[2].strftime('%H:%M')}} - {{entry[3].strftime('%H:%M')}}
+  {% endfor %}
+</ul>
+<!-------------------------------------------------------------------------------------------------------------------------------------------------------->
+<form action="/plan" method="POST">
+<ul>    <!--all own.. #pvm, event.name, alkuaika, loppuaika, dow, day_i, event_id, en.id -->
     <!--listassa nyt: e.id, e.name, e.description, e.min_participants, e.max_participants, e.event_level-->
     {% for j in range(events|length) %}
-            <li>{{events[j][1]}} <input type="time" name="time_start"> - <input type="time" name="time_finish">
-                <input type="hidden" name="day" value={{i}}> <input type="hidden" name="event_index" value={{j}}>
-
+      <li>{{events[j][1]}} <input type="time" name="time_start"> - <input type="time" name="time_finish">
+      <input type="hidden" name="day" value={{i}}> <input type="hidden" name="event_index" value={{j}}>
     {% endfor %}
-    </ul>
-
+</ul>
+    <input type="submit" value="Tallenna">
+</form>
+<!---------------------------------------------------------------------------------------------- ----------------------------------------------------------->   
+<p>
     ryhmän alustavia suunnitelmia..
     {% if not week[i][1] %}
-        <select name="no_entries">
-            <option> ei ilmoittautumisia vielä
-        </select>
+      <select name="no_entries">
+        <option> ei ilmoittautumisia vielä
+      </select>
     {% else: %}
-        <select name="entries">
-        {% for event in week[i][:-1] %}
-            {% for time in event %}
-                <option> {{time[1]}} klo {{time[0]}} - {{time[5]}} osallistujia {{time[3]}}
+<!---------------------------------------------------------------------------------------------------------------------------------------------------------->    
+<form action="/plan/pick" method="POST">
+  <select name="plan_pick">
+    {% for j in range(week[i][:-1] | length) %}
+            {% for k in range(week[i][:-1][j] | length) %}
+                <option value="{{week[i][:-1][j][k]}}"> {{week[i][:-1][j][k][1]}} | klo {{week[i][:-1][j][k][0]}} - {{week[i][:-1][j][k][5]}} | osallistujia {{week[i][:-1][j][k][3]}}</option>
             {% endfor %} 
-        </select>
-        {% endfor %} 
+        {% endfor %}
+                <input type="hidden" name="date" value="{{week[i][-1]}}">        
+        </select><input type="submit" value="mukana!"><br>    
+</form>
     {% endif %}
-    </select>
+<hr>
 {% endfor %} 
-
 <p>
-            
-<input type="submit" value="Tallenna">
-
-
-<!--Lista: dow, event.name, alkuaika, loppuaika, lepopäivät-->
-<p>
-    <h3> Omat suunnitelmasi tälle ajanjaksolle: </h3>
-        <ul>
-            {% for entry in all_event_entries %}
-        <li>{{days[entry[0]]}} #kts.pvm 
-            {{entry[1]}} 
-            klo {{entry[2].strftime('%H:%M')}} - {{entry[3].strftime('%H:%M')}} 
-            <a href="/entry">muuta #kts.linkki oikeaksi </a>
-            {% endfor %}
-        </ul>
-
-<p>   
-<a href="/calendar"><h4>Takaisin</h4></a>
-<p>
-
+<!----------------------------------------------------------------------->
 #TÄHÄN LISTANA KAVERIEN ALUSTAVAT SUUNNITELMAT, keskeneräinen
 <h4>Kaverien alustavat suunnitelmat:</h4>
 <!--  pvm:n mukaan, alajaottelu tapahtuman mukaan
         sql = """SELECT DISTINCT u.name, e.name, en.start_time, en.finish_time, dow, event_id, en.date, en.weekly
                 ORDER BY dow, en.event_id, u.name"""
-
 -->
 <ul>
     {% for friend in friends_plans %}
@@ -72,5 +65,4 @@
     {% endfor %}
 </ul>
 
-</form>
 {% endblock %}
