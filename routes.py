@@ -439,10 +439,7 @@ def userlist():
     if request.method == "GET":
         all_events = events.get_all_events()
         userlist = group.get_all_users_info_for_userlist()
-        #users_in_events_list = group.get_all_users_in_events_info()
-        #users_in_events_info = group.get_all_users_in_events_info_dict()
         users_in_events_info = group.get_all_users_in_events_info_list()
-        #print("---ue list", users_in_events_info)
         return render_template("userlist.html", users_in_events_info=users_in_events_info, all_events=all_events, userlist=userlist)
 #sql = """SELECT u.id, u.name, u.contact_info, u.role, u.founded, ue.event_id, ue.role
     if request.method == "POST":
