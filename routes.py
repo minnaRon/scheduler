@@ -28,11 +28,11 @@ def register():
         return render_template("register.html", group_info=group_info, events=event_list)
 
     if request.method == "POST":
-        username = request.form["username"]
-        if len(username) < 1 or len(username) > 35:
-            return render_template("error.html", message="Tunnuksen tulee sisältää 1-35 merkkiä")
-        password1 = request.form["password1"]
-        password2 = request.form["password2"]
+        username = request.form["username"].strip()
+        if len(username) < 2 or len(username) > 35:
+            return render_template("error.html", message="Tunnuksen tulee sisältää 2-35 merkkiä")
+        password1 = request.form["password1"].strip()
+        password2 = request.form["password2"].strip()
         if password1 != password2:
             return render_template("error.html", message="Salasanoissa oli eroa")
         if password1 == "":
@@ -40,7 +40,8 @@ def register():
         
         if request.form["group_reg"] == "old_group":
             password_group = request.form["password_group"]
-            
+            if not password_group:
+                return render_template("error.html", message="Liittymissalasana oli tyhjä, jos salasana ei ole tiedossasi, kysy ohjeet salasanan saamiseksi ryhmän jäseneltä.")
             if group.check_password(password_group):
                 if users.register(username, password1, 2):
                     events_checked = request.form.getlist("event_checked")
