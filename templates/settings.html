@@ -46,11 +46,23 @@ Uusi salasana uudelleen: <br><input type="password" name="new_password2">
 </form>
 <hr>
 <!-------------------------------------------------------------------->
+<!-- TÄHÄN ASTI nyt jäsenille näkyvät jäsenen asetukset-->
+<!-------------------------------------------------------------------------->
+
+
+<!-- alla muutamia toiminnaltaan osittain valmiita asetustoimintoja jäsenelle, näkyy nyt vain adminina/ryhmän perustajana -->
+{% if session["user_role"] == 1 or session["user_role"] == 0 %}
+<!--(siirrä yllä olevaa adminin oikeusriviä, kun allaolevia jäsenelle kuuluvia asetuksia valmiina)-->
+-------------
+<h4 style="color:green">Alla näkyvistä ominaisuuksista suurin osa vasta luonnostelmia tai ei testattu toimintaa riittävästi<br>
+Vihreällä otsikoidut ovat kokeiltavaksi valmiita ominaisuuksia.</h4>
+-------------
+<p>
 <form action="/settings/weekly_entries" method="POST">
 <h2>Viikottaiset vakio-osallistumisajat</h2>
+##lisää peruminen, toimii muuten ok, tarkista vielä..<br>
 <p>
 Lisään uuden viikottaisen vakioajan tapahtumalle:<br>
-
 <select name="weekly_event">
     {% for event in events_with_own_level %}
     <option value="{{event[0]}}">{{event[1]}}
@@ -86,7 +98,7 @@ Vakioaikani:
 <hr>
 <!------------------------------------------------------------------->
 <form action="/settings/change_calendarview" method="POST">
-<h2>Kalenterinäkymässä näkyvät tapahtumat</h2>
+<h2 style="color:green">Kalenterinäkymässä näkyvät tapahtumat</h2>
 <p>
 Tässä voit valita tapahtumat, jotka näkyvät kalenteriisi
 <p>
@@ -102,7 +114,6 @@ Tapahtuman nimi:
     {% endfor %}    
 </select>
 <p>
-    ###########kts. kuntoon yläpuolen kysely keskeneräinen^^^^^^^^^^
 <input type="submit" value="Tallenna muutokset">
 <p>
 </form>
@@ -110,7 +121,7 @@ Tapahtuman nimi:
 <!------------------------------------------------------------------>
 <form action="/settings/friends" method="POST">
 <h2>Lisää kavereita</h2>
-Voit seurata kavereidesi alustavia toisen viikon suunnitelmia.
+Voit seurata kavereidesi alustavia toisen viikon suunnitelmia.<br>
 <b>Lähetä kaveripyyntö, anna kaverisi kalenterissa oleva nimi: </b><br>
 <input type="text" name="friend">
 <p>
@@ -149,14 +160,15 @@ Hae ajalta: <input type="date" name="date_start"> - <input type="date" name="dat
 <hr>-->
 <!-------------------------------------------------------------------------->
 <!-------------ADMIN--------------------------------------------------------->
-{% if session["user_role"] == 1 %}
+<!-- tästä alkaa varsinaisesti adminin/ryhmän perustajan asetukset, kun jäsenen asetuksista loputkin toiminnaltaan täysin varmoja-->
+
 <form action="/settings/change_group_name" method="POST">
 
-    <h2>Ryhmän hallinta -admin</h2>
+    <h2 >Ryhmän hallinta -admin</h2>
 <p>
     <hr>
     <p>
-    <b>Muuta ryhmän nimi</b> <br>
+    <b style="color:green">Muuta ryhmän nimi</b> <br>
     Anna uusi nimi:<br>
     <input type="text" name="name_group" minlength="2" maxlength="30">
      <p>
@@ -167,9 +179,7 @@ Hae ajalta: <input type="date" name="date_start"> - <input type="date" name="dat
     <p>
     <!--------------------------------------------------------------------------->
     <form action="/settings/change_group_description" method="POST">
-
-        <b>Muuta ryhmän kuvaus</b> <br>
-
+        <b style="color:green">Muuta ryhmän kuvaus</b><br>
         Ryhmän kuvaus: <br><textarea name ="group_description" rows="3" cols="50" maxlength="400">
         </textarea>
            <p>
@@ -180,8 +190,8 @@ Hae ajalta: <input type="date" name="date_start"> - <input type="date" name="dat
         </form>
     <!--------------------------------------------------------------------->
     <form action="/settings/change_group_password" method="POST">
-
-    <b>Salasanan vaihto:</b>
+    <b style="color:green">Salasanan vaihto:</b><br>
+    Huom! muuta takaisin ryhmän salasanaksi tsoha jos kokeilet.. :)
     <p>
     Oma kirjautumissalasanasi:<br><input type="password" name="old_password">
     <p>
@@ -196,7 +206,7 @@ Hae ajalta: <input type="date" name="date_start"> - <input type="date" name="dat
     <hr>
 <!--------------------------------------------------------------------------->
 <form action="/settings/add_new_event" method="POST">
-<h2>Uuden tapahtuman luominen:</h2>
+<h2 style="color: green">Uuden tapahtuman luominen:</h2>
 <b>Anna tapahtuman nimi: <input type="text" name="new_event_name" minlength="1" maxlength="30"></b>
 <p>
 <b>..voit halutessasi antaa lisätietoa:</b>
@@ -214,7 +224,7 @@ Anna tapahtumaan vaadittava (taito)taso: <input type="number" name="new_event_le
 <p>
     Huom! Mikäli käytit tasoasetuksia, päivitä tapahtuman kohderyhmän jäsenille riittävä taso tapahtumaan 
     jäsenten asetuksissa tapahtuman tietojen tallentamisen jälkeen <br>
-    <a href="/settings/admin/userlist">pääset tästä jäsenten asetuksiin</a>
+    <a style="color:green" href="/settings/admin/userlist">pääset tästä jäsenten asetuksiin</a>
     <p>Jäsenillä on oletuksena oikeus ilmoittautua nollatason tapahtumiin.
     Esim. jos määrittelet jäsenelle tason 5, niin jäsen näkee kaikki tapahtumat tasoilla 0-5
     ja voi omissa asetuksissaan valita näistä tapahtumista itselleen sopivat tapahtumat kalenterissa näytettäväksi.
@@ -222,10 +232,10 @@ Anna tapahtumaan vaadittava (taito)taso: <input type="number" name="new_event_le
     <input type="submit" value="Tallenna uuden tapahtuman tiedot">
     <p>
     </form>
-
+    <hr>
 <!------------------------------------------------------------------------------------------------>
 <form action="/settings/change_event_info" method="POST">
-<h2>Tapahtuman muuttaminen tai poistaminen käytöstä</h2>
+<h2 style="color:green">Tapahtuman muuttaminen tai poistaminen käytöstä</h2>
 <p>
 <p><b>valitse tapahtuma:</b>
 <select name="event_pick">
@@ -244,7 +254,7 @@ Anna tapahtumaan vaadittava (taito)taso: <input type="number" name="new_event_le
 </select>
 <p>
     *käytöstä poistetut tapahtumat (taso 100) voidaan ottaa uudelleen käyttöön muuttamalla tasomääritys normaaliksi, myös muita tapahtuman tietoja voi muutella.
-<!--tässä bugivaara.. jos tapahtuma muutetaan kokonaan toiseksi, niin siihen täytyy olla vielä lisäkäsittelyä, joten erikseen toimintoihin vielä-->
+<!--tässä bugivaara.. jos tapahtuma muutetaan kokonaan toiseksi, niin siihen täytyy olla vielä users in events -lisäkäsittelyä, joten erikseen toimintoihin vielä-->
 <br><b>Täytä vain valintaasi vastaava kenttä:</b><br>
 muuta nimi: <input type="text" name="event_name" minlength="1" maxlength="35">
 <p>
@@ -261,7 +271,7 @@ muuta taso: <input type="number" name="number_value2" min="0" max="99">
 <hr>
 <!---------------------------------------------------------------------->
 <form action="/settings/admin/message" method="POST">
-<h2>Admin -viesti</h2>
+<h2 style="color: green">Admin -viesti</h2>
 Lyhyt viesti, joka näkyy jäsenille ensimmäisen viikon näkymässä ja on päivitettävissä.
 <br> Viesti: <input type="text" name="admin_info">
 <p>
@@ -272,20 +282,20 @@ Lyhyt viesti, joka näkyy jäsenille ensimmäisen viikon näkymässä ja on päi
 <!----------------------------------------------------------------------------->
 <form action="/settings/admin/management_users" method="POST">
 <h2>Jäsenten hallinta</h2>
-##tämä vielä keskeneräinen: haku ja jäsenlistan järjestyksen muokkaus vai linkki? nyt linkki toimii..
+<!--##tämä vielä keskeneräinen: haku ja jäsenlistan järjestyksen muokkaus vai linkki? nyt linkki toimii.. -->
 <p>
-    <a href="/settings/admin/userlist">Tarkastele ja muuta jäsenien asetuksia</a>
+    <a style="color:green" href="/settings/admin/userlist">Tarkastele ja muuta jäsenien asetuksia</a>
 <p>
-voit:
+voit mm.:
 <ul>
-    <li>resetoida unohtuneen salasanan, salasanaksi vaihtuu jäsenen käyttämä tunnus, jonka jäsen voi muuttaa asetuksissa.
+    <li>resetoida unohtuneen salasanan, salasanaksi vaihtuu jäsenen käyttämä tunnus, kunnes jäsen itse vaihtaa sen asetuksissa.
     <li>muuttaa jäsenen tasoa tapahtumakohtaisesti, mikäli tasot ovat käytössä, oletustasona jäsenellä on 0
     <li>muuttaa tarvittaessa jäsenen roolin adminiksi
-    <li>rajoittaa tarvittaessa jäsenen oikeuksia keskustella ja/tai lisätä tapahtumiin henkilöitä ryhmän ulkopuolelta
-    <li>poistaa jäsenen
+    <li>poistaa jäsenen tapahtumasta ja lisätä takaisin
+    <li>estää jäsen kaikista tapahtumistaan ja palauttaa oikeudet kaikkiin tapahtumiinsa</li>    
 </ul>
 <p>
-<input type="submit" value="Hae jäsenet">
+<!--<input type="submit" value="Hae jäsenet">   ..odottelee jäsenlistan sorttausominaisuutta-->
 <p>
 </form>
 <hr>

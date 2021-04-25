@@ -29,7 +29,7 @@
 </ul>
     <input type="submit" value="Tallenna">
 </form>
-<!---------------------------------------------------------------------------------------------- ----------------------------------------------------------->   
+<!---------------------------------------------------------------------------------------------- ----------------------------------------------------------->
 <p>
     ryhmän alustavia suunnitelmia..
     {% if not week[i][1] %}
@@ -37,7 +37,7 @@
         <option> ei ilmoittautumisia vielä
       </select>
     {% else: %}
-<!---------------------------------------------------------------------------------------------------------------------------------------------------------->    
+<!---------------------------------------------------------------------------------------------------------------------------------------------------------->
 <form action="/plan/pick" method="POST">
   <select name="plan_pick">
     {% for j in range(week[i][:-1] | length) %}
@@ -45,14 +45,17 @@
                 <option value="{{week[i][:-1][j][k]}}"> {{week[i][:-1][j][k][1]}} | klo {{week[i][:-1][j][k][0]}} - {{week[i][:-1][j][k][5]}} | osallistujia {{week[i][:-1][j][k][3]}}</option>
             {% endfor %} 
         {% endfor %}
-                <input type="hidden" name="date" value="{{week[i][-1]}}">        
-        </select><input type="submit" value="mukana!"><br>    
+                <input type="hidden" name="date" value="{{week[i][-1]}}">
+        </select><input type="submit" value="mukana!"><br>
 </form>
     {% endif %}
 <hr>
 {% endfor %} 
 <p>
 <!----------------------------------------------------------------------->
+<!-----------tämä keskeneräinen ja siirretty näkymään vain adminille/ryhmän perustajalle -->
+{% if session["user_role"] == 1 or session["user_role"] == 0 %}
+
 #TÄHÄN LISTANA KAVERIEN ALUSTAVAT SUUNNITELMAT, keskeneräinen
 <h4>Kaverien alustavat suunnitelmat:</h4>
 <!--  pvm:n mukaan, alajaottelu tapahtuman mukaan
@@ -64,5 +67,5 @@
     <li> {{friend[6]}} {{friend[7]}} {{friend[5]}} {{friend[0]}} klo {{friend[2]}} - {{friend[3]}}
     {% endfor %}
 </ul>
-
+{% endif %}
 {% endblock %}

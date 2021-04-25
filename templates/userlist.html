@@ -5,6 +5,7 @@
     #sql = """SELECT u.id, username, u.name, u.contact_info, u.role, u.founded
 <p>users_in_events_list id, event_id, user_id, user_level, role<p>-->
 <b>Valitse toiminto:</b>
+<p style= color:green>näistä 1. muuta jäsenen taso, 2. vaihda rooli ja 3. resetoi salasana kokeiltavissa, muita ei vielä täysin testailtu..</p>
 <select name="action">
     <option value="1">1. muuta jäsenen taso -tapahtumakohtainen
     <option value="2">2. vaihda rooli admin/jäsen jäsen/admin
@@ -17,7 +18,7 @@
 <p>
 <b>..valitse lisätiedot:</b>
 <ul>
-    <li>kohtaan <b>1</b>; jäsenen tason muuttaminen tapahtumaan sopivaksi,<br>
+    <li>kohtaan <b style="color:green">1</b>; jäsenen tason muuttaminen tapahtumaan sopivaksi,<br>
         valitse tapahtuma:
         <select name="event_on">
         {% for event in all_events %}
@@ -34,7 +35,7 @@
             </select>
 </ul>
 <p>
-<b>..ja valitse muuttuvat jäsenet:</b>
+<b style="color :green">..ja valitse muuttuvat jäsenet:</b>
     <table>
         <th>valinta</th>
         <th> rooli </th>
