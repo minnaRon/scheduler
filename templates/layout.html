@@ -1,14 +1,14 @@
-<!DOCTYPE html><
-...tyylitiedosto...UTF tänne...jos ei css vaan bootstrap
-...tänne stylesheet?..mitä muuta?
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<!DOCTYPE html>
+<!--<link rel="stylesheet" href="/static/main.css"> ota tämä käyttöön kun css -->
 <title>scheduler</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <h4>scheduler - aikatauluapulainen</h4>
 <hr>
 {% if session.user_name %}
 Kirjautuneena nimellä <b>{{  session.user_name  }}</b>  |  <a href="/settings">Omat asetukset</a>  |  <a href="/logout">Kirjaudu ulos</a> | <a href="/calendar">Kalenterisivu</a>
+<hr>
+<p>
 {% endif %}
 {% block content %}
 {% endblock %}
-
