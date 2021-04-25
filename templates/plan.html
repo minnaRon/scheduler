@@ -1,12 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
-<p>
-<hr>
+
 <h3>{{group_info[0]|upper}}</h3>
 
 <b>Suunnittele seuraavia osallistumisia</b>
 <p>
-  Lisää tapahtuman kohdalle osallistumisaika ja tallenna yksitellen tai päivän kaikki osallistumiset kerralla.<br>
+  Lisää niiden tapahtumien kohdalle aika, joihin osallistut ja tallenna yksitellen tai päivän kaikki osallistumiset kerralla.<br>
   Tapahtuman peruminen hukkaa tallentamattomat ajat, joten tallenna ennen perumista.
 <hr>
   {% for i in range(7) %}

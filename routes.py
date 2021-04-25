@@ -212,8 +212,8 @@ def plan():
                         for earlier_entry in all_own_entries[int(days[i])]:
                             start = earlier_entry[2]
                             end = earlier_entry[3]
-                            start_time = datetime.datetime.strptime(start_times[i], "%H:%M").time()      
-                            finish_time = datetime.datetime.strptime(finish_times[i], "%H:%M").time()      
+                            start_time = datetime.datetime.strptime(start_times[i], "%H:%M").time()
+                            finish_time = datetime.datetime.strptime(finish_times[i], "%H:%M").time()
                             if not (start_time >= end or finish_time <= start):
                                 return render_template("error.html", message="Aika menee päällekkäin päivän toisen ilmoittautumisesi kanssa, peru ilmoittautumisia tarvittaessa")
                     entries.add_entry(datetime.datetime.today() + datetime.timedelta(days=7+int(float(days[i]))), user_id, event_list[int(event_indices[i])][0], start_times[i], finish_times[i])
