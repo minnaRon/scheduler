@@ -3,18 +3,18 @@
 <p>
 <!---------------------------------------------------------------------------------->
 <form action="/settings/change_user_name" method="POST">
-<h2>Omat tiedot hallinta</h2>
+<h2 style="color:green">Omat tiedot hallinta</h2>
 <p>
 Tunnuksesi on: {{ user_info[0] }}<br>
 Kalenterissa näkyvä nimesi on: {{ user_info[1] }}<br>
-Yhteystietosi adminille: {{ user_info[2] }}<br>
+Yhteystietosi adminille: {% if user_info[2] %} {{ user_info[2] }} {% endif %}<br>
 <p>
 <b>Vaihda kalenterissa näkyvä nimesi*</b> <br>
 Anna uusi nimi:<br>
 <input type="text" name="name" minlength="2" maxlength="30">
-<br>*Huom! tunnus ei muutu, vain kalenterissa näkyvä nimi muuttuu. Oletuksena muille jäsenille näkyy rekisteröinnissä antamasi tunnus nimenäsi.<br>
+<br>*Huom! tunnus ei muutu, vain kalenterissa näkyvä nimi muuttuu. Oletuksena muille jäsenille näkyy rekisteröinnissä antamasi tunnus nimenäsi.
 Voit halutessasi vaihtaa kalenterissa näkyvää nimeäsi, kirjautumistunnuksesi säilyy silti ennallaan.<br>
-Nimi päivittyy heti uusiin viesteihin ja ilmoittautumisiin, ja ylhäälle näkymään seuraavassa sisäänkirjautumisessa.
+Nimi päivittyy heti uusiin viesteihin ja ilmoittautumisiin, ja ylhäälle näkymään kirjautuneena seuraavassa sisäänkirjautumisessa.
 <p>
     <input type="submit" value="Tallenna muutos">
     <p>
