@@ -40,20 +40,33 @@ def get_weekly_entries_for_user(user_id):
     return db.session.execute(sql, {"user_id":user_id})
 
 #-------------------------------------------------------------------------------------------------
-#hakee tietokannasta kaikkien osallistumiset kaikille päiville niistä tapahtumista, joita käyttäjä seuraa
-#sekä erittelee käyttäjän omat ilmoittautumiset
-#ja jakaa tiedon tietorakenteeseen, jolla kalenterisivu toimii.
-#ajatuksena että taulujen skannaus tarvitaan vain kerran sivua avattaessa.
+#mm. KALENTERIIN JA SUUNNITTELUNÄKYMÄÄN OSALLISTUJATILANNETIETOJEN HAKU suoritetaan alla näkyvillä funktioilla.
+#haetaan tietokannasta yhdellä kyselyllä kaikkien osallistumiset viikoksi eteenpäin kaikille päiville niistä tapahtumista, joita käyttäjä seuraa
+#sekä eritellään käyttäjän omat ilmoittautumiset omaksi listakseen.
+#..tässä aika tarkkaa kuvausta mitä funktioissa tapahtuu, poistan osan näistä kommenteista ennen lopullista palautusta, kun onhan tämä loppujen lopuksi aika yksinkertainen.
+
+#1/5
+#funktio get_week: haetaan viikon ilmoittautumistiedot ja jaetaan sopiviin tietorakenteisiin kalenterinäkymää varten 
+#erotellaan käyttäjän omat ilmoittautumiset omaksi listakseen, palautetaan viikon tapahtumat -sanakirja ja käyttäjän omat tapahtumat -lista tuplena.
 def get_week(user_id:int, week_wanted:int) -> dict:
+    #tässä kyselyn muuttujaan tieto onko kalenterinäkymän vai suunnittelunäkymän tiedot haettavana; first_day 0, last_day 6 on viikko 1 eli kalenterinäkymä
     first_day = 0 if week_wanted == 1 else 6
     last_day = 6 if week_wanted == 1 else 13
+    #sql -kyselyssä haetaan tapahtuman id ja nimi, ilmoittautuneen käyttäjän id, dow eli viikonpäivän nro (0=su, 1=ma,...,6=la)
+    #päivä haetaan dow:n kautta, jotta viikottaiset vakioajat saadaan mukaan kalenterin osallistujatilanteeseen, 
+    #ilmoitettu aloitusaika, ilmoitettu lopetusaika, ilmoitetut lisäosallistujat, ilmoittautumisen tapahtuma id ja ilmoittautumisen id -numero
+    #haetaan tauluista users_in_events, events ja entries käyttäjät, tapahtumat ja ilmoittautumiset
+    #jossa aika on haluttu ajanjakso; joko ensimmäinen tai toinen viikko, 
+    #ue rooli alle neljä (4=käyttäjä ei seuraa tapahtumaa, 5=admin on estänyt käyttäjää seuraamasta tapahtumaa)
+    #en.activella vakioajan voi laittaa (tulevaisuudessa) tauolle
+    #tapahtuman tasovaatimus on pienempi tai sama kuin käyttäjälle määritelty taso
+    #tulostaulun järjestys viikonpäivän ja ilmoittautumisen tapahtuma id:n mukaan
     sql = """SELECT DISTINCT ev.id, ev.name, en.user_id,
                         COALESCE(weekly, (SELECT DATE_PART('dow', en.date))) dow,
                         en.start_time, en.finish_time, en.extra_participants, en.event_id, en.id
                 FROM users_in_events ue 
                 LEFT JOIN events ev ON ue.event_id=ev.id 
                 LEFT JOIN entries en ON ev.id=en.event_id
-                
                 WHERE ((en.date BETWEEN ((SELECT CURRENT_DATE) + INTEGER ':first_day') AND ((SELECT CURRENT_DATE) + INTEGER ':last_day'))
                         OR en.weekly IS NOT NULL)
                 AND ue.role < 4
@@ -63,39 +76,55 @@ def get_week(user_id:int, week_wanted:int) -> dict:
     result = db.session.execute(sql, {"user_id":user_id, "first_day":first_day, "last_day":last_day}).fetchall()
     return add_structure(result, user_id, week_wanted)
 
+#2/5
+#jaetaan tieto listoille, jotka tallennetaan week -sanakirjaan tapahtumapäivän kohdalle
 def add_structure(result, user_id, week_wanted):
+    #alustus; 
+    #(kts.3/5) week -sanakirjan avaimena päivän indeksi alkaen tänään=0, huomenna=1, jne., lisätään sanakirjan arvoksi varsinainen päivämäärä päivän kohdalle
+    #times_and_changes -listaan kirjataan yksittäisen päivän yksittäisen tapahtuman kaikki ilmoitetut alku ja loppuajat erikseen sekä niiden osallistujamäärän muutos (ym.tietoa ajankohtaan liittyen)
+    #dow ja event_id -muuttujilla seurataan viikonpäivän ja tapahtuman vaihtumista kyselyn tulosta läpikäytäessä
+    #entries_all_events -listaan kirjataan käyttäjän omat ilmoittautumiset, tämä on täysin erillinen lista joka saadaan tässä samalla
     week = prepare_dict_with_days(week_wanted)
     times_and_changes = []
     dow = 0 if not result else result[0][3] 
     event_id = 0 if not result else result[0][0]
     entries_all_events = []
+    #käydään kyselyn tulos läpi
     for i in range(len(result)):
+        #jos käyttäjän oma ilmoittautuminen, lisätään käyttäjän omien ilmoittautumisien listaan
         if user_id == result[i][2]:
             today = datetime.datetime.today()                    #pvm, event.name, alkuaika, loppuaika, dow, day_i, event_id, en.id
             entries_all_events.append(((today + datetime.timedelta(days=match_day_to_dict_week7i(result[i][3]))), result[i][1], result[i][4], result[i][5], result[i][3], match_day_to_dict_week7i(result[i][3]), result[i][0], result[i][8]))
+        #jos läpikäytävä viikonpäivä tai tapahtuman id muuttuu (kyselyssä on järjestys näiden mukaan);
+        #(kts.4/5) haetaan viikonpäivän perusteella oikea day eli kalenterin päivän indeksi tästä päivästä alkaen 0=tänään, 1=huomenna, jne.
+        #otetaan talteen tältä päivältä sanakirjasta aiemmat päivän tapahtumat ja päivän varsinainen päivämäärä
         if dow != result[i][3] or event_id != result[i][0]:
             day = match_day_to_dict_week7i(dow)
             store_events = week[day][:-1] 
             store_day = week[day][-1]
-            if dow != result[i][3] or event_id != result[i][0]:
-                day = match_day_to_dict_week7i(dow)
-                store_events = week[day][:-1] 
-                store_day = week[day][-1]
-                if dow != result[i][3] and event_id != result[i][0]:
-                    week[day] = [store_events[:]+calc_participants(sorted(times_and_changes))]+[store_day]
-                    times_and_changes = []
-                    dow = result[i][3]
-                    event_id = result[i][0]  
-                elif dow != result[i][3]:
-                    week[day] = [store_events[:]+calc_participants(sorted(times_and_changes))]+[store_day]
-                    times_and_changes = []
-                    dow = result[i][3]
-                elif event_id != result[i][0]:
-                    week[day] = store_events[:]+calc_participants(sorted(times_and_changes))+[store_day]
-                    times_and_changes = []
-                    event_id = result[i][0]  
+            #jos molemmat muuttuvat; (kts.5/5) lasketaan tapahtuman osallistujat ilmoitettujen aikojen mukaan ja lisätään päivän kohdalle week -sanakirjaan
+            #tyhjennetään lista seuraavaa tapahtumaa varten, vaihdetaan viikonpäivä ja tapahtuman id muuttujiin vaihtumisen seuraamista varten
+            if dow != result[i][3] and event_id != result[i][0]:
+                week[day] = [store_events[:]+calc_participants(sorted(times_and_changes))]+[store_day]
+                times_and_changes = []
+                dow = result[i][3]
+                event_id = result[i][0]
+            #jos vain viikonpäivä vaihtuu..
+            elif dow != result[i][3]:
+                week[day] = [store_events[:]+calc_participants(sorted(times_and_changes))]+[store_day]
+                times_and_changes = []
+                dow = result[i][3]
+            #jos vain tapahtuman id vaihtuu..
+            elif event_id != result[i][0]:
+                week[day] = store_events[:]+calc_participants(sorted(times_and_changes))+[store_day]
+                times_and_changes = []
+                event_id = result[i][0]
+        #jos mikään ei vaihdu..
+        #times_and_changes -listaan lisätään lista, jossa alkuaika, tapahtuman nimi, dow, lisäosallistujat + itse, tapahtuman id
+        #sorttauksen mahdollistamiseksi omalla rivillään loppuaika, tapahtuman nimi, dow, - (lisäosallistujat + itse), tapahtuman id
         times_and_changes.append([result[i][4].strftime("%H:%M"), result[i][1], result[i][3], result[i][6] + 1, result[i][0]])
         times_and_changes.append([result[i][5].strftime("%H:%M"), result[i][1], result[i][3], - (result[i][6] + 1), result[i][0]])
+        #kyselyn viimeinen rivi vielä erikseen, kun viikonpäivä tai tapahtuma ei muutu, tapahtuman times_and_changes -lista käsitellään ja lisätään week -sanakirjaan
         if i == len(result) - 1:
             day = match_day_to_dict_week7i(dow)
             store_events = week[day][:-1]
@@ -105,6 +134,8 @@ def add_structure(result, user_id, week_wanted):
     #print("---entries_all_events", entries_all_events)
     return week, sorted(entries_all_events) 
 
+#3/5
+#alustetaan week -sanakirjan avaimiksi 0-6, tänään=0, huomenna=1, jne.
 def prepare_dict_with_days(week_wanted:int) -> dict:
     today = datetime.date.today()
     weekdays = {}
@@ -112,6 +143,8 @@ def prepare_dict_with_days(week_wanted:int) -> dict:
         weekdays[i] = [today + datetime.timedelta(days=i)] if week_wanted == 1 else [today + datetime.timedelta(days=i+7)]
     return weekdays
 
+#4/5
+#haetaan viikonpäivää vastaava sanakirjan avain, esim. jos tänään (day=0) on keskiviikko (dow=3), viikonpäivän dow=3 tapahtumat kirjataan week -sanakirjan avaimelle day=0
 def match_day_to_dict_week7i(dow) -> int:
     dow_now = datetime.date.today().weekday() + 1
     if dow < dow_now:
@@ -120,13 +153,20 @@ def match_day_to_dict_week7i(dow) -> int:
         day = dow - dow_now
     return day
 
+#5/5
+#lasketaan yksittäisen tapahtuman osallistujien määrä alku- ja loppuaikojen perusteella sortatusta times_and_changes -listasta (jossa alkioina listat, jossa alku tai loppuaika, tapahtuman nimi, dow, muutos lisäosallistujat + itse, tapahtuman id)
 def calc_participants(sorted_times_and_changes:list) -> list:
     participant_count = 0
+    #lasketaan osallistujat participant_count -muuttujaa apuna käyttäen; jos rivin listalla alkuaika -tiedot, niin lisää osallistujia, jos loppuaika -tiedot niin vähentää osallistujia
+    #vaihdetaan osallistujien määrän muutos -alkion paikalle todellinen osallistujien määrä kyseisestä ajankohdasta alkaen
+    #lisätään viimeiseksi alkioksi seuraavan rivin aikatiedon sisältävä -alkio osoittamaan aika johon asti kyseinen osallistujamäärä pätee
+    #poistetaan viimeinen osallistujarivi (joka kertoo, että osallistujia on nolla)
     for i in range(len(sorted_times_and_changes)-1):
         participant_count = participant_count + sorted_times_and_changes[i][3]
         sorted_times_and_changes[i][3] = participant_count
         sorted_times_and_changes[i].append(sorted_times_and_changes[i+1][0])
     sorted_times_and_changes.pop(-1)
+    #käydään rivit läpi ja poimitaan sieltä rivit, joissa alkuaika on eri kuin loppuaika ja osallistujia on enemmän kuin nolla
     times_and_changes = []
     for row in sorted_times_and_changes:
         if row[0] != row[5] and row[3] != 0:
