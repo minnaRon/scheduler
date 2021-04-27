@@ -2,7 +2,7 @@
 
 2. välipalautus:
 Tällä hetkellä sovelluksen toiminnallisuuksista jäsenenä kirjautuneen käyttäjän toiminnallisuudet ovat suurimmaksi osin valmiina ja kaikki nyt jäsenenä kirjautuneelle näkyvät toiminnot ovat testattavissa ja niiden tulisi toimia täysin (keskeneräiset toiminnallisuudet on poistettu näkymästä).
-Admin -toiminnallisuudet ovat osittain valmiina ja testailtavaksi valmiit toiminnallisuudet on kirjoitettu asetukset -näkymässä vihreällä ja löytyvät myös alla luetteloituna. (Jotain puutteita määrityksissä siellä saattaa olla, ei pitäisi olla kuitenkaan mitään rikkovaa, joten uskaltaa testailla myös niitä.)
+Admin -toiminnallisuudet ovat osittain valmiina ja testailtavaksi valmiit toiminnallisuudet on kirjoitettu asetukset -näkymässä violetilla ja löytyvät myös alla luetteloituna. (Jotain puutteita määrityksissä siellä saattaa olla, ei pitäisi olla kuitenkaan mitään rikkovaa, joten uskaltaa testailla myös niitä.)
 Käyttöoikeuksien tarkastaminen on edelleen köykäistä ja seuraavaksi lisäilen csrf -tarkistukset, tällä hetkellä tarkistuksia on vain joissain adminin toiminnoissa. Poikkeuksista suurin osa käsitellään jo, voi mahdollisesti olla joitain yksittäisiä vielä ilman poikkeuskäsittelyä. Koodi vaatii vielä hieman selkeyttä ja routes -tiedosto useampaan tiedostoon jakamista.
 
 Sovelluksen kuvaus:
