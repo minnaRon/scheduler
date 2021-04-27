@@ -5,9 +5,9 @@
     #sql = """SELECT u.id, username, u.name, u.contact_info, u.role, u.founded
 <p>users_in_events_list id, event_id, user_id, user_level, role<p>-->
 <b>Valitse toiminto:</b>
-<p style= color:green>näistä 1. muuta jäsenen taso, 2. vaihda rooli ja 3. resetoi salasana kokeiltavissa, muita ei vielä täysin testailtu..</p>
+<p id="ready">näistä 1. muuta jäsenen taso, 2. vaihda rooli ja 3. resetoi salasana kokeiltavissa, muita ei vielä täysin testailtu..</p>
 <select name="action">
-    <option value="1">1. muuta jäsenen taso -tapahtumakohtainen
+    <option value="1">1. muuta jäsenen taso - tapahtumakohtainen
     <option value="2">2. vaihda rooli admin/jäsen jäsen/admin
     <option value="3">3. resetoi salasana samaksi kuin tunnus
     <option value="4">4. poista jäsen tapahtumasta
@@ -18,11 +18,11 @@
 <p>
 <b>..valitse lisätiedot:</b>
 <ul>
-    <li>kohtaan <b style="color:green">1</b>; jäsenen tason muuttaminen tapahtumaan sopivaksi,<br>
+    <li>kohtaan <b id="ready">1</b>; jäsenen tason muuttaminen tapahtumaan sopivaksi,<br>
         valitse tapahtuma:
         <select name="event_on">
         {% for event in all_events %}
-        <option value="{{event[0]}}">tapahtuman nimi: {{event[1]}} vaadittava taso: {{event[5]}}
+        <option value="{{event[0]}}">tapahtuman nimi: {{event[1]}}, vaadittava taso: {{event[5]}}
             {% endfor %} 
         </select>
         <p>
@@ -30,12 +30,12 @@
         valitse tapahtuma:
         <select name="event_off">
             {% for event in all_events %}
-            <option value="{{event[0]}}">tapahtuman nimi: {{event[1]}} taso: {{event[5]}}
+            <option value="{{event[0]}}">tapahtuman nimi: {{event[1]}}, taso: {{event[5]}}
                 {% endfor %} 
             </select>
 </ul>
 <p>
-<b style="color :green">..ja valitse muuttuvat jäsenet:</b>
+<b id="ready">..ja valitse muuttuvat jäsenet:</b>
     <table>
         <th>valinta</th>
         <th> rooli </th>
@@ -55,7 +55,7 @@
         {% endfor %}
     </table>
     </ul>
-    <input type="submit" value="Tallenna muutokset">
+    <input class="button"type="submit" value="Tallenna muutokset">
 </form>
 <hr>
 <p>

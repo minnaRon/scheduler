@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>menossa mukana!</h2>
+<h2>menossa mukana myös täällä!</h2>
 <form action="/entry/{{day}}" method="POST">
 <p>
 <h4>{{days_i[day]}} {{date.strftime('%d/%m')}}</h4>
@@ -20,10 +20,10 @@
 <p>
 <b>kommenttia osallistumiseeni liittyen: </b><br>
 <input type="text" name="comment" maxlength="150"><br>
-(kommentti näkyy kalenterisivun keskustelussa mukana)
+<h5>kommentti näkyy kalenterisivun keskustelussa mukana</h5>
 <p>
 <!------------------------------------------------------------------------------->
-<!-- tämä keskeneräinen ja rajattu näkymään vain adminille/ryhmän perustajalle --> 
+<!-- tämä keskeneräinen ja rajattu näkymään vain adminille/ryhmän perustajalle -->
 {% if session["user_role"] == 1 or session["user_role"] == 0 %}
 
 <b>Osallistujat tänään:</b>
@@ -43,6 +43,6 @@
 {% endif %}
 <!----------------------------------------------------------------------------------->
 <!------------------------------------------------------------------------------------>
-<input type="submit" value="Tallenna ilmoittautuminen">
+<input class="button" type="submit" value="Tallenna ilmoittautuminen">
 </form>
 {% endblock %}

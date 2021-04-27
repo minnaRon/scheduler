@@ -5,50 +5,51 @@
 
 <h2> {{group_info[0]|upper}}</h2>
 
-Tapahtumien ajankohdat muodostuvat ilmoittautumisien perusteella (tapahtuma toteutuu, kun sopivasti osallistujia).<br>
-
-<h2>Päiväkohtaisesti ryhmän jäsenien osallistumistilanne tapahtumissa:</h2>
+<h2>päivittäinen osallistumistilanne:</h2>
 <p>
     <hr>
 <!--Sanakirja: päivänumerointi:[[alkuaika, tapahtuman nimi, dow, osallistujia, loppuaika],...,[päivämäärä]]-->
 {% for i in range(7) %}
-<p>
-<!--tämä alkup. rivi alle kts.vkpv {{days[week[i][-1].strftime("%w")]}} {{week[i][-1].strftime("%d.%m.")}}
+<p id="dayrow"><b>
+    <!--tämä alkup. rivi alle kts.vkpv {{days[week[i][-1].strftime("%w")]}} {{week[i][-1].strftime("%d.%m.")}}
 -->
-{{days_i[i]}} {{week[i][-1].strftime("%d/%m")}}
-Oma mahdollinen osallistumiseni päivälle:
+{{days_i[i]}} {{week[i][-1].strftime("%d/%m")}}</b>
+<p><b>Omat mahdolliset osallistumiseni :</b>
 <ul>
 {% for entry in all_own_entries[i] %}
-    <li><a href="/entry/delete_entry/{{entry[7]}}">peru</a> {{entry[1]}} klo {{entry[2].strftime('%H:%M')}} - {{entry[3].strftime('%H:%M')}}
+  <li> {{entry[1]}} klo {{entry[2].strftime('%H:%M')}} - {{entry[3].strftime('%H:%M')}} <a id="linkx" href="/entry/delete_entry/{{entry[7]}}">peru</a> 
 {% endfor %}
 </ul>
 
-{{group_info[0]}} kaikkien jäsenien mahdolliset osallistumiset päivälle:
+<!--{{group_info[0]}} kaikkien jäsenien osallistumistilanne:-->
+kaikkien jäsenien osallistumistilanne:<br>
+
     {% if not week[i][1] %}
         <select name="no_entries">
             <option> ei ilmoittautumisia vielä<br>
-        </select><br>
-        <a href="/entry/{{i}}">Ehdit ekana! ..ilmoita oma mahdollinen aikataulusi päivälle tapahtumiin täällä</a>
+        </select>
+        <a id="linkbutton" href="/entry/{{i}}">Ehdit ekana! </a>
     {% else: %}
 <!--ilmoittautuminen kun valittu valikosta----------------------------------------------------------------------------------------------------------------------------------------------->
     <form action="/calendar" method="POST">
         <select name="calendar_pick">
         {% for j in range(week[i][:-1] | length) %}
             {% for k in range(week[i][:-1][j] | length) %}
-                <option value="{{week[i][:-1][j][k]}}"> {{week[i][:-1][j][k][1]}} | klo {{week[i][:-1][j][k][0]}} - {{week[i][:-1][j][k][5]}} | osallistujia {{week[i][:-1][j][k][3]}}</option>
+                <option value="{{week[i][:-1][j][k]}}"> {{week[i][:-1][j][k][1]}} | klo {{week[i][:-1][j][k][0]}} - {{week[i][:-1][j][k][5]}} | osallistujia {{week[i][:-1][j][k][3]}}
             {% endfor %} 
         {% endfor %}
-                <input type="hidden" name="date" value="{{week[i][-1]}}">
+               <input type="hidden" name="date" value="{{week[i][-1]}}">
                 
-        </select><input type="submit" value="mukana!"><br>
+        </select><input class="button" type="submit" value="mukana!">
         
-    </form>
 <!-----------
 ---------------------------------------------------------------------------------------------------------------------------------------------------->        
-        <a href="/entry/{{i}}">ehdin myös.. ilmoita täällä mihin tapahtumaan ja milloin</a>
+        <a id="linkbutton" href="/entry/{{i}}">ehdin myös.. </a>
     {% endif %}
     <hr>
+</form>
 {% endfor %} 
+Tapahtumien ajankohdat muodostuvat ilmoittautumisien perusteella<br>(tapahtuma toteutuu, kun on sopivasti osallistujia).<br>
 
 <a href="/plan"><h4>Suunnittele seuraava viikko</h4></a>
 <!---------------------------------------------------------------------------------------------------------------------------------------------->
@@ -56,24 +57,28 @@ Oma mahdollinen osallistumiseni päivälle:
 <p>
 Viestittele tässä muiden ryhmän jäsenien kanssa tapahtumiin liittyen:<br>
 <input type="text" name="comment" minlength="1" maxlength="150">
-<input type="submit" value="Lähetä">
+<input class="button" type="submit" value="Lähetä">
 <p>
 {% if group_info[2] %}
-{{group_info[2]}}
+<b>Huom! {{group_info[2]}} </b>
 {% endif %}
 <!--Lista: user_name, content, sent_at-->
 {% if messages %}
 <p> 
 Viimeisimmät viestit:
 <!--div style="width:150px;height:150px;overflow:auto;padding:5px;"-->
+<div class="scroller">
 <ul>
 {% for message in messages %}
  <li>{{message[2].strftime('%d/%m')}} {{message[2].strftime('%H:%M')}}  {{message[1]}} t. {{message[0]}}
 {% endfor %}
 </ul>
+</div>
 {% endif %}
 
 <!--/div-->
 </form>
-
+<p>
+<hr>
+<p>
 {% endblock %}

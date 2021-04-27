@@ -9,24 +9,27 @@
   Tapahtuman peruminen hukkaa tallentamattomat ajat, joten tallenna ennen perumista.
 <hr>
   {% for i in range(7) %}
-<p>
+<p id="dayrow">
   {{days_i[i]}} {{week[i][-1].strftime("%d/%m")}}
   Oma mahdollinen osallistumiseni päivälle:
 <ul>
   {% for entry in all_own_entries[i] %}
-    <li><a href="/entry/delete_entry/plan/{{entry[7]}}">peru</a> {{entry[1]}} klo {{entry[2].strftime('%H:%M')}} - {{entry[3].strftime('%H:%M')}}
+    <li>{{entry[1]}} klo {{entry[2].strftime('%H:%M')}} - {{entry[3].strftime('%H:%M')}} <a id="linkx" href="/entry/delete_entry/plan/{{entry[7]}}">peru</a> 
   {% endfor %}
 </ul>
 <!-------------------------------------------------------------------------------------------------------------------------------------------------------->
 <form action="/plan" method="POST">
-<ul>    <!--all own.. #pvm, event.name, alkuaika, loppuaika, dow, day_i, event_id, en.id -->
+<table>    <!--all own.. #pvm, event.name, alkuaika, loppuaika, dow, day_i, event_id, en.id -->
     <!--listassa nyt: e.id, e.name, e.description, e.min_participants, e.max_participants, e.event_level-->
     {% for j in range(events|length) %}
-      <li>{{events[j][1]}} <input type="time" name="time_start"> - <input type="time" name="time_finish">
+      <tr>
+        <td>{{events[j][1]}}</td>
+          <td><input id="timefield" type="time" name="time_start"> - <input id="timefield" type="time" name="time_finish"></td>
       <input type="hidden" name="day" value={{i}}> <input type="hidden" name="event_index" value={{j}}>
-    {% endfor %}
-</ul>
-    <input type="submit" value="Tallenna">
+      </tr>    
+      {% endfor %}
+      </table>
+    <input class="button" type="submit" value="Tallenna">
 </form>
 <!---------------------------------------------------------------------------------------------- ----------------------------------------------------------->
 <p>
@@ -45,7 +48,7 @@
             {% endfor %} 
         {% endfor %}
                 <input type="hidden" name="date" value="{{week[i][-1]}}">
-        </select><input type="submit" value="mukana!"><br>
+        </select><input class="button" type="submit" value="mukana!"><br>
 </form>
     {% endif %}
 <hr>

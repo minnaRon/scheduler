@@ -1,8 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<h2>Rekisteröidy ja liity ryhmään {{group_info.name}}</h2>
-<P>{{group_info.description}}</P>
+<h2>Rekisteröidy ja liity ryhmään</h2>
+<h2>{{group_info.name}}</h2>
+<P id="ginfo">{{group_info.description}}</P>
 
 <form action="/register" method="POST">
 <p>
@@ -25,7 +26,7 @@ Liittymissalasana: <br><input type="password" name="password_group">
 <p>   <input type="checkbox" name="event_checked" value="{{events[i][0]}}" checked> {{events[i][1]}}
 {% endfor %}
 <p>
-    <input type="submit" value="Lähetä rekisteröinti ja liitä ryhmään">
+    <input class="button" type="submit" value="Lähetä rekisteröinti ja liitä ryhmään">
 <p>
     <hr>
 <input type="hidden" name="group_reg" value="old_group">
