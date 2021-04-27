@@ -20,7 +20,7 @@ Nimesi päivittyy kaikkialle seuraavassa sisäänkirjautumisessa.
     <p>
     </form>
 <p>
-<hr>    
+<hr>
 <!--------------------------------------------------------------------------->
 <form action="/settings/change_contact_info" method="POST">
 
@@ -257,7 +257,7 @@ Anna tapahtumaan vaadittava taso: <input type="number" name="new_event_level" mi
 <option value="6"> muuta tasomääritys
 <option value="1"> poista käytöstä*
 </select>
-<p>   
+<p>
 <!--tässä bugivaara.. jos tapahtuma muutetaan kokonaan toiseksi, niin siihen täytyy olla vielä users in events -lisäkäsittelyä, joten erikseen toimintoihin vielä-->
 <b>Täytä vain valintaasi vastaava kenttä:</b>
 <p>
@@ -271,16 +271,16 @@ minimi- tai maksimiosallistujamäärä: <input type="number" name="number_value1
 muuta taso: <input type="number" name="number_value2" min="0" max="99">
 <h5>
     *käytöstä poistetut tapahtumat (taso 100) voidaan ottaa uudelleen käyttöön muuttamalla tasomääritys normaaliksi.
-</h5> 
+</h5>
 <input class="button" type="submit" value="Tallenna muutokset">
-<p>    
+<p>
 </form>
 <hr>
 <!---------------------------------------------------------------------->
 <form action="/settings/admin/message" method="POST">
 <h2 id="ready">Admin -viesti</h2>
 Lyhyt viesti, joka näkyy jäsenille ensimmäisen viikon näkymässä ja on päivitettävissä.
-<p> 
+<p>
   Viestisi: <input type="text" name="admin_info">
 <p>
 <input class="button" type="submit" value="Tallenna viesti">
@@ -300,7 +300,7 @@ voit mm.:
     <li>muuttaa jäsenen tasoa tapahtumakohtaisesti, mikäli tasot ovat käytössä, oletustasona jäsenellä on 0
     <li>muuttaa tarvittaessa jäsenen roolin adminiksi
     <li>poistaa jäsenen tapahtumasta ja lisätä takaisin
-    <li>estää jäsen kaikista tapahtumistaan ja palauttaa oikeudet kaikkiin tapahtumiinsa</li>    
+    <li>estää jäsen kaikista tapahtumistaan ja palauttaa oikeudet kaikkiin tapahtumiinsa</li>
 </ul>
 <p>
 <!--<input type="submit" value="Hae jäsenet">   ..odottelee jäsenlistan sorttausominaisuutta-->

@@ -46,17 +46,17 @@ def get_weekly_entries_for_user(user_id):
 #..tässä aika tarkkaa kuvausta mitä funktioissa tapahtuu, poistan osan näistä kommenteista ennen lopullista palautusta, kun onhan tämä loppujen lopuksi aika yksinkertainen.
 
 #1/5
-#funktio get_week: haetaan viikon ilmoittautumistiedot ja jaetaan sopiviin tietorakenteisiin kalenterinäkymää varten 
+#funktio get_week: haetaan viikon ilmoittautumistiedot ja jaetaan sopiviin tietorakenteisiin kalenterinäkymää varten
 #erotellaan käyttäjän omat ilmoittautumiset omaksi listakseen, palautetaan viikon tapahtumat -sanakirja ja käyttäjän omat tapahtumat -lista tuplena.
 def get_week(user_id:int, week_wanted:int) -> dict:
     #tässä kyselyn muuttujaan tieto onko kalenterinäkymän vai suunnittelunäkymän tiedot haettavana; first_day 0, last_day 6 on viikko 1 eli kalenterinäkymä
     first_day = 0 if week_wanted == 1 else 6
     last_day = 6 if week_wanted == 1 else 13
     #sql -kyselyssä haetaan tapahtuman id ja nimi, ilmoittautuneen käyttäjän id, dow eli viikonpäivän nro (0=su, 1=ma,...,6=la)
-    #päivä haetaan dow:n kautta, jotta viikottaiset vakioajat saadaan mukaan kalenterin osallistujatilanteeseen, 
+    #päivä haetaan dow:n kautta, jotta viikottaiset vakioajat saadaan mukaan kalenterin osallistujatilanteeseen,
     #ilmoitettu aloitusaika, ilmoitettu lopetusaika, ilmoitetut lisäosallistujat, ilmoittautumisen tapahtuma id ja ilmoittautumisen id -numero
     #haetaan tauluista users_in_events, events ja entries käyttäjät, tapahtumat ja ilmoittautumiset
-    #jossa aika on haluttu ajanjakso; joko ensimmäinen tai toinen viikko, 
+    #jossa aika on haluttu ajanjakso; joko ensimmäinen tai toinen viikko,
     #ue rooli alle neljä (4=käyttäjä ei seuraa tapahtumaa, 5=admin on estänyt käyttäjää seuraamasta tapahtumaa)
     #en.activella vakioajan voi laittaa (tulevaisuudessa) tauolle
     #tapahtuman tasovaatimus on pienempi tai sama kuin käyttäjälle määritelty taso
@@ -79,7 +79,7 @@ def get_week(user_id:int, week_wanted:int) -> dict:
 #2/5
 #jaetaan tieto listoille, jotka tallennetaan week -sanakirjaan tapahtumapäivän kohdalle
 def add_structure(result, user_id, week_wanted):
-    #alustus; 
+    #alustus;
     #(kts.3/5) week -sanakirjan avaimena päivän indeksi alkaen tänään=0, huomenna=1, jne., lisätään sanakirjan arvoksi varsinainen päivämäärä päivän kohdalle
     #times_and_changes -listaan kirjataan yksittäisen päivän yksittäisen tapahtuman kaikki ilmoitetut alku ja loppuajat erikseen sekä niiden osallistujamäärän muutos (ym.tietoa ajankohtaan liittyen)
     #dow ja event_id -muuttujilla seurataan viikonpäivän ja tapahtuman vaihtumista kyselyn tulosta läpikäytäessä

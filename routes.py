@@ -92,8 +92,6 @@ def calendar():
     today = datetime.date.today()
     week, all_event_entries = entries.get_week(user_id, 1)
     all_own_entries = entries.get_all_own_entries_dict(all_event_entries)
-    #print("--all_own_entries", all_own_entries)
-    #print("---week",week)
 ##kun ehtii.. niin tarkenna vielä mahdollisuus hakea/lisätä yhtä tapahtumaa koskevat viestit kaikkien viestien lisäksi v
     message_list =  messages.get_newest(25, user_id)
     group_info = group.get_info()
