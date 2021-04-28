@@ -138,7 +138,7 @@ def entry(day):
     all_own_entries = entries.get_all_own_entries_dict(all_event_entries)
     today = datetime.datetime.today()
     date = today + datetime.timedelta(days=day)
-    
+
     if request.method == "GET":
         participants = entries.get_participants(date)
         #print("---participants", participants)
@@ -203,10 +203,10 @@ def plan():
     today1 = datetime.date.today()
     days = {0:"SU", 1:"MA", 2:"TI", 3:"KE", 4:"TO", 5:"PE", 6:"LA"}
     days_i = entries.change_days_dow_to_i_dict(days, today1)
-    
+
     if request.method == "GET":
         return render_template("plan.html", friends_plans=friends_plans, all_own_entries=all_own_entries, days_i=days_i, group_info=group_info, events=event_list, days=days, week=week, all_event_entries=all_event_entries, today=today)
-    
+
     if request.method == "POST":
         users.check_csrf()
         event_indices = request.form.getlist("event_index")
@@ -465,7 +465,7 @@ def userlist():
         users_in_events_info = group.get_all_users_in_events_info_list()
         return render_template("userlist.html", users_in_events_info=users_in_events_info, all_events=all_events, userlist=userlist)
 #sql = """SELECT u.id, u.name, u.contact_info, u.role, u.founded, ue.event_id, ue.role
-    
+
     if request.method == "POST":
         users.check_csrf()
         action = request.form["action"]
