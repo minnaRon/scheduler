@@ -187,11 +187,11 @@ def get_all_own_entries_dict(all_entries:list) -> dict:
     #print("---all own entries", all_own_entries)
     return all_own_entries
 
-def delete_own_entry(entry_id):
+def delete_own_entry(entry_id, user_id):
     #print("---",entry_id)
     try:
-        sql = """DELETE FROM entries WHERE id=:entry_id"""
-        db.session.execute(sql, {"entry_id":entry_id})
+        sql = """DELETE FROM entries WHERE id=:entry_id AND user_id=:user_id"""
+        db.session.execute(sql, {"entry_id":entry_id, "user_id":user_id})
         db.session.commit()
         return True
     except:

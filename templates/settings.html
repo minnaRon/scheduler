@@ -16,6 +16,7 @@ Anna uusi nimi:<br>
 <br>*Huom! tunnuksesi ei muutu, vain kalenterissa näkyvä nimesi muuttuu.<br>
 Nimesi päivittyy kaikkialle seuraavassa sisäänkirjautumisessa.
 <br>
+<input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
 <input class="button" type="submit" value="Tallenna muutos">
 <p>
 </form>
@@ -26,6 +27,7 @@ Nimesi päivittyy kaikkialle seuraavassa sisäänkirjautumisessa.
 <b>Anna yhteystietosi:</b>*<br>
 <input type="text" name="contact_info"><br>
 *vain adminin/adminien tietoon<br>
+<input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
 <input class="button" type="submit" value="Tallenna muutos">
 <p>
 </form>
@@ -81,6 +83,7 @@ viikonpäivä
 </select>
 aika: <input type="time" name="weekly_time_start"> - <input type="time" name="weekly_time_end">
 <p>
+<input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
 <input class="button" type="submit" value="Tallenna muutokset">
 <p>
 Vakioaikani:
@@ -115,6 +118,7 @@ Tapahtuman nimi:
 {% endfor %}
 </select>
 <p>
+<input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
 <input class="button" type="submit" value="Tallenna muutokset">
 <p>
 </form>
@@ -141,6 +145,7 @@ Voit seurata kavereidesi alustavia toisen viikon suunnitelmia.<br>
   {% endfor %}
 {% endif %}
 <p>
+<input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
 <input class="button" type="submit" value="Tallenna muutokset">
 <p>
 </form>
@@ -226,6 +231,7 @@ jäsenten asetuksissa tapahtuman tietojen tallentamisen jälkeen <br>
 Esim. jos määrittelet jäsenelle tason 5, niin jäsen näkee kaikki tapahtumat tasoilla 0-5
 ja voi omissa asetuksissaan valita näistä tapahtumista itselleen sopivat tapahtumat kalenterissa näytettäväksi.
 <p>
+<input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
 <input class="button" type="submit" value="Tallenna uuden tapahtuman tiedot">
 <p>
 </form>
@@ -265,6 +271,7 @@ muuta taso: <input type="number" name="number_value2" min="0" max="99">
 <h5>
 *käytöstä poistetut tapahtumat (taso 100) voidaan ottaa uudelleen käyttöön muuttamalla tasomääritys normaaliksi.
 </h5>
+<input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
 <input class="button" type="submit" value="Tallenna muutokset">
 <p>
 </form>
@@ -276,6 +283,7 @@ Lyhyt viesti, joka näkyy jäsenille ensimmäisen viikon näkymässä ja on päi
 <p>
 Viestisi: <input type="text" name="admin_info">
 <p>
+<input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
 <input class="button" type="submit" value="Tallenna viesti">
 <p>
 </form>

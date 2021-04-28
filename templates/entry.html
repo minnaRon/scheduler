@@ -43,6 +43,7 @@
 {% endif %}
 <!----------------------------------------------------------------------------------->
 <!------------------------------------------------------------------------------------>
+<input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
 <input class="button" type="submit" value="Tallenna ilmoittautuminen">
 </form>
 {% endblock %}

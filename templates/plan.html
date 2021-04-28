@@ -27,6 +27,7 @@ Tapahtuman peruminen hukkaa tallentamattomat ajat, joten tallenna ennen perumist
     </tr>
   {% endfor %}
   </table>
+  <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
   <input class="button" type="submit" value="Tallenna">
   </form>
 <!--ryhmän suunnitelmat--->
@@ -45,7 +46,9 @@ Tapahtuman peruminen hukkaa tallentamattomat ajat, joten tallenna ennen perumist
       {% endfor %}
     {% endfor %}
     <input type="hidden" name="date" value="{{week[i][-1]}}">
-    </select><input class="button" type="submit" value="mukana!"><br>
+    </select>
+    <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
+    <input class="button" type="submit" value="mukana!"><br>
     </form>
   {% endif %}
   <hr>

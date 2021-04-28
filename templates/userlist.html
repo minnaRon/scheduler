@@ -52,6 +52,7 @@
     </tr>
   {% endfor %}
 </table>
+<input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
 <input class="button"type="submit" value="Tallenna muutokset">
 </form>
 <hr>

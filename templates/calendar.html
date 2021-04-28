@@ -33,7 +33,9 @@
       {% endfor %}
     {% endfor %}
     <input type="hidden" name="date" value="{{week[i][-1]}}">
-    </select><input class="button" type="submit" value="mukana!">
+    </select>
+    <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
+    <input class="button" type="submit" value="mukana!">
     <a id="linkbutton" href="/entry/{{i}}">ehdin myös.. </a>
   {% endif %}
   <hr>
@@ -49,6 +51,7 @@ Tapahtumien ajankohdat muodostuvat ilmoittautumisien perusteella<br>(tapahtuma t
 <p>
 Viestittele tässä muiden ryhmän jäsenien kanssa tapahtumiin liittyen:<br>
 <input type="text" name="comment" minlength="1" maxlength="150">
+<input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
 <input class="button" type="submit" value="Lähetä">
 <p>
 {% if group_info[2] %}

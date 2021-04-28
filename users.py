@@ -39,6 +39,14 @@ def register(username, password, role):
         return render_template("error.html", message="Rekisteröinti ei onnistunut")
     return login(username, password)
 
+def check_csrf():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+def require_role(role):
+    if role < session["user_role"]:
+        abort(403)
+
 def get_username(user_id):
     sql = """SELECT username
                 FROM users

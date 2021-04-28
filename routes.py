@@ -87,6 +87,7 @@ def logout():
 
 @app.route("/calendar", methods=["GET","POST"])
 def calendar():
+    users.require_role(2)
     username = session["user_name"]
     user_id = session["user_id"]
     today = datetime.date.today()
@@ -102,6 +103,7 @@ def calendar():
         return render_template("calendar.html", messages=message_list, days_i=days_i, all_own_entries=all_own_entries, group_info=group_info, days=days, week=week, all_event_entries=all_event_entries, today=today)
     
     if request.method == "POST":
+        users.check_csrf()
         #-- ['05:00', 'tapahtuma12', 4.0, 3, 12, '10:00']
         entry = request.form["calendar_pick"].split(",")
         #--- 2021-04-22
@@ -121,6 +123,7 @@ def calendar():
 
 @app.route("/calendar_message", methods=["POST"])
 def calendar_message():
+    users.check_csrf()
     if len(request.form["comment"].strip()) > 0:
         if messages.add(session["user_id"], request.form["comment"]):
             return redirect("/calendar")
@@ -128,12 +131,14 @@ def calendar_message():
 
 @app.route("/entry/<day>", methods=["GET","POST"])
 def entry(day):
+    users.require_role(2)
     day = int(float(day))
     user_id = session["user_id"]
     week, all_event_entries = entries.get_week(user_id, 1)
     all_own_entries = entries.get_all_own_entries_dict(all_event_entries)
     today = datetime.datetime.today()
     date = today + datetime.timedelta(days=day)
+    
     if request.method == "GET":
         participants = entries.get_participants(date)
         #print("---participants", participants)
@@ -143,6 +148,7 @@ def entry(day):
         return render_template("entry.html", participants=participants, events=event_list, days_i=days_i, date=date, day=day)
     
     if request.method == "POST":
+        users.check_csrf()
         #muodonmuutos vertailua varten
         if request.form["time1"] and request.form["time2"]:
             start_time = datetime.datetime.strptime(request.form["time1"], "%H:%M").time()
@@ -177,13 +183,15 @@ def entry(day):
 
 @app.route("/entry/delete_entry/<entry_id>")
 def delete_entry(entry_id):
+    users.require_role(2)
     #print("---entry id", entry_id)
-    if entries.delete_own_entry(entry_id):
+    if entries.delete_own_entry(entry_id, session["user_id"]):
         return redirect("/calendar")
     return render_template("error.html", message="Ilmoittautumisesi peruminen ei onnistunut")
 
 @app.route("/plan", methods=["GET","POST"])
 def plan():
+    users.require_role(2)
     username = session["user_name"]
     user_id = session["user_id"]
     group_info = group.get_info()
@@ -195,9 +203,12 @@ def plan():
     today1 = datetime.date.today()
     days = {0:"SU", 1:"MA", 2:"TI", 3:"KE", 4:"TO", 5:"PE", 6:"LA"}
     days_i = entries.change_days_dow_to_i_dict(days, today1)
+    
     if request.method == "GET":
         return render_template("plan.html", friends_plans=friends_plans, all_own_entries=all_own_entries, days_i=days_i, group_info=group_info, events=event_list, days=days, week=week, all_event_entries=all_event_entries, today=today)
+    
     if request.method == "POST":
+        users.check_csrf()
         event_indices = request.form.getlist("event_index")
         start_times = request.form.getlist("time_start")
         finish_times = request.form.getlist("time_finish")
@@ -225,12 +236,14 @@ def plan():
 
 @app.route("/entry/delete_entry/plan/<entry_id>")
 def delete_entry_planned(entry_id):
-    if entries.delete_own_entry(entry_id):
+    users.require_role(2)
+    if entries.delete_own_entry(entry_id, session["user_id"]):
         return redirect("/plan")
     return render_template("error.html", message="Ilmoittautumisesi peruminen ei onnistunut")
 
 @app.route("/plan/pick", methods=["POST"])
 def add_plan_pick():
+    users.check_csrf()
     #-- ['05:00', 'tapahtuma12', 4.0, 3, 12, '10:00']
     entry = request.form["plan_pick"].split(",")
     #--- 2021-04-22
@@ -260,6 +273,7 @@ def add_plan_pick():
 
 @app.route("/settings")
 def settings():
+    users.require_role(2)
     user_id = session["user_id"]
     events_with_own_level = events.get_all_events_for_user(user_id)
     #print("--own level", events_with_own_level)
@@ -281,6 +295,7 @@ def settings():
 
 @app.route("/settings/change_user_name", methods=["POST"])
 def change_name():
+    users.check_csrf()
     user_id = session["user_id"]  
     changed_name = request.form["name"]
     if changed_name:
@@ -292,6 +307,7 @@ def change_name():
 
 @app.route("/settings/change_contact_info", methods=["POST"])
 def change_contact_info():
+    users.check_csrf()
     user_id = session["user_id"]
     changed_contact_info = request.form["contact_info"]
     if not users.change_contact_info(user_id, changed_contact_info):
@@ -300,8 +316,7 @@ def change_contact_info():
 
 @app.route("/settings/change_password", methods=["POST"])
 def change_password():
-    if session["csrf_token"] != request.form["csrf_token"]:
-        abort(403)
+    users.check_csrf()
     user_id = session["user_id"]
     changing_password = [request.form["old_password"], request.form["new_password1"], request.form["new_password2"]]
     if not users.check_password(user_id, changing_password[0]):
@@ -316,6 +331,7 @@ def change_password():
     
 @app.route("/settings/weekly_entries", methods=["POST"])
 def weekly_entries():
+    users.check_csrf()
     if entries.add_weekly_entry(session["user_id"], request.form["weekly_event"], request.form["weekly_time_start"], request.form["weekly_time_end"], request.form["weekly_dow"]):
         return redirect("/settings")
     return render_template("error.html", message="Uuden vakioajan lisääminen ei onnistunut")
@@ -324,6 +340,7 @@ def weekly_entries():
 #nyt kysely muuttaa kaikki not active ja lisää muuttuneet activeksi ..en rustaile tätä valmiiksi näin
 @app.route("/settings/change_calendarview", methods=["POST"])
 def change_calendarview():
+    users.check_csrf()
     events = request.form.getlist("event_pick")
     #print("--events calendar", events)
     if users.update_calendarview(session["user_id"], events):
@@ -334,6 +351,7 @@ def change_calendarview():
 ##tämä keskeneräinen..kaverit ei poistu.. :D
 @app.route("/settings/friends", methods=["POST"])
 def friends():
+    users.check_csrf()
     if request.form["friend"]:
         if users.add_friend_request(session["user_id"], request.form["friend"]):
             return redirect("/settings")
@@ -345,24 +363,24 @@ def friends():
  
 @app.route("/settings/change_group_name", methods=["POST"])
 def change_group_name():
-    if session["csrf_token"] != request.form["csrf_token"]:
-        abort(403)
+    users.check_csrf()
+    users.require_role(1)
     if group.change_group_name(request.form["name_group"]):
         return redirect("/settings")
     return render_template("error.html", message="Nimenvaihto ei onnistunut")
  
 @app.route("/settings/change_group_description", methods=["POST"])
 def change_group_description():
-    if session["csrf_token"] != request.form["csrf_token"]:
-        abort(403)
+    users.check_csrf()
+    users.require_role(1)
     if group.change_group_description(request.form["group_description"]):
         return redirect("/settings")
     return render_template("error.html", message="Ryhmän kuvauksen vaihto ei onnistunut")
  
 @app.route("/settings/change_group_password", methods=["POST"])
 def change_group_password():
-    if session["csrf_token"] != request.form["csrf_token"]:
-        abort(403)
+    users.check_csrf()
+    users.require_role(1)
     new_password = request.form["new_password1"]
     if  new_password != request.form["new_password2"]:
         return render_template("error.html", message="Uusissa salasanoissa oli eroa")
@@ -374,6 +392,8 @@ def change_group_password():
     
 @app.route("/settings/add_new_event", methods=["POST"])
 def add_new_event():
+    users.check_csrf()
+    users.require_role(1)
     if events.old_events_with_level_100(5):
         return render_template("error.html", message="Uuden tapahtuman lisäys ei onnistu. Saat luotua uuden tapahtuman muuttamalla yhden käytöstä poistamasi tapahtuman kohdassa Tapahtuman muuttaminen tai poistaminen käytöstä.")
     event_info = {1:request.form["new_event_name"], 2:"", 3:0, 4:0, 5:0}
@@ -397,6 +417,8 @@ def add_new_event():
 
 @app.route("/settings/change_event_info", methods=["POST"])
 def change_event_info():
+    users.check_csrf()
+    users.require_role(1)
     action = request.form["event_action"]
     event_id = request.form["event_pick"]
     if action == "1":
@@ -428,19 +450,24 @@ def change_event_info():
 
 @app.route("/settings/admin/message", methods=["POST"])
 def admin_message():
+    users.check_csrf()
+    users.require_role(1)
     if group.add_admin_message(request.form["admin_info"]):
         return redirect("/settings")
     return render_template("error.html", message="viestin tallentaminen ei onnistunut")
 
 @app.route("/settings/admin/userlist", methods=["GET", "POST"])
 def userlist():
+    users.require_role(1)
     if request.method == "GET":
         all_events = events.get_all_events()
         userlist = group.get_all_users_info_for_userlist()
         users_in_events_info = group.get_all_users_in_events_info_list()
         return render_template("userlist.html", users_in_events_info=users_in_events_info, all_events=all_events, userlist=userlist)
 #sql = """SELECT u.id, u.name, u.contact_info, u.role, u.founded, ue.event_id, ue.role
+    
     if request.method == "POST":
+        users.check_csrf()
         action = request.form["action"]
         users_changing = request.form.getlist("user_id")
         if action == "1":
