@@ -14,19 +14,25 @@ def check_password(password_group):
 
 def add(name, description, password):
     hash_value = generate_password_hash(password)
-    sql = """INSERT INTO group_info (name, description, password, founded) 
-                VALUES (:name, :description, :password, NOW()) RETURNING id"""
-    result = db.session.execute(sql, {"name":name, "description":description,"password":hash_value})
-    group_id = result.fetchone()[0]
-    db.session.commit()
-    return group_id
+    try:
+        sql = """INSERT INTO group_info (name, description, password, founded)
+                    VALUES (:name, :description, :password, NOW()) RETURNING id"""
+        result = db.session.execute(sql, {"name":name, "description":description,"password":hash_value})
+        group_id = result.fetchone()[0]
+        db.session.commit()
+        return group_id
+    except:
+        return -1
 
 def set_founder(user_id):
-    sql = """UPDATE group_info 
-                SET founder_id=:user_id"""
-    db.session.execute(sql, {"user_id":user_id})
-    db.session.commit()
-    return
+    try:
+        sql = """UPDATE group_info
+                    SET founder_id=:user_id"""
+        db.session.execute(sql, {"user_id":user_id})
+        db.session.commit()
+        return True
+    except:
+        return False
 
 def change_group_name(name:str):
     try:

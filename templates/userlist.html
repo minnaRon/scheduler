@@ -1,61 +1,58 @@
 {% extends "layout.html" %}
 {% block content %}
 <form action="/settings/admin/userlist" method="POST">
-    <p><!--#Tähän jäsenlista ja hakuominaisuuksia:
-    #sql = """SELECT u.id, username, u.name, u.contact_info, u.role, u.founded
-<p>users_in_events_list id, event_id, user_id, user_level, role<p>-->
+<p>
 <b>Valitse toiminto:</b>
 <p id="ready">näistä 1. muuta jäsenen taso, 2. vaihda rooli ja 3. resetoi salasana kokeiltavissa, muita ei vielä täysin testailtu..</p>
 <select name="action">
-    <option value="1">1. muuta jäsenen taso - tapahtumakohtainen
-    <option value="2">2. vaihda rooli admin/jäsen jäsen/admin
-    <option value="3">3. resetoi salasana samaksi kuin tunnus
-    <option value="4">4. poista jäsen tapahtumasta
-    <option value="5">5. palauta jäsen tapahtumaan
-    <option value="6">6. estä jäsen kaikista tapahtumistaan
-    <option value="7">7. palauta jäsenen oikeudet kaikkiin tapahtumiin
+  <option value="1">1. muuta jäsenen taso - tapahtumakohtainen
+  <option value="2">2. vaihda rooli admin/jäsen jäsen/admin
+  <option value="3">3. resetoi salasana samaksi kuin tunnus
+  <option value="4">4. poista jäsen tapahtumasta
+  <option value="5">5. palauta jäsen tapahtumaan
+  <option value="6">6. estä jäsen kaikista tapahtumistaan
+  <option value="7">7. palauta jäsenen oikeudet kaikkiin tapahtumiin
 </select>
 <p>
 <b>..valitse lisätiedot:</b>
 <ul>
-    <li>kohtaan <b id="ready">1</b>; jäsenen tason muuttaminen tapahtumaan sopivaksi,<br>
-        valitse tapahtuma:
-        <select name="event_on">
-        {% for event in all_events %}
-        <option value="{{event[0]}}">tapahtuman nimi: {{event[1]}}, vaadittava taso: {{event[5]}}
-            {% endfor %} 
-        </select>
-        <p>
-    <li>kohtaan <b>4</b> ja <b>5</b>; poista/palauta jäsen tiettyyn tapahtumaan,<br>
-        valitse tapahtuma:
-        <select name="event_off">
-            {% for event in all_events %}
-            <option value="{{event[0]}}">tapahtuman nimi: {{event[1]}}, taso: {{event[5]}}
-                {% endfor %} 
-            </select>
+  <li>kohtaan <b id="ready">1</b>; jäsenen tason muuttaminen tapahtumaan sopivaksi,<br>
+  valitse tapahtuma:
+  <select name="event_on">
+  {% for event in all_events %}
+    <option value="{{event[0]}}">tapahtuman nimi: {{event[1]}}, vaadittava taso: {{event[5]}}
+  {% endfor %}
+  </select>
+  <p>
+  <li>kohtaan <b>4</b> ja <b>5</b>; poista/palauta jäsen tiettyyn tapahtumaan,<br>
+  valitse tapahtuma:
+  <select name="event_off">
+  {% for event in all_events %}
+    <option value="{{event[0]}}">tapahtuman nimi: {{event[1]}}, taso: {{event[5]}}
+  {% endfor %}
+  </select>
 </ul>
 <p>
 <b id="ready">..ja valitse muuttuvat jäsenet:</b>
-    <table>
-        <th>valinta</th>
-        <th> rooli </th>
-        <th> tunnus </th>
-        <th> kalenterinimi </th>
-        <th> yhteystiedot </th>
-        <th> liittynyt </th>
-        {% for user in userlist %}
-        <tr>
-         <td><input type="checkbox" name="user_id" value="{{user[0]}}"></td>
-         <td> {{user[4]}} </td>
-         <td> {{user[1]}} </td>
-         <td> {{user[2]}} </td>
-         <td>{% if user[3] %} {{user[3]}} {% endif %}</td>
-         <td> {{user[5].strftime("%d.%m.%Y")}} </td>
-        </tr>
-        {% endfor %}
-    </table>
-    </ul>
-    <input class="button"type="submit" value="Tallenna muutokset">
+<table>
+  <th>valinta</th>
+  <th> rooli </th>
+  <th> tunnus </th>
+  <th> kalenterinimi </th>
+  <th> yhteystiedot </th>
+  <th> liittynyt </th>
+  {% for user in userlist %}
+    <tr>
+      <td><input type="checkbox" name="user_id" value="{{user[0]}}"></td>
+      <td> {{user[4]}} </td>
+      <td> {{user[1]}} </td>
+      <td> {{user[2]}} </td>
+      <td>{% if user[3] %} {{user[3]}} {% endif %}</td>
+      <td> {{user[5].strftime("%d.%m.%Y")}} </td>
+    </tr>
+  {% endfor %}
+</table>
+<input class="button"type="submit" value="Tallenna muutokset">
 </form>
 <hr>
 <p>

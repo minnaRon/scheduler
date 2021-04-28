@@ -2,56 +2,53 @@
 {% block content %}
 
 <h3>{{group_info[0]|upper}}</h3>
-
 <b>Suunnittele seuraavia osallistumisia</b>
 <p>
-  Lisää niiden tapahtumien kohdalle aika, joihin osallistut ja tallenna yksitellen tai päivän kaikki osallistumiset kerralla.<br>
-  Tapahtuman peruminen hukkaa tallentamattomat ajat, joten tallenna ennen perumista.
+Lisää niiden tapahtumien kohdalle aika, joihin osallistut ja tallenna yksitellen tai päivän kaikki osallistumiset kerralla.<br>
+Tapahtuman peruminen hukkaa tallentamattomat ajat, joten tallenna ennen perumista.
 <hr>
-  {% for i in range(7) %}
-<p id="dayrow">
-  {{days_i[i]}} {{week[i][-1].strftime("%d/%m")}}
+{% for i in range(7) %}
+  <p id="dayrow">{{days_i[i]}} {{week[i][-1].strftime("%d/%m")}}
+<!--omat osallistumiset-->
   Oma mahdollinen osallistumiseni päivälle:
-<ul>
+  <ul>
   {% for entry in all_own_entries[i] %}
     <li>{{entry[1]}} klo {{entry[2].strftime('%H:%M')}} - {{entry[3].strftime('%H:%M')}} <a id="linkx" href="/entry/delete_entry/plan/{{entry[7]}}">peru</a> 
   {% endfor %}
-</ul>
-<!-------------------------------------------------------------------------------------------------------------------------------------------------------->
-<form action="/plan" method="POST">
-<table>    <!--all own.. #pvm, event.name, alkuaika, loppuaika, dow, day_i, event_id, en.id -->
-    <!--listassa nyt: e.id, e.name, e.description, e.min_participants, e.max_participants, e.event_level-->
-    {% for j in range(events|length) %}
-      <tr>
-        <td>{{events[j][1]}}</td>
-          <td><input id="timefield" type="time" name="time_start"> - <input id="timefield" type="time" name="time_finish"></td>
+  </ul>
+<!--aikakentät----------->
+  <form action="/plan" method="POST">
+  <table>
+  {% for j in range(events|length) %}
+    <tr>
+      <td>{{events[j][1]}}</td>
+      <td><input id="timefield" type="time" name="time_start"> - <input id="timefield" type="time" name="time_finish"></td>
       <input type="hidden" name="day" value={{i}}> <input type="hidden" name="event_index" value={{j}}>
-      </tr>
-      {% endfor %}
-      </table>
-    <input class="button" type="submit" value="Tallenna">
-</form>
-<!---------------------------------------------------------------------------------------------- ----------------------------------------------------------->
-<p>
-    ryhmän alustavia suunnitelmia..
-    {% if not week[i][1] %}
-      <select name="no_entries">
-        <option> ei ilmoittautumisia vielä
-      </select>
-    {% else: %}
-<!---------------------------------------------------------------------------------------------------------------------------------------------------------->
-<form action="/plan/pick" method="POST">
-  <select name="plan_pick">
+    </tr>
+  {% endfor %}
+  </table>
+  <input class="button" type="submit" value="Tallenna">
+  </form>
+<!--ryhmän suunnitelmat--->
+  <p>
+  ryhmän alustavia suunnitelmia..
+  {% if not week[i][1] %}
+    <select name="no_entries">
+      <option> ei ilmoittautumisia vielä
+    </select>
+  {% else: %}
+    <form action="/plan/pick" method="POST">
+    <select name="plan_pick">
     {% for j in range(week[i][:-1] | length) %}
-            {% for k in range(week[i][:-1][j] | length) %}
-                <option value="{{week[i][:-1][j][k]}}"> {{week[i][:-1][j][k][1]}} | klo {{week[i][:-1][j][k][0]}} - {{week[i][:-1][j][k][5]}} | osallistujia {{week[i][:-1][j][k][3]}}</option>
-            {% endfor %} 
-        {% endfor %}
-                <input type="hidden" name="date" value="{{week[i][-1]}}">
-        </select><input class="button" type="submit" value="mukana!"><br>
-</form>
-    {% endif %}
-<hr>
+      {% for k in range(week[i][:-1][j] | length) %}
+        <option value="{{week[i][:-1][j][k]}}"> {{week[i][:-1][j][k][1]}} | klo {{week[i][:-1][j][k][0]}} - {{week[i][:-1][j][k][5]}} | osallistujia {{week[i][:-1][j][k][3]}}</option>
+      {% endfor %}
+    {% endfor %}
+    <input type="hidden" name="date" value="{{week[i][-1]}}">
+    </select><input class="button" type="submit" value="mukana!"><br>
+    </form>
+  {% endif %}
+  <hr>
 {% endfor %} 
 <p>
 <!----------------------------------------------------------------------->
@@ -65,9 +62,10 @@
                 ORDER BY dow, en.event_id, u.name"""
 -->
 <ul>
-    {% for friend in friends_plans %}
-    <li> {{friend[6]}} {{friend[7]}} {{friend[5]}} {{friend[0]}} klo {{friend[2]}} - {{friend[3]}}
-    {% endfor %}
+{% for friend in friends_plans %}
+  <li> {{friend[6]}} {{friend[7]}} {{friend[5]}} {{friend[0]}} klo {{friend[2]}} - {{friend[3]}}
+{% endfor %}
 </ul>
 {% endif %}
+
 {% endblock %}

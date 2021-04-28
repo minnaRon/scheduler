@@ -5,18 +5,17 @@
 <form action="/login" method="POST">
 <p>
 {% if session.user_name %}
-Olet kirjautuneena, <a href="/calendar">pääset kalenteriin tästä</a>
-
+  Olet kirjautuneena, <a href="/calendar">pääset kalenteriin tästä</a>
 {% else %}
-Tunnus: <br><input type="text" name="username">
-<p>
-Salasana: <br><input type="password" name="password">
-<p>
-<input class="button" type="submit" value="Kirjaudu">
-</form>
-<p>
-<hr>
-Jos sinulla ei vielä ole tunnuksia, niin <a href="/register"> rekisteröidy tästä</a>
-<p>
+  Tunnus: <br><input type="text" name="username">
+  <p>
+  Salasana: <br><input type="password" name="password">
+  <p>
+  <input class="button" type="submit" value="Kirjaudu">
+  </form>
+  <p>
+  <hr>
+  Jos sinulla ei vielä ole tunnuksia, niin <a href="/register"> rekisteröidy tästä</a>
+  <p>
 {% endif %}
 {% endblock %}

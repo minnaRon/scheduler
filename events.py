@@ -14,63 +14,48 @@ def add_new_event(event_info:dict):
         return -1
 
 def get_all_0_level_events():
-    try:
-        sql = """SELECT id, name, description, min_participants, max_participants
-                    FROM events
-                    WHERE event_level = 0
-                    ORDER BY name"""
-        return db.session.execute(sql).fetchall()
-    except:
-        return []
+    sql = """SELECT id, name, description, min_participants, max_participants
+                FROM events
+                WHERE event_level = 0
+                ORDER BY name"""
+    return db.session.execute(sql).fetchall()
 
 def get_all_events_for_register():
-    try:
-        sql = """SELECT id, name, description, min_participants, max_participants
-                    FROM events
-                    WHERE event_level < 100
-                    ORDER BY name"""
-        return db.session.execute(sql).fetchall()
-    except:
-        return []
+    sql = """SELECT id, name, description, min_participants, max_participants
+                FROM events
+                WHERE event_level < 100
+                ORDER BY name"""
+    return db.session.execute(sql).fetchall()
 
 def get_all_events():
-    try:
-        sql = """SELECT *
-                    FROM events
-                    ORDER BY name"""
-        return db.session.execute(sql).fetchall()
-    except:
-        return []
+    sql = """SELECT *
+                FROM events
+                ORDER BY name"""
+    return db.session.execute(sql).fetchall()
 
 def get_all_events_for_user(user_id):
 #poistettu rajoitus AND ue.role < 4 ...hakee nyt kaikki johon taso oikeuttaa
-    try:
-        sql = """SELECT DISTINCT e.id, e.name, e.description, e.min_participants, e.max_participants, e.event_level, ue.role
-                    FROM users u
-                    LEFT JOIN users_in_events ue ON u.id=ue.user_id
-                    LEFT JOIN events e ON e.id=ue.event_id
-                    WHERE u.id=:user_id
-                    AND ue.role < 5
-                    AND ue.user_id=:user_id
-                    AND e.event_level <= ue.user_level
-                    ORDER BY e.name, e.event_level"""
-        return db.session.execute(sql, {"user_id":user_id}).fetchall()
-    except:
-        return []
+    sql = """SELECT DISTINCT e.id, e.name, e.description, e.min_participants, e.max_participants, e.event_level, ue.role
+                FROM users u
+                LEFT JOIN users_in_events ue ON u.id=ue.user_id
+                LEFT JOIN events e ON e.id=ue.event_id
+                WHERE u.id=:user_id
+                AND ue.role < 5
+                AND ue.user_id=:user_id
+                AND e.event_level <= ue.user_level
+                ORDER BY e.name, e.event_level"""
+    return db.session.execute(sql, {"user_id":user_id}).fetchall()
 
 def get_events(user_id):
-    try:
-        sql = """SELECT e.id, e.name, e.description, e.min_participants, e.max_participants, e.event_level
-                    FROM users u 
-                    LEFT JOIN users_in_events ue ON u.id=ue.user_id
-                    LEFT JOIN events e ON e.id=ue.event_id
-                    WHERE u.id=:user_id
-                    AND e.event_level <= ue.user_level
-                    AND ue.role < 4
-                    ORDER BY e.id"""
-        return db.session.execute(sql, {"user_id":user_id}).fetchall()  
-    except:
-        return []
+    sql = """SELECT e.id, e.name, e.description, e.min_participants, e.max_participants, e.event_level
+                FROM users u
+                LEFT JOIN users_in_events ue ON u.id=ue.user_id
+                LEFT JOIN events e ON e.id=ue.event_id
+                WHERE u.id=:user_id
+                AND e.event_level <= ue.user_level
+                AND ue.role < 4
+                ORDER BY e.id"""
+    return db.session.execute(sql, {"user_id":user_id}).fetchall()
 
 def old_events_with_level_100(allowed_amount):
     sql = """SELECT COUNT(event_level) FROM events
@@ -78,7 +63,7 @@ def old_events_with_level_100(allowed_amount):
     return db.session.execute(sql).fetchone()[0] > allowed_amount
 
 
-#tämä turha?
+#tämä turha? tarkista..
 def delete_event(event_id):
     try:
         sql = """DELETE FROM events

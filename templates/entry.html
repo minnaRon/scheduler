@@ -6,9 +6,9 @@
 <h4>{{days_i[day]}} {{date.strftime('%d/%m')}}</h4>
 <b>valitse tapahtuma:</b>
 <select name="event_id">
-    {% for event in events %}
-    <option value={{event[0]}}> {{event[1]}}
-    {% endfor %}            
+{% for event in events %}
+  <option value={{event[0]}}> {{event[1]}}
+{% endfor %}
 </select>
 <p>
 <b>valitse kellonaika:</b>
@@ -28,16 +28,16 @@
 
 <b>Osallistujat tänään:</b>
 <ul>
-    {% for participant in participants %}
-        <li> {{participant[0]}} | {{participant[0]}} klo {{participant[1]}} - {{participant[2]}}
-            {% if participant[3] != 0 %}
-            , lisäosallistujia mukana {{ participant[3]}}
-            {% endif %}
-            {% if participant[4] %}
-            , {{ participant[4]}}
-            {% endif %}
-        </li>
-    {% endfor %}
+{% for participant in participants %}
+  <li> {{participant[0]}} | {{participant[0]}} klo {{participant[1]}} - {{participant[2]}}
+  {% if participant[3] != 0 %}
+    , lisäosallistujia mukana {{ participant[3]}}
+  {% endif %}
+  {% if participant[4] %}
+    , {{ participant[4]}}
+  {% endif %}
+  </li>
+{% endfor %}
 </ul>
 <p>
 {% endif %}

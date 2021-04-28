@@ -2,12 +2,15 @@ from db import db
 import datetime
         
 def add_entry(date, user_id, event_id, time1, time2):
-    sql = """INSERT INTO entries (user_id, event_id, date, start_time, finish_time) 
+    try:
+        sql = """INSERT INTO entries (user_id, event_id, date, start_time, finish_time)
                 VALUES (:user_id, :event_id, :date, :time1, :time2)
                 RETURNING id"""
-    entry_id = db.session.execute(sql, {"user_id":user_id, "event_id":event_id, "date":date, "time1":time1, "time2":time2}).fetchone()[0]
-    db.session.commit()
-    return entry_id
+        entry_id = db.session.execute(sql, {"user_id":user_id, "event_id":event_id, "date":date, "time1":time1, "time2":time2}).fetchone()[0]
+        db.session.commit()
+        return entry_id
+    except:
+        return -1
 
 def add_entry_with_extras(date, user_id, event_id, time1, time2, extras):
     try:

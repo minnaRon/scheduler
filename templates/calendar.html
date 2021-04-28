@@ -1,58 +1,50 @@
 {% extends "layout.html" %}
 {% block content %}
-<!--lyoutissa: Kirjautuneena <b>{{  session.user_name  }}</b> 
- |  <a href="/settings">Omat asetukset</a>  |  <a href="/logout">Kirjaudu ulos</a> -->
-
 <h2> {{group_info[0]|upper}}</h2>
-
 <h2>päivittäinen osallistumistilanne:</h2>
 <p>
-    <hr>
-<!--Sanakirja: päivänumerointi:[[alkuaika, tapahtuman nimi, dow, osallistujia, loppuaika],...,[päivämäärä]]-->
+<hr>
 {% for i in range(7) %}
-<p id="dayrow"><b>
-    <!--tämä alkup. rivi alle kts.vkpv {{days[week[i][-1].strftime("%w")]}} {{week[i][-1].strftime("%d.%m.")}}
--->
-{{days_i[i]}} {{week[i][-1].strftime("%d/%m")}}</b>
-<p><b>Omat mahdolliset osallistumiseni :</b>
-<ul>
-{% for entry in all_own_entries[i] %}
-  <li> {{entry[1]}} klo {{entry[2].strftime('%H:%M')}} - {{entry[3].strftime('%H:%M')}} <a id="linkx" href="/entry/delete_entry/{{entry[7]}}">peru</a>
-{% endfor %}
-</ul>
+  <p id="dayrow"><b>{{days_i[i]}} {{week[i][-1].strftime("%d/%m")}}</b>
 
-<!--{{group_info[0]}} kaikkien jäsenien osallistumistilanne:-->
-kaikkien jäsenien osallistumistilanne:<br>
+<!--omat osallistumiset------------------------------------>
+  <p><b>Omat mahdolliset osallistumiseni :</b>
+  <ul>
+  {% for entry in all_own_entries[i] %}
+    <li> {{entry[1]}} klo {{entry[2].strftime('%H:%M')}} - {{entry[3].strftime('%H:%M')}} <a id="linkx" href="/entry/delete_entry/{{entry[7]}}">peru</a>
+  {% endfor %}
+  </ul>
 
-    {% if not week[i][1] %}
-        <select name="no_entries">
-            <option> ei ilmoittautumisia vielä<br>
-        </select>
-        <a id="linkbutton" href="/entry/{{i}}">Ehdit ekana! </a>
-    {% else: %}
-<!--ilmoittautuminen kun valittu valikosta----------------------------------------------------------------------------------------------------------------------------------------------->
+<!--kaikkien jäsenien osallistumistilanne:----------------->
+  kaikkien jäsenien osallistumistilanne:<br>
+  {% if not week[i][1] %}
+    <select name="no_entries">
+      <option> ei ilmoittautumisia vielä<br>
+    </select>
+    <a id="linkbutton" href="/entry/{{i}}">Ehdit ekana! </a>
+  {% else: %}
+
+<!--ilmoittautuminen--------------------------------------->
     <form action="/calendar" method="POST">
-        <select name="calendar_pick">
-        {% for j in range(week[i][:-1] | length) %}
-            {% for k in range(week[i][:-1][j] | length) %}
-                <option value="{{week[i][:-1][j][k]}}"> {{week[i][:-1][j][k][1]}} | klo {{week[i][:-1][j][k][0]}} - {{week[i][:-1][j][k][5]}} | osallistujia {{week[i][:-1][j][k][3]}}
-            {% endfor %} 
-        {% endfor %}
-               <input type="hidden" name="date" value="{{week[i][-1]}}">
-                
-        </select><input class="button" type="submit" value="mukana!">
-        
-<!-----------
----------------------------------------------------------------------------------------------------------------------------------------------------->        
-        <a id="linkbutton" href="/entry/{{i}}">ehdin myös.. </a>
-    {% endif %}
-    <hr>
-</form>
+    <select name="calendar_pick">
+    {% for j in range(week[i][:-1] | length) %}
+      {% for k in range(week[i][:-1][j] | length) %}
+        <option value="{{week[i][:-1][j][k]}}"> {{week[i][:-1][j][k][1]}} | klo {{week[i][:-1][j][k][0]}} - {{week[i][:-1][j][k][5]}} | osallistujia {{week[i][:-1][j][k][3]}}
+      {% endfor %}
+    {% endfor %}
+    <input type="hidden" name="date" value="{{week[i][-1]}}">
+    </select><input class="button" type="submit" value="mukana!">
+    <a id="linkbutton" href="/entry/{{i}}">ehdin myös.. </a>
+  {% endif %}
+  <hr>
+  </form>
 {% endfor %} 
 Tapahtumien ajankohdat muodostuvat ilmoittautumisien perusteella<br>(tapahtuma toteutuu, kun on sopivasti osallistujia).<br>
 
+<!--suunnittele seuraava viikko------------------------------>
 <a href="/plan"><h4>Suunnittele seuraava viikko</h4></a>
-<!---------------------------------------------------------------------------------------------------------------------------------------------->
+
+<!--viestit-------------------------------------------------->
 <form action="/calendar_message" method="POST">
 <p>
 Viestittele tässä muiden ryhmän jäsenien kanssa tapahtumiin liittyen:<br>
@@ -60,23 +52,19 @@ Viestittele tässä muiden ryhmän jäsenien kanssa tapahtumiin liittyen:<br>
 <input class="button" type="submit" value="Lähetä">
 <p>
 {% if group_info[2] %}
-<b>Huom! {{group_info[2]}} </b>
+  <b>Huom! {{group_info[2]}} </b>
 {% endif %}
-<!--Lista: user_name, content, sent_at-->
 {% if messages %}
-<p> 
-Viimeisimmät viestit:
-<!--div style="width:150px;height:150px;overflow:auto;padding:5px;"-->
-<div class="scroller">
-<ul>
-{% for message in messages %}
- <li>{{message[2].strftime('%d/%m')}} {{message[2].strftime('%H:%M')}}  {{message[1]}} t. {{message[0]}}
-{% endfor %}
-</ul>
-</div>
+  <p>
+  Viimeisimmät viestit:
+  <div class="scroller">
+  <ul>
+  {% for message in messages %}
+    <li>{{message[2].strftime('%d/%m')}} {{message[2].strftime('%H:%M')}}  {{message[1]}} t. {{message[0]}}
+  {% endfor %}
+  </ul>
+  </div>
 {% endif %}
-
-<!--/div-->
 </form>
 <p>
 <hr>
