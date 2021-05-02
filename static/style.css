@@ -34,6 +34,11 @@ hr {
     text-align: center;
 }
 
+.cancel_button {
+    color: white;
+    background-color: rgb(192, 221, 192);
+}
+
 #linkbutton {
     text-decoration: none;
     color: green;

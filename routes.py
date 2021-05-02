@@ -332,9 +332,42 @@ def change_password():
 @app.route("/settings/weekly_entries", methods=["POST"])
 def weekly_entries():
     users.check_csrf()
-    if entries.add_weekly_entry(session["user_id"], request.form["weekly_event"], request.form["weekly_time_start"], request.form["weekly_time_end"], request.form["weekly_dow"]):
+    user_id = session["user_id"]
+    week, all_event_entries = entries.get_week(user_id, 1)
+    all_own_entries_week_1 = entries.get_all_own_entries_dict_with_dow(all_event_entries)
+    week, all_event_entries = entries.get_week(user_id, 2)
+    all_own_entries_week_2 = entries.get_all_own_entries_dict_with_dow(all_event_entries)
+    if request.form["weekly_time_start"] and request.form["weekly_time_end"]:
+        start_time = datetime.datetime.strptime(request.form["weekly_time_start"], "%H:%M").time()
+        finish_time = datetime.datetime.strptime(request.form["weekly_time_end"], "%H:%M").time()
+    else:
+        return render_template("error.html", message="Osallistumisesi lisäys ei onnistunut, tarkista valitsemasi ajat")
+    dow = int(request.form["weekly_dow"])
+    if start_time < finish_time:
+        if all_own_entries_week_1[dow]:
+            for earlier_entry in all_own_entries_week_1[dow]:
+                start = earlier_entry[2]
+                end = earlier_entry[3]
+                if not (start_time >= end or finish_time <= start):
+                    return render_template("error.html", message="Aika menee päällekkäin kalenteriviikolla päivän toisen ilmoittautumisesi kanssa, peru ilmoittautumisia tarvittaessa")
+        if all_own_entries_week_2[dow]:
+            for earlier_entry in all_own_entries_week_2[dow]:
+                start = earlier_entry[2]
+                end = earlier_entry[3]
+                if not (start_time >= end or finish_time <= start):
+                    return render_template("error.html", message="Aika menee päällekkäin suunnitteluviikolla päivän toisen ilmoittautumisesi kanssa, peru ilmoittautumisia tarvittaessa")
+        if entries.add_weekly_entry(user_id, request.form["weekly_event"], start_time, finish_time, dow):
+            return redirect("/settings")
+        return render_template("error.html", message="Uuden vakioajan lisääminen ei onnistunut")
+    else:
+        return render_template("error.html", message="Osallistumisesi lisäys ei onnistunut, tarkista valitsemasi ajat")
+
+@app.route("/settings/weekly_cancel", methods=["POST"])
+def weekly_cancel():
+    users.check_csrf()
+    if entries.delete_own_entry(request.form["entry_id"], session["user_id"]):
         return redirect("/settings")
-    return render_template("error.html", message="Uuden vakioajan lisääminen ei onnistunut")
+    return render_template("error.html", message="Vakioajan peruminen ei onnistunut")
 
 ######kysy tähän ohje kuinka checked ainoastaan muuttuneet voi muuttaa, kun active/not active
 #nyt kysely muuttaa kaikki not active ja lisää muuttuneet activeksi ..en rustaile tätä valmiiksi näin

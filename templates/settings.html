@@ -63,7 +63,6 @@ violetilla otsikoidut ovat kokeiltavaksi valmiita ominaisuuksia.</h4>
 <p>
 <form action="/settings/weekly_entries" method="POST">
 <h2>Viikottaiset vakio-osallistumisajat</h2>
-##lisää peruminen, toimii muuten ok, tarkista vielä..<br>
 <p>
 Lisään uuden viikottaisen vakioajan tapahtumalle:<br>
 <select name="weekly_event">
@@ -86,19 +85,26 @@ aika: <input type="time" name="weekly_time_start"> - <input type="time" name="we
 <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
 <input class="button" type="submit" value="Tallenna muutokset">
 <p>
+</form>
+<!----------------------------------------------------------------->
 Vakioaikani:
 <Ul>
 {% if own_weekly_entries %}
   {% for entry in own_weekly_entries %}
-    <li>{{days[entry[0]]}} {{entry[2]}} klo {{entry[3].strftime('%H:%M')}} - {{entry[4].strftime('%H:%M')}}
-    <a href="/entry/weekly/{{entry[5]}}">  muuta</a>
+    <form action="/settings/weekly_cancel" method="POST">
+    <li><input class="cancel_button" type="submit" value="peru"> {{days[entry[0]]}} {{entry[2]}} klo {{entry[3].strftime('%H:%M')}} - {{entry[4].strftime('%H:%M')}}
+    <!--<a href="/entry/weekly/{{entry[5]}}">  muuta</a>-->
+    <input type="hidden" name="entry_id" value="{{entry[5]}}">
+    <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
     </li>
-#TÄHÄN linkki ilmoittautumiseen, jossa voi muuttaa tai perua vakioajan, entry[5] on vakioajan entry id sillä update tai delete
+    </form>
   {% endfor %}
 {% endif %}
 </Ul>
 <p>
-</form>
+  Vakioaika peruuntuu automaattisesti myös kalenterinäkymässä tai suunnittelunäkymässä peruttaessa.
+  Lisää ajankohta tarvittaessa kalenterinäkymään tavallisena ilmoittautumisena.
+<p>
 <hr>
 <!----------------------------------------------------------------->
 <form action="/settings/change_calendarview" method="POST">

@@ -187,6 +187,16 @@ def get_all_own_entries_dict(all_entries:list) -> dict:
     #print("---all own entries", all_own_entries)
     return all_own_entries
 
+def get_all_own_entries_dict_with_dow(all_entries:list) -> dict:
+    #print("---all_entries", all_entries)
+    #pvm, event.name, alkuaika, loppuaika, dow, day_i, event_id
+    all_own_entries = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]}
+    for entry in all_entries:
+        all_own_entries[entry[4]].append(entry)
+    #print("---all own entries", all_own_entries)
+    return all_own_entries
+
+
 def delete_own_entry(entry_id, user_id):
     #print("---",entry_id)
     try:
