@@ -10,10 +10,15 @@ Tapahtuman peruminen hukkaa tallentamattomat ajat, joten tallenna ennen perumist
 {% for i in range(7) %}
   <p id="dayrow">{{days_i[i]}} {{week[i][-1].strftime("%d/%m")}}
 <!--omat osallistumiset-->
-  Oma mahdollinen osallistumiseni päivälle:
+  <p><b>Omat mahdolliset osallistumiseni :</b>
   <ul>
   {% for entry in all_own_entries[i] %}
-    <li>{{entry[1]}} klo {{entry[2].strftime('%H:%M')}} - {{entry[3].strftime('%H:%M')}} <a id="linkx" href="/entry/delete_entry/plan/{{entry[7]}}">peru</a> 
+    <form action="/plan/entry_cancel" method="POST">
+    <li><input class="cancel_button" type="submit" value="peru"> {{entry[1]}} klo {{entry[2].strftime('%H:%M')}} - {{entry[3].strftime('%H:%M')}}
+    <input type="hidden" name="entry_id" value="{{entry[7]}}">
+    <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
+    </li>
+    </form>
   {% endfor %}
   </ul>
 <!--aikakentät----------->

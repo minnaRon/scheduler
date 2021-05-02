@@ -182,10 +182,10 @@ def entry(day):
                     return render_template("error.html", message="Viestisi lähetys ei onnistunut, tarkista viestin sisältö")
         return redirect("/calendar")
 
-@app.route("/entry/delete_entry/<entry_id>")
-def delete_entry(entry_id):
-    users.require_role(2)
-    #print("---entry id", entry_id)
+@app.route("/calendar/entry_cancel", methods=["POST"])
+def cancel_entry():
+    users.check_csrf()
+    entry_id = request.form["entry_id"]
     if entries.delete_own_entry(entry_id, session["user_id"]):
         return redirect("/calendar")
     return render_template("error.html", message="Ilmoittautumisesi peruminen ei onnistunut")
@@ -235,9 +235,10 @@ def plan():
             return render_template("error.html", message="Tapahtumien lisäys ei onnistunut, tarkista valitsemasi ajat")
         return redirect("/plan")
 
-@app.route("/entry/delete_entry/plan/<entry_id>")
-def delete_entry_planned(entry_id):
-    users.require_role(2)
+@app.route("/plan/entry_cancel", methods=["POST"])
+def cancel_plan_entry():
+    users.check_csrf()
+    entry_id = request.form["entry_id"]
     if entries.delete_own_entry(entry_id, session["user_id"]):
         return redirect("/plan")
     return render_template("error.html", message="Ilmoittautumisesi peruminen ei onnistunut")

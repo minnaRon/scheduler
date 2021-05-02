@@ -11,10 +11,14 @@
   <p><b>Omat mahdolliset osallistumiseni :</b>
   <ul>
   {% for entry in all_own_entries[i] %}
-    <li> {{entry[1]}} klo {{entry[2].strftime('%H:%M')}} - {{entry[3].strftime('%H:%M')}} <a id="linkx" href="/entry/delete_entry/{{entry[7]}}">peru</a>
+    <form action="/calendar/entry_cancel" method="POST">
+    <li><input class="cancel_button" type="submit" value="peru"> {{entry[1]}} klo {{entry[2].strftime('%H:%M')}} - {{entry[3].strftime('%H:%M')}}
+    <input type="hidden" name="entry_id" value="{{entry[7]}}">
+    <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
+    </li>
+    </form>
   {% endfor %}
   </ul>
-
 <!--kaikkien jäsenien osallistumistilanne:----------------->
   kaikkien jäsenien osallistumistilanne:<br>
   {% if not week[i][1] %}
