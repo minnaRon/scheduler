@@ -25,7 +25,7 @@ Nimesi päivittyy kaikkialle seuraavassa sisäänkirjautumisessa.
 <!-------------------------------------------------------------------->
 <form action="/settings/change_contact_info" method="POST">
 <b>Anna yhteystietosi:</b>*<br>
-<input type="text" name="contact_info"><br>
+<input type="text" name="contact_info" maxlength="100"><br>
 *vain adminin/adminien tietoon<br>
 <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
 <input class="button" type="submit" value="Tallenna muutos">
