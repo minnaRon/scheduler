@@ -50,6 +50,7 @@ def plan():
 @app.route("/plan/entry_cancel", methods=["POST"])
 def cancel_plan_entry():
     users.check_csrf()
+    users.require_role(2)
     entry_id = request.form["entry_id"]
     if entries.delete_own_entry(entry_id, session["user_id"]):
         return redirect("/plan")
@@ -58,6 +59,7 @@ def cancel_plan_entry():
 @app.route("/plan/pick", methods=["POST"])
 def add_plan_pick():
     users.check_csrf()
+    users.require_role(2)
     #-- ['05:00', 'tapahtuma12', 4.0, 3, 12, '10:00']
     entry = request.form["plan_pick"].split(",")
     #--- 2021-04-22

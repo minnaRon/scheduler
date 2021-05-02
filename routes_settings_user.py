@@ -28,6 +28,7 @@ def settings():
 @app.route("/settings/change_user_name", methods=["POST"])
 def change_name():
     users.check_csrf()
+    users.require_role(2)
     user_id = session["user_id"]  
     changed_name = request.form["name"]
     if changed_name:
@@ -40,6 +41,7 @@ def change_name():
 @app.route("/settings/change_contact_info", methods=["POST"])
 def change_contact_info():
     users.check_csrf()
+    users.require_role(2)
     user_id = session["user_id"]
     changed_contact_info = request.form["contact_info"]
     if not users.change_contact_info(user_id, changed_contact_info):
@@ -49,6 +51,7 @@ def change_contact_info():
 @app.route("/settings/change_password", methods=["POST"])
 def change_password():
     users.check_csrf()
+    users.require_role(2)
     user_id = session["user_id"]
     changing_password = [request.form["old_password"], request.form["new_password1"], request.form["new_password2"]]
     if not users.check_password(user_id, changing_password[0]):
@@ -64,6 +67,7 @@ def change_password():
 @app.route("/settings/weekly_entries", methods=["POST"])
 def weekly_entries():
     users.check_csrf()
+    users.require_role(2)
     user_id = session["user_id"]
     week, all_event_entries = entries.get_week(user_id, 1)
     all_own_entries_week_1 = entries.get_all_own_entries_dict_with_dow(all_event_entries)
@@ -97,6 +101,7 @@ def weekly_entries():
 @app.route("/settings/weekly_cancel", methods=["POST"])
 def weekly_cancel():
     users.check_csrf()
+    users.require_role(2)
     if entries.delete_own_entry(request.form["entry_id"], session["user_id"]):
         return redirect("/settings")
     return render_template("error.html", message="Vakioajan peruminen ei onnistunut")
@@ -104,6 +109,7 @@ def weekly_cancel():
 @app.route("/settings/change_calendarview", methods=["POST"])
 def change_calendarview():
     users.check_csrf()
+    users.require_role(2)
     events = request.form.getlist("event_pick")
     #print("--events calendar", events)
     if users.update_calendarview(session["user_id"], events):
@@ -114,6 +120,7 @@ def change_calendarview():
 @app.route("/settings/friends", methods=["POST"])
 def friends():
     users.check_csrf()
+    users.require_role(2)
     if request.form["friend"]:
         print("--oli friend", session["user_id"], request.form["friend"])
         if not users.add_friend_request(session["user_id"], request.form["friend"]):

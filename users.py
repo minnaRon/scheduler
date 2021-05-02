@@ -44,7 +44,7 @@ def check_csrf():
         abort(403)
 
 def require_role(role):
-    if role < session["user_role"]:
+    if role < session.get("user_role", 3):
         abort(403)
 
 def get_username(user_id):

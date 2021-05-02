@@ -41,6 +41,7 @@ def calendar():
 @app.route("/calendar_message", methods=["POST"])
 def calendar_message():
     users.check_csrf()
+    users.require_role(2)
     if len(request.form["comment"].strip()) > 0:
         if messages.add(session["user_id"], request.form["comment"]):
             return redirect("/calendar")
@@ -102,6 +103,7 @@ def entry(day):
 @app.route("/calendar/entry_cancel", methods=["POST"])
 def cancel_entry():
     users.check_csrf()
+    users.require_role(2)
     entry_id = request.form["entry_id"]
     if entries.delete_own_entry(entry_id, session["user_id"]):
         return redirect("/calendar")

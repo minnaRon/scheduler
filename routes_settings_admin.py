@@ -109,6 +109,7 @@ def userlist():
 
     if request.method == "POST":
         users.check_csrf()
+        users.require_role(1)
         action = request.form["action"]
         users_changing = request.form.getlist("user_id")
         if action == "1":
