@@ -242,12 +242,18 @@ def change_days_dow_to_i_dict(days, today):
     #print("--days_i", days_i)
     return days_i
 
-def get_participants(date) -> list:
+def get_participants(user_id, date) -> list:
+    print("---date",date)
     sql = """SELECT e.name, u.name, en.start_time, en.finish_time, extra_participants, m.content
-                FROM entries en JOIN users u ON en.user_id=u.id
-                JOIN events e ON en.event_id=e.id
-                JOIN messages m ON en.id=m.entries_id
-                WHERE (en.date=:date OR en.weekly=(SELECT DATE_PART('dow', :date)))
+                FROM entries en LEFT JOIN users u ON en.user_id=u.id
+                LEFT JOIN events e ON en.event_id=e.id
+                LEFT JOIN messages m ON en.id=m.entries_id
+                WHERE (EXTRACT (day from en.date)=EXTRACT(day from :date)
+                OR en.weekly=(SELECT DATE_PART('dow', :date)))
                 AND en.active=1
+                AND e.id IN (SELECT event_id
+                                FROM users_in_events
+                                WHERE user_id=:user_id
+                                AND role < 4)
                 ORDER BY e.name, en.start_time"""
-    return db.session.execute(sql, {"date":date}).fetchall()
+    return db.session.execute(sql, {"user_id":user_id, "date":date}).fetchall()

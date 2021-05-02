@@ -13,7 +13,7 @@
 <p>
 <b>valitse kellonaika:</b>
 <input type="time" name="time1">
-<input type="time" name="time2">
+ - <input type="time" name="time2">
 <p>
 <b>mukanani tulee lisäosallistujia:</b>
 <input type="number" name="extra_participants" min="0" max="99" value="0">
@@ -22,28 +22,32 @@
 <input type="text" name="comment" maxlength="150"><br>
 <h5>kommentti näkyy kalenterisivun keskustelussa mukana</h5>
 <p>
-<!------------------------------------------------------------------------------->
-<!-- tämä keskeneräinen ja rajattu näkymään vain adminille/ryhmän perustajalle -->
-{% if session["user_role"] == 1 or session["user_role"] == 0 %}
-
-<b>Osallistujat tänään:</b>
-<ul>
-{% for participant in participants %}
-  <li> {{participant[0]}} | {{participant[0]}} klo {{participant[1]}} - {{participant[2]}}
-  {% if participant[3] != 0 %}
-    , lisäosallistujia mukana {{ participant[3]}}
-  {% endif %}
-  {% if participant[4] %}
-    , {{ participant[4]}}
-  {% endif %}
-  </li>
-{% endfor %}
-</ul>
-<p>
-{% endif %}
-<!----------------------------------------------------------------------------------->
-<!------------------------------------------------------------------------------------>
 <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
 <input class="button" type="submit" value="Tallenna ilmoittautuminen">
+<p>
+<p>
+<hr>
+<p>
+<b>Osallistujat tänään:</b>
+<table>
+  <th>tapahtuma</th>
+  <th>mukana</th>
+  <th>klo</th>
+  <th>lisäos.</th>
+{% for participant in participants %}
+  <tr>
+  <td> {{participant[0]}} </td>
+  <td> {{participant[1]}} </td>
+  <td> {{participant[2].strftime('%H:%M')}} - {{participant[3].strftime('%H:%M')}} </td>
+  <td> {% if participant[4] != 0 %}
+         {{ participant[4]}}
+       {% endif %} </td>
+  <td> {% if participant[5] %}
+    , {{ participant[5]}}
+       {% endif %} </td>
+  </tr>
+{% endfor %}
+</table>
+<p>
 </form>
 {% endblock %}

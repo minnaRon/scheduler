@@ -140,8 +140,9 @@ def entry(day):
     date = today + datetime.timedelta(days=day)
 
     if request.method == "GET":
-        participants = entries.get_participants(date)
-        #print("---participants", participants)
+        participants = entries.get_participants(session["user_id"], date)
+        #sql = """SELECT e.name, u.name, en.start_time, en.finish_time, extra_participants, m.content
+        print("---participants", participants)
         event_list = events.get_events(user_id)
         days = {0:"SU", 1:"MA", 2:"TI", 3:"KE", 4:"TO", 5:"PE", 6:"LA"}
         days_i = entries.change_days_dow_to_i_dict(days, today)

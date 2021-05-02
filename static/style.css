@@ -18,6 +18,10 @@ hr {
     color:rgb(231, 228, 228);
 }
 
+th {
+    text-align: left;
+}
+
 .scroller {
     width: 40em;
     height: 15em;
