@@ -85,8 +85,7 @@ Vakioaikani:
 {% if own_weekly_entries %}
   {% for entry in own_weekly_entries %}
     <form action="/settings/weekly_cancel" method="POST">
-    <li><input class="cancel_button" type="submit" value="peru"> {{days[entry[0]]}} {{entry[2]}} klo {{entry[3].strftime('%H:%M')}} - {{entry[4].strftime('%H:%M')}}
-    <!--<a href="/entry/weekly/{{entry[5]}}">  muuta</a>-->
+    <li><input class="cancel_button" type="submit" value="X"> {{days[entry[0]]}} {{entry[2]}} klo {{entry[3].strftime('%H:%M')}} - {{entry[4].strftime('%H:%M')}}
     <input type="hidden" name="entry_id" value="{{entry[5]}}">
     <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
     </li>

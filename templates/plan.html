@@ -15,7 +15,7 @@ Tapahtuman peruminen hukkaa tallentamattomat ajat, joten tallenna ennen perumist
   <ul>
   {% for entry in all_own_entries[i] %}
     <form action="/plan/entry_cancel" method="POST">
-    <li><input class="cancel_button" type="submit" value="peru"> {{entry[1]}} klo {{entry[2].strftime('%H:%M')}} - {{entry[3].strftime('%H:%M')}}
+    <li><input class="cancel_button" type="submit" value="X"> {{entry[1]}} klo {{entry[2].strftime('%H:%M')}} - {{entry[3].strftime('%H:%M')}}
     <input type="hidden" name="entry_id" value="{{entry[7]}}">
     <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
     </li>
