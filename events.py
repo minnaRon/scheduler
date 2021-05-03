@@ -2,7 +2,6 @@ from db import db
 from flask import render_template
 import os 
 
-#    event_info = {1:request.form["new_event_name"], 2:request.form["new_event_description"], 3:request.form["new_event_min_participants"], 4:request.form["new_event_max_participants"], 5:request.form["new_event_level"]}
 def add_new_event(event_info:dict):
     try:
         sql = """INSERT INTO events (name, description, min_participants, max_participants, event_level)
@@ -34,7 +33,6 @@ def get_all_events():
     return db.session.execute(sql).fetchall()
 
 def get_all_events_for_user(user_id):
-#poistettu rajoitus AND ue.role < 4 ...hakee nyt kaikki johon taso oikeuttaa
     sql = """SELECT DISTINCT e.id, e.name, e.description, e.min_participants, e.max_participants, e.event_level, ue.role
                 FROM users u
                 LEFT JOIN users_in_events ue ON u.id=ue.user_id
@@ -62,15 +60,12 @@ def old_events_with_level_100(allowed_amount):
                 WHERE event_level=100"""
     return db.session.execute(sql).fetchone()[0] > allowed_amount
 
-
-#tämä turha? tarkista..
 def delete_event(event_id):
     try:
         sql = """DELETE FROM events
                     WHERE id=:event_id"""
         db.session.execute(sql,{"event_id":event_id})
         db.session.commit()
-        #print("---tämä on true")
         return True
     except:
         return False

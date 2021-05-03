@@ -30,7 +30,6 @@ def plan():
         if len(event_indices) == len(start_times) and len(start_times) == len(finish_times):
             for i in range(len(event_indices)-1):
                 if start_times[i] < finish_times[i]:
-                    print("-- start, finish",start_times[i], finish_times[i])
                     if all_own_entries[int(days[i])]:
                         for earlier_entry in all_own_entries[int(days[i])]:
                             start = earlier_entry[2]
@@ -61,11 +60,8 @@ def cancel_plan_entry():
 def add_plan_pick():
     users.check_csrf()
     users.require_role(2)
-    #-- ['05:00', 'tapahtuma12', 4.0, 3, 12, '10:00']
     entry = request.form["plan_pick"].split(",")
-    #--- 2021-04-22
     entry_date = datetime.datetime.strptime(request.form["date"], "%Y-%m-%d").date()
-    print("---entry, ..date", entry, entry_date)
     today = datetime.date.today()
     day_i = entry_date - today
     entry_start = datetime.datetime.strptime(entry[0][2:-1], "%H:%M").time()
@@ -86,7 +82,6 @@ def add_weekday(friends_plans:list) -> list:
     days = {0:"SU", 1:"MA", 2:"TI", 3:"KE", 4:"TO", 5:"PE", 6:"LA"}
     friends_plans_w = []
     for entry in friends_plans:
-        print("---entry", entry)
         entry = list(entry)
         entry[4] = days[entry[4]]
         friends_plans_w.append(entry)

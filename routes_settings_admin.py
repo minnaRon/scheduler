@@ -105,7 +105,6 @@ def userlist():
         userlist = group.get_all_users_info_for_userlist()
         users_in_events_info = group.get_all_users_in_events_info_list()
         return render_template("userlist.html", users_in_events_info=users_in_events_info, all_events=all_events, userlist=userlist)
-#sql = """SELECT u.id, u.name, u.contact_info, u.role, u.founded, ue.event_id, ue.role
 
     if request.method == "POST":
         users.check_csrf()
@@ -122,11 +121,9 @@ def userlist():
             if users.reset_password(users_changing):
                 return redirect("/settings/admin/userlist")
         elif action == "4":
-            print("---4", request.form["event_off"])
             if group.change_participation_rights(users_changing, request.form["event_off"], 5):
                 return redirect("/settings/admin/userlist")
         elif action == "5":
-            print("---5", request.form["event_off"])
             if group.change_participation_rights(users_changing, request.form["event_off"], 2):
                 return redirect("/settings/admin/userlist")
         elif action == "6":

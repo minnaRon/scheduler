@@ -77,14 +77,12 @@ def add_admin_message(admin_info):
     except:
         return False
 
-#Tähän onko mahdollista saada parametriksi haettava järjestys jollakin lailla?
 def get_all_users_info_for_userlist():
     sql = """SELECT id, username, name, contact_info, role, founded
                 FROM users
                 ORDER BY role, name"""
     return db.session.execute(sql).fetchall()
 
-#tarviiko?vvv
 def get_all_users_in_events_info():
     sql = """SELECT *
                 FROM users_in_events"""
@@ -97,7 +95,6 @@ def get_all_users_in_events_info_list() -> list:
                     ORDER BY u.role, u.name"""
     return db.session.execute(sql).fetchall()
 
-#tarviiko?VVVVV
 def get_all_users_in_events_info_dict() -> dict:
     info = {}
     sql = """SELECT id
@@ -117,7 +114,6 @@ def get_all_users_in_events_info_dict() -> dict:
         print("---info", info)
     return info
 
-#keskeneräinen
 def get_admin_info() -> list:
     sql = """SELECT admin_info
                 FROM group_info"""

@@ -7,20 +7,14 @@ def settings():
     users.require_role(2)
     user_id = session["user_id"]
     events_with_own_level = events.get_all_events_for_user(user_id)
-    #print("--own level", events_with_own_level)
-    #    sql = """SELECT e.id, e.name, e.description, e.min_participants, e.max_participants, e.event_level, ue.role
     own_weekly_entries = entries.get_weekly_entries_for_user(user_id)
-    #    sql = """SELECT en.weekly, e.id, e.name, en.start_time, en.finish_time, en.id
     friends_list = friends.get_friends(user_id)
-    #    sql = """SELECT u.id, u.name, f.active, f.user_id1
     friend_requests = friends.get_friends_open_requests(user_id)
     friend_requests_own = friends.get_own_requests(user_id)
     weekdays = {0:"SU", 1:"MA", 2:"TI", 3:"KE", 4:"TO", 5:"PE", 6:"LA"}
     user_info = users.get_user_info(user_id)
-    #    sql = """SELECT username, name, contact_info FROM users"""
     if session["user_role"] == 1:
         all_events = events.get_all_events()
-    #    sql = """SELECT *
         return render_template("settings.html", all_events=all_events, friend_requests_own=friend_requests_own, user_info=user_info, days=weekdays, events_with_own_level=events_with_own_level, own_weekly_entries= own_weekly_entries, friends=friends_list, friend_requests=friend_requests)
     else:
         return render_template("settings.html", friend_requests_own=friend_requests_own, user_info=user_info,  days=weekdays, events_with_own_level=events_with_own_level, own_weekly_entries= own_weekly_entries, friends=friends_list, friend_requests=friend_requests)
@@ -111,27 +105,21 @@ def change_calendarview():
     users.check_csrf()
     users.require_role(2)
     events = request.form.getlist("event_pick")
-    #print("--events calendar", events)
     if users.update_calendarview(session["user_id"], events):
         return redirect("/settings")
     return render_template("error.html", message="Kalenterissa näkyvien tapahtumien päivittäminen ei onnistunut")
 
-##tämä keskeneräinen..kaverit ei poistu.. :D
 @app.route("/settings/friends", methods=["POST"])
 def friends_settings():
     users.check_csrf()
     users.require_role(2)
     if request.form["friend"]:
-        print("--oli friend", session["user_id"], request.form["friend"])
         if not friends.add_friend_request(session["user_id"], request.form["friend"]):
             return render_template("error.html", message="Kaveripyyntö on jo lähetetty")
-    print("---palasi")
     if request.form.getlist("friend_asks"):
-        print("---friends", request.form.getlist("friend_asks"))
         if not friends.accept_friends(session["user_id"], request.form.getlist("friend_asks")):
             return render_template("error.html", message="Kaveripäivitys ei onnistunut")
     if request.form.getlist("friends"):
-        print("---friends", request.form.getlist("friends"))
         if not friends.remove_friends(session["user_id"], request.form.getlist("friends")):
             return render_template("error.html", message="Kaveripäivitys ei onnistunut")
     if request.form.getlist("ask_cancel"):

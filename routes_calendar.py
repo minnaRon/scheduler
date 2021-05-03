@@ -10,7 +10,6 @@ def calendar():
     today = datetime.date.today()
     week, all_event_entries = entries.get_week(user_id, 1)
     all_own_entries = entries.get_all_own_entries_dict(all_event_entries)
-##kun ehtii.. niin tarkenna vielä mahdollisuus hakea/lisätä yhtä tapahtumaa koskevat viestit kaikkien viestien lisäksi v
     message_list =  messages.get_newest(25, user_id)
     group_info = group.get_info()
     days = {0:"SU", 1:"MA", 2:"TI", 3:"KE", 4:"TO", 5:"PE", 6:"LA"}
@@ -21,9 +20,7 @@ def calendar():
     
     if request.method == "POST":
         users.check_csrf()
-        #-- ['05:00', 'tapahtuma12', 4.0, 3, 12, '10:00']
         entry = request.form["calendar_pick"].split(",")
-        #--- 2021-04-22
         entry_date = datetime.datetime.strptime(request.form["date"], "%Y-%m-%d").date()
         day_i = entry_date - today
         entry_start = datetime.datetime.strptime(entry[0][2:-1], "%H:%M").time()
@@ -59,8 +56,6 @@ def entry(day):
 
     if request.method == "GET":
         participants = entries.get_participants(session["user_id"], date)
-        #sql = """SELECT e.name, u.name, en.start_time, en.finish_time, extra_participants, m.content
-        print("---participants", participants)
         event_list = events.get_events(user_id)
         days = {0:"SU", 1:"MA", 2:"TI", 3:"KE", 4:"TO", 5:"PE", 6:"LA"}
         days_i = entries.change_days_dow_to_i_dict(days, today)
@@ -68,20 +63,17 @@ def entry(day):
     
     if request.method == "POST":
         users.check_csrf()
-        #muodonmuutos vertailua varten
         if request.form["time1"] and request.form["time2"]:
             start_time = datetime.datetime.strptime(request.form["time1"], "%H:%M").time()
             finish_time = datetime.datetime.strptime(request.form["time2"], "%H:%M").time()
         else:
             return render_template("error.html", message="Osallistumisesi lisäys ei onnistunut, tarkista valitsemasi ajat")
-        #print("finish_time", finish_time)
         if request.form["extra_participants"]:
             extras = request.form["extra_participants"]
         else:
             extras = 0
         if start_time < finish_time:
             if all_own_entries[day]:
-                #print("---all_own_entries", all_own_entries)
                 for earlier_entry in all_own_entries[day]:
                     start = earlier_entry[2]
                     end = earlier_entry[3]

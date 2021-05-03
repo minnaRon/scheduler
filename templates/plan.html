@@ -9,6 +9,7 @@ Tapahtuman peruminen hukkaa tallentamattomat ajat, joten tallenna ennen perumist
 <hr>
 {% for i in range(7) %}
   <p id="dayrow">{{days_i[i]}} {{week[i][-1].strftime("%d/%m")}}
+
 <!--omat osallistumiset-->
   <p><b>Omat mahdolliset osallistumiseni :</b>
   <ul>
@@ -21,6 +22,7 @@ Tapahtuman peruminen hukkaa tallentamattomat ajat, joten tallenna ennen perumist
     </form>
   {% endfor %}
   </ul>
+
 <!--aikakentät----------->
   <form action="/plan" method="POST">
   <table>
@@ -35,6 +37,7 @@ Tapahtuman peruminen hukkaa tallentamattomat ajat, joten tallenna ennen perumist
   <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
   <input class="button" type="submit" value="Tallenna">
   </form>
+
 <!--ryhmän suunnitelmat--->
   <p>
   ryhmän alustavia suunnitelmia..
@@ -59,11 +62,9 @@ Tapahtuman peruminen hukkaa tallentamattomat ajat, joten tallenna ennen perumist
   <hr>
 {% endfor %} 
 <p>
+
+<!--kaverien suunnitelmat--->
 <h4>Kaverien alustavia suunnitelmia:</h4>
-<!--  pvm:n mukaan, alajaottelu tapahtuman mukaan
-        sql = """SELECT DISTINCT u.name, e.name, en.start_time, en.finish_time, dow, event_id, en.date, en.weekly
-                ORDER BY dow, en.event_id, u.name"""
--->
 <table>
 {% for friend in friends_plans %}
   <tr>

@@ -21,7 +21,6 @@ def register():
     
     if request.method == "GET":
         group_info = group.get_info()
-        #event_list = events.get_all_0_level_events()
         event_list = events.get_all_events_for_register()
         if not group_info:
             return render_template("new_group.html")
@@ -46,7 +45,6 @@ def register():
                 if users.register(username, password1, 2):
                     events_checked = request.form.getlist("event_checked")
                     for event in events_checked:
-                        print("events reg", event)
                         users.add_event(event, session["user_id"], 2)
                     return redirect("/calendar")
             return render_template("error.html", message="Rekisteröinti ei onnistunut, tarkista ryhmän liittymissalasana")
