@@ -59,21 +59,22 @@ Tapahtuman peruminen hukkaa tallentamattomat ajat, joten tallenna ennen perumist
   <hr>
 {% endfor %} 
 <p>
-<!----------------------------------------------------------------------->
-<!-----------tämä keskeneräinen ja siirretty näkymään vain adminille/ryhmän perustajalle -->
-{% if session["user_role"] == 1 or session["user_role"] == 0 %}
-
-#TÄHÄN LISTANA KAVERIEN ALUSTAVAT SUUNNITELMAT, keskeneräinen
-<h4>Kaverien alustavat suunnitelmat:</h4>
+<h4>Kaverien alustavia suunnitelmia:</h4>
 <!--  pvm:n mukaan, alajaottelu tapahtuman mukaan
         sql = """SELECT DISTINCT u.name, e.name, en.start_time, en.finish_time, dow, event_id, en.date, en.weekly
                 ORDER BY dow, en.event_id, u.name"""
 -->
-<ul>
+<table>
 {% for friend in friends_plans %}
-  <li> {{friend[6]}} {{friend[7]}} {{friend[5]}} {{friend[0]}} klo {{friend[2]}} - {{friend[3]}}
+  <tr>
+    <tr>
+    <td>{{friend[4]}}</td>
+    <td>{% if friend[6] %} {{friend[6].strftime("%d/%m")}} {% else %} vakio {% endif %}</td>
+    <td>{{friend[1]}}</td>
+    <td>{{friend[0]}}</td>
+    <td>klo {{friend[2]}} - {{friend[3]}}</td>
+  </tr>
 {% endfor %}
-</ul>
-{% endif %}
+  </table>
 
 {% endblock %}

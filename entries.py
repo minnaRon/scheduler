@@ -215,7 +215,7 @@ def friends_planning(user_id):
                 COALESCE(weekly, (SELECT DATE_PART('dow', en.date))) dow, en.event_id, en.date, en.weekly
                 FROM users_in_events ue
                 JOIN friends f ON ue.user_id=f.user_id1 OR ue.user_id=f.user_id2
-                JOIN entries en ON en.user_id=f.user_id1 OR ue.user_id=f.user_id2
+                JOIN entries en ON en.user_id=f.user_id1 OR en.user_id=f.user_id2
                 JOIN users u ON u.id=en.user_id
                 JOIN events e ON en.event_id=e.id
                 WHERE ue.user_id=:user_id

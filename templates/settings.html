@@ -136,18 +136,25 @@ Voit seurata kavereidesi alustavia toisen viikon suunnitelmia.<br>
 <b>Lähetä kaveripyyntö, anna kaverisi kalenterissa oleva nimi: </b><br>
 <input type="text" name="friend">
 <p>
-#tämä vielä kesken.. friends forever! .. :D<br>
-<b>Hyväksy kaveripyyntöjä ja poista kavereita: </b><br>
+<b>Hyväksy kaveripyyntöjä: </b><br>
 {% if friend_requests %}
   Kaveripyynnöt:<br>
   {% for friend_asking in friend_requests %}
-    <input type="checkbox" name="friends" value="{{friend_asking[0]}}" >{{friend_asking[1]}} <br>
+    <input type="checkbox" name="friend_asks" value="{{friend_asking[0]}}" >{{friend_asking[1]}} <br>
   {% endfor %}
 {% endif %}
 {% if friends %}
+<b>Poista kavereita ja kaveripyyntöjäsi: </b><br>
   Kaverisi:<br>
   {% for friend in friends %}
-    <input type="checkbox" name="friends" value="{{friend[0]}}" checked >{{friend[1]}} <br>
+    <input type="checkbox" name="friends" value="{{friend[0]}}">{{friend[1]}} <br>
+  {% endfor %}
+{% endif %}
+<p>
+{% if friend_requests_own %}
+  Omat kaveripyyntösi, odottaa vastausta:<br>
+  {% for own_ask in friend_requests_own %}
+    <input type="checkbox" name="ask_cancel" value="{{own_ask[0]}}">{{own_ask[1]}} <br>
   {% endfor %}
 {% endif %}
 <p>

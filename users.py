@@ -113,56 +113,6 @@ def update_calendarview(user_id, events:list):
     except:
         return False
 
-def get_friends_open_requests(user_id):
-    sql = """SELECT u.id, u.name, fr.active, fr.user_id1
-                FROM (SELECT * FROM friends f
-                        WHERE (f.user_id2=:user_id AND f.active=0)) fr JOIN users u ON user_id1=u.id
-                WHERE u.id <> :user_id
-                ORDER BY u.name"""
-    return db.session.execute(sql, {"user_id":user_id}).fetchall()
-
-def get_friends(user_id):
-    sql = """SELECT u.id, u.name, fr.active, fr.user_id1
-                FROM (SELECT * FROM friends f
-                        WHERE ((f.user_id1=:user_id AND f.active=1)
-                        OR (f.user_id2=:user_id AND f.active=1))) fr JOIN users u ON user_id2=u.id OR user_id1=u.id
-                WHERE u.id <> :user_id
-                ORDER BY u.name"""
-    return db.session.execute(sql, {"user_id":user_id}).fetchall()
-
-def add_friend_request(user_id, friend_calendarname):
-    #print("--f cal",friend_calendarname)
-    try:
-        sql = """SELECT id
-                    FROM users
-                    WHERE name=:name"""
-        friend_id = db.session.execute(sql, {"name":friend_calendarname}).fetchone()[0]
-        print("--f id", friend_id)
-        sql = """INSERT INTO friends (user_id1, user_id2)
-                    VALUES (:user_id, :friend_id)"""
-        db.session.execute(sql, {"user_id":user_id, "friend_id":friend_id})
-        db.session.commit()
-        return True
-    except:
-        return False
-
-def change_friends(user_id, friends):
-    try:
-        sql = """UPDATE friends SET active=0
-                    WHERE (user_id1 = :user_id OR user_id2 = :user_id)
-                    AND active=1"""
-        db.session.execute(sql, {"user_id":user_id})
-        if friends:
-            for friend in friends:
-                sql = """UPDATE friends SET active=1
-                        WHERE (user_id1=:user_id AND user_id2=:friend)
-                            OR (user_id1=:friend AND user_id2=:user_id)"""
-                db.session.execute(sql, {"user_id":user_id, "friend":friend})
-        db.session.commit()
-        return True
-    except:
-        return False
-
 def get_user_info(user_id):
     sql = """SELECT username, name, contact_info
                 FROM users

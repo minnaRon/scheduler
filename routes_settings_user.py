@@ -11,10 +11,10 @@ def settings():
     #    sql = """SELECT e.id, e.name, e.description, e.min_participants, e.max_participants, e.event_level, ue.role
     own_weekly_entries = entries.get_weekly_entries_for_user(user_id)
     #    sql = """SELECT en.weekly, e.id, e.name, en.start_time, en.finish_time, en.id
-    friends = users.get_friends(user_id)
+    friends = friends.get_friends(user_id)
     #    sql = """SELECT u.id, u.name, f.active, f.user_id1
-    friend_requests = users.get_friends_open_requests(user_id)
-    friend_requests_own = users.get_own_requests(user_id)
+    friend_requests = friends.get_friends_open_requests(user_id)
+    friend_requests_own = friends.get_own_requests(user_id)
     weekdays = {0:"SU", 1:"MA", 2:"TI", 3:"KE", 4:"TO", 5:"PE", 6:"LA"}
     user_info = users.get_user_info(user_id)
     #    sql = """SELECT username, name, contact_info FROM users"""
@@ -123,14 +123,18 @@ def friends():
     users.require_role(2)
     if request.form["friend"]:
         print("--oli friend", session["user_id"], request.form["friend"])
-        if not users.add_friend_request(session["user_id"], request.form["friend"]):
+        if not friends.add_friend_request(session["user_id"], request.form["friend"]):
             return render_template("error.html", message="Kaveripyyntö on jo lähetetty")
     print("---palasi")
+    if request.form.getlist("friend_asks"):
+        print("---friends", request.form.getlist("friend_asks"))
+        if not friends.accept_friends(session["user_id"], request.form.getlist("friend_asks")):
+            return render_template("error.html", message="Kaveripäivitys ei onnistunut")
     if request.form.getlist("friends"):
         print("---friends", request.form.getlist("friends"))
-        if not users.change_friends(session["user_id"], request.form.getlist("friends")):
+        if not friends.remove_friends(session["user_id"], request.form.getlist("friends")):
             return render_template("error.html", message="Kaveripäivitys ei onnistunut")
     if request.form.getlist("ask_cancel"):
-        if not users.cancel_friend_request(session["user_id"], request.getlist("ask_cancel")):
+        if not friends.cancel_friend_request(session["user_id"], request.form.getlist("ask_cancel")):
             return render_template("error.html", message="Kaveripäivitys ei onnistunut")
     return redirect("/settings")

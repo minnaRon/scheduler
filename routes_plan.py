@@ -10,6 +10,7 @@ def plan():
     group_info = group.get_info()
     event_list = events.get_events(user_id)
     friends_plans = entries.friends_planning(user_id)
+    friends_plans = add_weekday(friends_plans)
     week, all_event_entries = entries.get_week(user_id, 2)
     all_own_entries = entries.get_all_own_entries_dict(all_event_entries)
     today = datetime.date.today().strftime("%d.%m.")
@@ -80,3 +81,13 @@ def add_plan_pick():
     if entries.add_entry(entry_date, session["user_id"], entry[4], entry_start, entry_finish):
         return redirect("/plan")
     return render_template("error.html", message="Osallistumisesi lisäys ei onnistunut")
+
+def add_weekday(friends_plans:list) -> list:
+    days = {0:"SU", 1:"MA", 2:"TI", 3:"KE", 4:"TO", 5:"PE", 6:"LA"}
+    friends_plans_w = []
+    for entry in friends_plans:
+        print("---entry", entry)
+        entry = list(entry)
+        entry[4] = days[entry[4]]
+        friends_plans_w.append(entry)
+    return friends_plans_w
