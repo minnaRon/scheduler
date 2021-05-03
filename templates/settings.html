@@ -60,7 +60,9 @@ violetilla otsikoidut ovat kokeiltavaksi valmiita ominaisuuksia.</h4>
 Lisään uuden viikottaisen vakioajan tapahtumalle:<br>
 <select name="weekly_event">
 {% for event in events_with_own_level %}
+{% if event[6] == 2 %}
   <option value="{{event[0]}}">{{event[1]}}
+{% endif %}
 {% endfor %}
 </select>
 viikonpäivä
