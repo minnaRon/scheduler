@@ -53,6 +53,16 @@ def get_username(user_id):
                 WHERE id=:user_id"""
     return db.session.execute(sql, {"user_id":user_id}).fetchone[0]
 
+def get_user_id(name):
+    try:
+        sql = """SELECT id
+                FROM users
+                WHERE name=:name"""
+        id = db.session.execute(sql, {"name":name}).fetchone()[0]
+        return id
+    except:
+        return -1
+
 def check_password(user_id, password):
     sql = """SELECT password
                 FROM users

@@ -1,12 +1,8 @@
 from db import db
 import os
 
-def add_friend_request(user_id, friend_calendarname):
+def add_friend_request(user_id, friend_id):
     try:
-        sql = """SELECT id
-                    FROM users
-                    WHERE name=:name"""
-        friend_id = db.session.execute(sql, {"name":friend_calendarname}).fetchone()[0]
         sql = """SELECT COUNT(id) FROM friends
                     WHERE (user_id1=:user_id AND user_id2=:friend_id)
                     OR (user_id2=:user_id AND user_id1=:friend_id)"""

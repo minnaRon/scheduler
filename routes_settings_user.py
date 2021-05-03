@@ -114,7 +114,13 @@ def friends_settings():
     users.check_csrf()
     users.require_role(2)
     if request.form["friend"]:
-        if not friends.add_friend_request(session["user_id"], request.form["friend"]):
+        friend_name = request.form["friend"].strip()
+        if len(friend_name) == 0:
+            return render_template("error.html", message="Nimikenttä oli tyhjä, tarkista nimi ja tallenna pyyntö uudelleen")
+        friend_id = users.get_user_id(friend_name)
+        if friend_id == -1:
+            return render_template("error.html", message="Kaveria ei löytynyt antamallasi nimellä, tarkista nimi ja tallenna pyyntö uudelleen")
+        if not friends.add_friend_request(session["user_id"], friend_id):
             return render_template("error.html", message="Kaveripyyntö on jo lähetetty")
     if request.form.getlist("friend_asks"):
         if not friends.accept_friends(session["user_id"], request.form.getlist("friend_asks")):
