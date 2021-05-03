@@ -23,8 +23,8 @@ th {
 }
 
 .scroller {
-    width: 40em;
-    height: 15em;
+    width: 35em;
+    height: 25em;
     overflow-y: scroll;
     scrollbar-color: green;
     scrollbar-width: auto;
@@ -46,8 +46,9 @@ th {
 #linkbutton {
     text-decoration: none;
     color: green;
-    background-color:rgb(231, 228, 228);
     padding:5px;
+    font-size: 0.9em;
+    background-color:rgb(231, 228, 228);
     border-radius: .2em;
     text-align: center;
 }

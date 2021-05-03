@@ -102,7 +102,8 @@ Vakioaikani:
 {% endif %}
 </Ul>
 <p>
-  Vakioaika peruuntuu automaattisesti myös kalenterinäkymässä tai suunnittelunäkymässä peruttaessa.
+  Huom! Vakioajan käyttäminen vaatii käyttäjältään tarkkuutta:
+  Vakioaika peruuntuu automaattisesti kaikkialta, kun se perutaan missä tahansa, joten käytä harkiten.<br>
   Lisää ajankohta tarvittaessa kalenterinäkymään tavallisena ilmoittautumisena.
 <p>
 <hr>
@@ -113,16 +114,23 @@ Vakioaikani:
 Tässä voit valita tapahtumat, jotka näkyvät kalenteriisi
 <p>
 Tapahtuman nimi:
-<p>
+<table>
 {% for event in events_with_own_level %}
-<!-- vvvvv saako tähän on pienempi kuin neljä vvvvv miten escape-->
+<tr>
   {% if event[6] == 2 %}
-    <input type="checkbox" name="event_pick" value="{{event[0]}}" checked > <label for="event_pick"> {{event[1]}}, taso {{event[5]}} <br>..{{event[2]}} </label><br>
+    <td><input type="checkbox" name="event_pick" value="{{event[0]}}" checked ></td>
+    <td><label for="event_pick"> {{event[1]}}</label></td>
+    <td>taso {{event[5]}}</td>
+    <td>..{{event[2]}}</td>
   {% else %}
-    <input type="checkbox" name="event_pick" value="{{event[0]}}" > <label for="event_pick"> {{event[1]}}, taso {{event[5]}} <br>..{{event[2]}} </label><br>
+    <td><input type="checkbox" name="event_pick" value="{{event[0]}}"></td>
+    <td><label for="event_pick"> {{event[1]}}</label></td>
+    <td>taso {{event[5]}}</td>
+    <td>..{{event[2]}}</td>
   {% endif %}
+</tr>
 {% endfor %}
-</select>
+</table>
 <p>
 <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
 <input class="button" type="submit" value="Tallenna muutokset">
