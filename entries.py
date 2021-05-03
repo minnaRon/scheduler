@@ -121,15 +121,13 @@ def match_day_to_dict_week7i(dow) -> int:
 #5/5 lasketaan yksittäisen tapahtuman osallistujien määrä
 def calc_participants(sorted_times_and_changes:list) -> list:
     participant_count = 0
+    times_and_changes = []
     for i in range(len(sorted_times_and_changes)-1):
         participant_count = participant_count + sorted_times_and_changes[i][3]
         sorted_times_and_changes[i][3] = participant_count
         sorted_times_and_changes[i].append(sorted_times_and_changes[i+1][0])
-    sorted_times_and_changes.pop(-1)
-    times_and_changes = []
-    for row in sorted_times_and_changes:
-        if row[0] != row[5] and row[3] != 0:
-            times_and_changes.append(row)
+        if sorted_times_and_changes[i][0] != sorted_times_and_changes[i][5] and sorted_times_and_changes[i][3] != 0:
+            times_and_changes.append(sorted_times_and_changes[i])
     return times_and_changes
 #--------------------------------------------------------------------------------
 
