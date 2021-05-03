@@ -1,6 +1,6 @@
 from app import app
 from flask import redirect, render_template, request, session
-import users, entries, datetime, events
+import users, entries, datetime, events, friends
 
 @app.route("/settings")
 def settings():
@@ -11,7 +11,7 @@ def settings():
     #    sql = """SELECT e.id, e.name, e.description, e.min_participants, e.max_participants, e.event_level, ue.role
     own_weekly_entries = entries.get_weekly_entries_for_user(user_id)
     #    sql = """SELECT en.weekly, e.id, e.name, en.start_time, en.finish_time, en.id
-    friends = friends.get_friends(user_id)
+    friends_list = friends.get_friends(user_id)
     #    sql = """SELECT u.id, u.name, f.active, f.user_id1
     friend_requests = friends.get_friends_open_requests(user_id)
     friend_requests_own = friends.get_own_requests(user_id)
@@ -21,9 +21,9 @@ def settings():
     if session["user_role"] == 1:
         all_events = events.get_all_events()
     #    sql = """SELECT *
-        return render_template("settings.html", all_events=all_events, friend_requests_own=friend_requests_own, user_info=user_info, days=weekdays, events_with_own_level=events_with_own_level, own_weekly_entries= own_weekly_entries, friends=friends, friend_requests=friend_requests)
+        return render_template("settings.html", all_events=all_events, friend_requests_own=friend_requests_own, user_info=user_info, days=weekdays, events_with_own_level=events_with_own_level, own_weekly_entries= own_weekly_entries, friends=friends_list, friend_requests=friend_requests)
     else:
-        return render_template("settings.html", friend_requests_own=friend_requests_own, user_info=user_info,  days=weekdays, events_with_own_level=events_with_own_level, own_weekly_entries= own_weekly_entries, friends=friends, friend_requests=friend_requests)
+        return render_template("settings.html", friend_requests_own=friend_requests_own, user_info=user_info,  days=weekdays, events_with_own_level=events_with_own_level, own_weekly_entries= own_weekly_entries, friends=friends_list, friend_requests=friend_requests)
 
 @app.route("/settings/change_user_name", methods=["POST"])
 def change_name():
@@ -118,7 +118,7 @@ def change_calendarview():
 
 ##tämä keskeneräinen..kaverit ei poistu.. :D
 @app.route("/settings/friends", methods=["POST"])
-def friends():
+def friends_settings():
     users.check_csrf()
     users.require_role(2)
     if request.form["friend"]:
