@@ -5,7 +5,7 @@ import os
 def add_new_event(event_info:dict):
     try:
         sql = """INSERT INTO events (name, description, min_participants, max_participants, event_level)
-                    VALUES (:name, :description, :min, :max, :level) RETURNING id"""
+                    VALUES (:name, :description, :min, :max, :level)                    RETURNING id"""
         event_id = db.session.execute(sql, {"name":event_info[1], "description":event_info[2], "min":event_info[3], "max":event_info[4], "level":event_info[5]}).fetchone()[0]
         db.session.commit()
         return event_id

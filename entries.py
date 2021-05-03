@@ -143,7 +143,6 @@ def get_all_own_entries_dict_with_dow(all_entries:list) -> dict:
         all_own_entries[entry[4]].append(entry)
     return all_own_entries
 
-
 def delete_own_entry(entry_id, user_id):
     try:
         sql = """DELETE FROM entries WHERE id=:entry_id AND user_id=:user_id"""
