@@ -42,7 +42,10 @@ def calendar_message():
     if len(request.form["comment"].strip()) > 0:
         if messages.add(session["user_id"], request.form["comment"]):
             return redirect("/calendar")
-    return render_template("error.html", message="Viestin lisäys ei onnistunut, tarkista viesti")
+        else:
+            return render_template("error.html", message="Viestin lähetys ei onnistunut, yritä uudelleen")
+    else:
+        return render_template("error.html", message="Viesti oli tyhjä, joten sitä ei voinut lähettää")
 
 @app.route("/entry/<day>", methods=["GET","POST"])
 def entry(day):
@@ -67,7 +70,7 @@ def entry(day):
             start_time = datetime.datetime.strptime(request.form["time1"], "%H:%M").time()
             finish_time = datetime.datetime.strptime(request.form["time2"], "%H:%M").time()
         else:
-            return render_template("error.html", message="Osallistumisesi lisäys ei onnistunut, tarkista valitsemasi ajat")
+            return render_template("error.html", message="Osallistumisesi lisäys ei onnistunut, aikojen valinnassa oli puutteita. Tarkista ajat ja tallenna uudelleen")
         if request.form["extra_participants"]:
             extras = request.form["extra_participants"]
         else:
@@ -81,15 +84,15 @@ def entry(day):
                         return render_template("error.html", message="Aika menee päällekkäin päivän toisen ilmoittautumisesi kanssa, peru ilmoittautumisia tarvittaessa")
             entry_id = entries.add_entry_with_extras(date, user_id, request.form["event_id"], start_time, finish_time, extras)
             if entry_id == -1:
-                return render_template("error.html", message="Osallistumisesi lisäys ei onnistunut, tarkista valitsemasi ajat")
+                return render_template("error.html", message="Osallistumisesi lisäys ei onnistunut, tarkista tiedot ja tallenna uudelleen")
         else:
-            return render_template("error.html", message="Osallistumisesi lisäys ei onnistunut, tarkista valitsemasi ajat")
+            return render_template("error.html", message="Osallistumisesi lisäys ei onnistunut, aloitusaika oli suurempi tai yhtäsuuri kuin lopetusaika, tarkista valitsemasi ajat")
         if request.form["comment"]:
             content = request.form["comment"].strip()
             if len(content) > 0:
                 content = " [" + request.form["event_id"] + "] " + content
                 if not messages.add_entry_comment(user_id, entry_id, request.form["event_id"], content):
-                    return render_template("error.html", message="Viestisi lähetys ei onnistunut, tarkista viestin sisältö")
+                    return render_template("error.html", message="Viestisi lähetys ei onnistunut, tarkista tiedot ja lähetä uudelleen")
         return redirect("/calendar")
 
 @app.route("/calendar/entry_cancel", methods=["POST"])
