@@ -30,6 +30,8 @@ def register():
         username = request.form["username"].strip()
         if len(username) < 2 or len(username) > 35:
             return render_template("error.html", message="Tunnuksen tulee sisältää 2-35 merkkiä")
+        if users.check_exist(username) > 0:
+            return render_template("error.html", message="Tunnus on jo käytössä, valitse toinen tunnus")
         password1 = request.form["password1"].strip()
         password2 = request.form["password2"].strip()
         if password1 != password2:

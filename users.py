@@ -63,6 +63,18 @@ def get_user_id(name):
     except:
         return -1
 
+def check_exist(name):
+    try:
+        sql = """SELECT id
+                FROM users
+                WHERE username=:name
+                OR name=:name"""
+        id = db.session.execute(sql, {"name":name}).fetchone()[0]
+        print("---id", id)
+        return id
+    except:
+        return -1
+
 def check_password(user_id, password):
     sql = """SELECT password
                 FROM users
