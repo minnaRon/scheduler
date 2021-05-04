@@ -3,7 +3,7 @@
 <p>
 <!--U------------------------------------------------------------------>
 <form action="/settings/change_user_name" method="POST">
-<h2 id="ready">Omat tiedot hallinta</h2>
+<h2>Omat tiedot hallinta</h2>
 <p>
 Tunnuksesi on: {{ user_info[0] }}<br>
 Kalenterissa näkyvä nimesi on: {{ user_info[1] }}<br>
@@ -48,11 +48,6 @@ Uusi salasana uudelleen: <br><input type="password" name="new_password2">
 </form>
 <hr>
 <!--U------------------------------------------------------------------->
--------------
-<h4 id="ready"
->Alla näkyvistä ominaisuuksista suurin osa vasta luonnostelmia tai ei testattu toimintaa riittävästi<br>
-violetilla otsikoidut ovat kokeiltavaksi valmiita ominaisuuksia.</h4>
--------------
 <p>
 <form action="/settings/weekly_entries" method="POST">
 <h2>Viikottaiset vakio-osallistumisajat</h2>
@@ -103,7 +98,7 @@ Vakioaikani:
 <hr>
 <!--U--------------------------------------------------------------->
 <form action="/settings/change_calendarview" method="POST">
-<h2 id="ready">Kalenterinäkymässä näkyvät tapahtumat</h2>
+<h2>Kalenterinäkymässä näkyvät tapahtumat</h2>
 <p>
 Tässä voit valita tapahtumat, jotka näkyvät kalenteriisi
 <p>
@@ -145,9 +140,9 @@ Kaveripyynnöt:<br>
     <input type="checkbox" name="friend_asks" value="{{friend_asking[0]}}" >{{friend_asking[1]}} <br>
   {% endfor %}
 {% endif %}
+<hr>
 {% if friends %}
-<b>Poista kavereita ja kaveripyyntöjä: </b>
-<p>
+<b>Poista kavereita ja kaveripyyntöjä: </b><br>
   Kaverisi:<br>
   {% for friend in friends %}
     <input type="checkbox" name="friends" value="{{friend[0]}}">{{friend[1]}} <br>
@@ -175,7 +170,7 @@ Kaveripyynnöt:<br>
 <p>
 <hr>
 <p>
-<b id="ready">Muuta ryhmän nimi</b> <br>
+<b>Muuta ryhmän nimi</b> <br>
 Anna uusi nimi:<br>
 <input type="text" name="name_group" minlength="2" maxlength="30">
 <p>
@@ -186,7 +181,7 @@ Anna uusi nimi:<br>
 <p>
 <!--A-------------------------------------------------------------------->
 <form action="/settings/change_group_description" method="POST">
-<b id="ready">Muuta ryhmän kuvaus</b><br>
+<b>Muuta ryhmän kuvaus</b><br>
 Ryhmän kuvaus: <br><textarea name ="group_description" rows="3" cols="50" maxlength="400"></textarea>
 <p>
 <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
@@ -196,7 +191,7 @@ Ryhmän kuvaus: <br><textarea name ="group_description" rows="3" cols="50" maxle
 </form>
 <!--A------------------------------------------------------------------->
 <form action="/settings/change_group_password" method="POST">
-<b id="ready">Salasanan vaihto:</b><br>
+<b>Salasanan vaihto:</b><br>
 Huom! muuta takaisin ryhmän salasanaksi tsoha jos kokeilet.. :)
 <p>
 Oma kirjautumissalasanasi:<br><input type="password" name="old_password">
@@ -212,7 +207,7 @@ Uusi ryhmän salasana uudelleen: <br><input type="password" name="new_password2"
 <hr>
 <!--A------------------------------------------------------------------------->
 <form action="/settings/add_new_event" method="POST">
-<h2 id="ready">Uuden tapahtuman luominen:</h2>
+<h2>Uuden tapahtuman luominen:</h2>
 <b>Anna tapahtuman nimi: <input type="text" name="new_event_name" minlength="1" maxlength="30"></b>
 <p>
 <b>..voit halutessasi antaa lisätietoa:</b>
@@ -229,7 +224,7 @@ Anna tapahtumaan vaadittava taso: <input type="number" name="new_event_level" mi
 <p>
 Huom! Mikäli käytit tasoasetuksia, päivitä tapahtuman kohderyhmän jäsenille riittävä taso tapahtumaan
 jäsenten asetuksissa tapahtuman tietojen tallentamisen jälkeen <br>
-<a id="ready" href="/settings/admin/userlist">pääset tästä jäsenten asetuksiin</a>
+<a href="/settings/admin/userlist">pääset tästä jäsenten asetuksiin</a>
 <p>Jäsenillä on oletuksena oikeus ilmoittautua nollatason tapahtumiin.
 Esim. jos määrittelet jäsenelle tason 5, niin jäsen näkee kaikki tapahtumat tasoilla 0-5
 ja voi omissa asetuksissaan valita näistä tapahtumista itselleen sopivat tapahtumat kalenterissa näytettäväksi.
@@ -241,7 +236,7 @@ ja voi omissa asetuksissaan valita näistä tapahtumista itselleen sopivat tapah
 <hr>
 <!--A----------------------------------------------------------------------------->
 <form action="/settings/change_event_info" method="POST">
-<h2 id="ready">Tapahtuman muuttaminen tai poistaminen käytöstä</h2>
+<h2>Tapahtuman muuttaminen tai poistaminen käytöstä</h2>
 <p>
 <p><b>valitse tapahtuma:</b>
 <select name="event_pick">
@@ -260,8 +255,6 @@ ja voi omissa asetuksissaan valita näistä tapahtumista itselleen sopivat tapah
 <option value="1"> poista käytöstä*
 </select>
 <p>
-<!--tähän vielä users in events -lisäkäsittelyä-->
-<!--lisää vielä, että voi valita ottaako uudet tapahtumat kalenteriinsa mukaan-->
 <b>Täytä vain valintaasi vastaava kenttä:</b>
 <p>
 muuta nimi: <input type="text" name="event_name" minlength="1" maxlength="35">
@@ -281,7 +274,7 @@ muuta taso: <input type="number" name="number_value2" min="0" max="99">
 <hr>
 <!--A-------------------------------------------------------------------->
 <form action="/settings/admin/message" method="POST">
-<h2 id="ready">Admin -viesti</h2>
+<h2>Admin -viesti</h2>
 Lyhyt viesti, joka näkyy jäsenille ensimmäisen viikon näkymässä ja on päivitettävissä.
 <p>
 Viestisi: <input type="text" name="admin_info">

@@ -1,9 +1,21 @@
 {% extends "layout.html" %}
 {% block content %}
+
+<h2>Jäsenten hallinta</h2>
+<p>
+voit:
+<ul>
+  <li>resetoida unohtuneen salasanan, salasanaksi vaihtuu jäsenen käyttämä tunnus, kunnes jäsen itse vaihtaa sen asetuksissa.
+  <li>muuttaa jäsenen tasoa tapahtumakohtaisesti, mikäli tasot ovat käytössä, oletustasona jäsenellä on 0
+  <li>muuttaa tarvittaessa jäsenen roolin adminiksi ja adminin jäseneksi
+  <li>poistaa jäsenen tapahtumasta ja lisätä takaisin
+  <li>estää jäsen kaikista tapahtumistaan ja palauttaa oikeudet kaikkiin tapahtumiinsa</li>
+</ul>
+<p>
+<p>
 <form action="/settings/admin/userlist" method="POST">
 <p>
-<b>Valitse toiminto:</b>
-<p id="ready">näistä 1. muuta jäsenen taso, 2. vaihda rooli ja 3. resetoi salasana kokeiltavissa, muita ei vielä täysin testailtu..</p>
+<b>1. valitse toiminto:</b>
 <select name="action">
   <option value="1">1. muuta jäsenen taso - tapahtumakohtainen
   <option value="2">2. vaihda rooli admin/jäsen jäsen/admin
@@ -14,9 +26,9 @@
   <option value="7">7. palauta jäsenen oikeudet kaikkiin tapahtumiin
 </select>
 <p>
-<b>..valitse lisätiedot:</b>
+<b>2. ..valitse, vain tarvittaessa, lisätiedot:</b>
 <ul>
-  <li>kohtaan <b id="ready">1</b>; jäsenen tason muuttaminen tapahtumaan sopivaksi,<br>
+  <li><b>jos</b> valitsit valikosta kohdan <b>1: muuta jäsenen taso - tapahtumakohtainen</b><br>
   valitse tapahtuma:
   <select name="event_on">
   {% for event in all_events %}
@@ -33,7 +45,7 @@
   </select>
 </ul>
 <p>
-<b id="ready">..ja valitse muuttuvat jäsenet:</b>
+<b>3. valitse muuttuvat jäsenet:</b>
 <table>
   <th>valinta</th>
   <th> rooli </th>
