@@ -287,21 +287,8 @@ Viestisi: <input type="text" name="admin_info">
 <!--A--------------------------------------------------------------------------->
 <form action="/settings/admin/management_users" method="POST">
 <h2>Jäsenten hallinta</h2>
-<!--keskeneräinen: lisää valikko, jossa voi valita järjestyksen roolin, nimen, (tason?) tai tapahtuman perusteella -->
-<!--näin on liian pitkät listat-->
 <p>
-<a id="ready" href="/settings/admin/userlist">Tarkastele ja muuta jäsenien asetuksia</a>
-<p>
-voit mm.:
-<ul>
-  <li>resetoida unohtuneen salasanan, salasanaksi vaihtuu jäsenen käyttämä tunnus, kunnes jäsen itse vaihtaa sen asetuksissa.
-  <li>muuttaa jäsenen tasoa tapahtumakohtaisesti, mikäli tasot ovat käytössä, oletustasona jäsenellä on 0
-  <li>muuttaa tarvittaessa jäsenen roolin adminiksi
-  <li>poistaa jäsenen tapahtumasta ja lisätä takaisin
-  <li>estää jäsen kaikista tapahtumistaan ja palauttaa oikeudet kaikkiin tapahtumiinsa</li>
-</ul>
-<p>
-<!--..jäsenlista odottelee vielä tähän jäsenlistan sorttausominaisuutta, ei valmis vielä..-->
+<a href="/settings/admin/userlist">Tarkastele ja muuta jäsenien asetuksia</a>
 <p>
 </form>
 <hr>

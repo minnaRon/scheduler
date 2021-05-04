@@ -36,7 +36,7 @@ voit:
   {% endfor %}
   </select>
   <p>
-  <li>kohtaan <b>4</b> ja <b>5</b>; poista/palauta jäsen tiettyyn tapahtumaan,<br>
+  <li><b>jos</b> valitsit valikosta kohdan <b>4 tai 5: poista/palauta jäsen tiettyyn tapahtumaan </b><br>
   valitse tapahtuma:
   <select name="event_off">
   {% for event in all_events %}
@@ -69,45 +69,4 @@ voit:
 </form>
 <hr>
 <p>
-<p>
-###keskeneräinen jäsenlista, kts. kuntoon...<br>
-<p>
-Jäsenten tarkat tiedot osallistumisoikeuksineen:<br>
-rooli 1 = admin<br>
-rooli 2 = jäsen<br>
-tunnus = kirjautumistunnus<br>
-kalenterinimi = kalenterissa näkyvä nimi<br>
-yhteystiedot = yhteystiedot adminin tietoon<br>
-liittynyt = ryhmäänliittymispäivämäärä<br>
-tapahtuma = tapahtuma<br>
-vaadittava taso = tapahtumaan vaadittava tason<br>
-jäsenen taso tapahtumaan = jäsenen taso tapahtumaan, jos pienempi kuin vaadittava taso, niin ei näy jäsenelle ja ei voi ilmoittautua tapahtumaan<br>
-aktiivisuus tapahtumaan 2 = tapahtuma näkyy jäsenen kalenterinäkymässä ja voi ilmoittautua mukaan<br>
-aktiivisuus tapahtumaan 4 = jäsen poistanut kalenterinäkymästä, ei osallistu tapahtumaan<br>
-aktiivisuus tapahtumaan 5 = admin poistanut jäseneltä oikeuden osallistua, tapahtuma ei näy jäsenelle ja ei voi ilmoittatua
-<table>
-    <th> rooli </th>
-    <th> tunnus </th>
-    <th> kalenterinimi </th>
-    <th> yhteystiedot </th>
-    <th> liittynyt </th>
-    <th> tapahtuma </th> 
-    <th> vaadittava taso </th> 
-    <th> jäsenen taso </th>
-    <th> jäsenen aktiivisuus </th>
-    {% for user_info in users_in_events_info %}
-    <tr>
-     <td> {{user_info[0]}} </td>
-     <td> {{user_info[1]}} </td>
-     <td> {{user_info[2]}} </td>
-     <td>{% if user_info[3] %} {{user_info[3]}} {% endif %}</td>
-     <td> {{user_info[4].strftime("%d.%m.%Y")}} </td>
-     <td> {{user_info[5]}} </td>
-     <td> {{user_info[6]}} </td>
-     <td> {{user_info[7]}} </td>
-     <td> {{user_info[8]}} </td>
-    </tr>
-    {% endfor %}
-</table>
-</ul>
 {% endblock %}
