@@ -1,6 +1,6 @@
 from app import app
 from flask import redirect, render_template, request, session
-import users, group, random, entries, datetime, messages, events
+import users, group, random, entries, datetime, messages, events, subfunctions
 
 @app.route("/")
 def index():

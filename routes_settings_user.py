@@ -1,6 +1,6 @@
 from app import app
 from flask import redirect, render_template, request, session
-import users, entries, datetime, events, friends
+import users, entries, datetime, events, friends, subfunctions
 
 @app.route("/settings")
 def settings():
@@ -61,34 +61,23 @@ def weekly_entries():
     users.check_csrf()
     users.require_role(2)
     user_id = session["user_id"]
-    week, all_event_entries = entries.get_week(user_id, 1)
-    all_own_entries_week_1 = entries.get_all_own_entries_dict_with_dow(all_event_entries)
-    week, all_event_entries = entries.get_week(user_id, 2)
-    all_own_entries_week_2 = entries.get_all_own_entries_dict_with_dow(all_event_entries)
+    times_of_own_entries_for_week1 = subfunctions.change_list_to_dict(0, entries.get_times_of_own_entries_for_week(user_id, 1))
+    times_of_own_entries_for_week2 = subfunctions.change_list_to_dict(0, entries.get_times_of_own_entries_for_week(user_id, 2))
     if request.form["weekly_time_start"] and request.form["weekly_time_end"]:
-        start_time = datetime.datetime.strptime(request.form["weekly_time_start"], "%H:%M").time()
-        finish_time = datetime.datetime.strptime(request.form["weekly_time_end"], "%H:%M").time()
-    else:
-        return render_template("error.html", message="Osallistumisesi lisäys ei onnistunut, tarkista valitsemasi ajat")
-    dow = int(request.form["weekly_dow"])
-    if start_time < finish_time:
-        if all_own_entries_week_1[dow]:
-            for earlier_entry in all_own_entries_week_1[dow]:
-                start = earlier_entry[2]
-                end = earlier_entry[3]
-                if not (start_time >= end or finish_time <= start):
-                    return render_template("error.html", message="Aika menee päällekkäin kalenteriviikolla päivän toisen ilmoittautumisesi kanssa, peru ilmoittautumisia tarvittaessa")
-        if all_own_entries_week_2[dow]:
-            for earlier_entry in all_own_entries_week_2[dow]:
-                start = earlier_entry[2]
-                end = earlier_entry[3]
-                if not (start_time >= end or finish_time <= start):
-                    return render_template("error.html", message="Aika menee päällekkäin suunnitteluviikolla päivän toisen ilmoittautumisesi kanssa, peru ilmoittautumisia tarvittaessa")
+        start_time = request.form["weekly_time_start"]
+        finish_time = request.form["weekly_time_end"]
+        dow = int(request.form["weekly_dow"])
+        time_check_errors = subfunctions.check_times_dow(times_of_own_entries_for_week1, dow, start_time, finish_time)
+        if time_check_errors != "ok":
+            return render_template("error.html", message=time_check_errors)
+        time_check_errors = subfunctions.check_times_dow(times_of_own_entries_for_week2, dow, start_time, finish_time)
+        if time_check_errors != "ok":
+            return render_template("error.html", message=time_check_errors)
         if entries.add_weekly_entry(user_id, request.form["weekly_event"], start_time, finish_time, dow):
             return redirect("/settings")
         return render_template("error.html", message="Uuden vakioajan lisääminen ei onnistunut")
     else:
-        return render_template("error.html", message="Osallistumisesi lisäys ei onnistunut, tarkista valitsemasi ajat")
+        return render_template("error.html", message="Osallistumisesi lisäys ei onnistunut, ajat olivat puutteellisia, tarkista valitsemasi ajat ja tallenna uudelleen")
 
 @app.route("/settings/weekly_cancel", methods=["POST"])
 def weekly_cancel():
