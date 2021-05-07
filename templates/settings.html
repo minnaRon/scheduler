@@ -141,8 +141,8 @@ Kaveripyynnöt:<br>
   {% endfor %}
 {% endif %}
 <hr>
-{% if friends %}
-<b>Poista kavereita ja kaveripyyntöjä: </b><br>
+{% if friends%}
+<b>Poista kavereita: </b><br>
   Kaverisi:<br>
   {% for friend in friends %}
     <input type="checkbox" name="friends" value="{{friend[0]}}">{{friend[1]}} <br>
@@ -150,6 +150,7 @@ Kaveripyynnöt:<br>
 {% endif %}
 <p>
 {% if friend_requests_own %}
+<b>Poista kaveripyyntöjä: </b><br>
   Omat kaveripyyntösi, odottaa vastausta:<br>
   {% for own_ask in friend_requests_own %}
     <input type="checkbox" name="ask_cancel" value="{{own_ask[0]}}">{{own_ask[1]}} <br>

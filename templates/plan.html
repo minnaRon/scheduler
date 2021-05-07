@@ -23,12 +23,12 @@ Tapahtuman peruminen hukkaa tallentamattomat ajat, joten tallenna ennen perumist
   {% endfor %}
   </ul>
 
-<!--aikakentät----------->
+<!--aikakentät----------------------------------->
   <form action="/plan" method="POST">
   <table>
   {% for j in range(events|length) %}
     <tr>
-      <td>{{events[j][1]}}</td>
+      <td id="td_plan_event">{{events[j][1]}}</td>
       <td>   klo <input id="timefield" type="time" name="time_start"> - <input id="timefield" type="time" name="time_finish"></td>
       <input type="hidden" name="day" value={{i}}> <input type="hidden" name="event_index" value={{j}}>
     </tr>

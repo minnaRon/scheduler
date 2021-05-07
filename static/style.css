@@ -23,7 +23,7 @@ th {
 }
 
 .scroller {
-    width: 35em;
+    width: 40em;
     height: 25em;
     overflow-y: scroll;
     scrollbar-color: green;
@@ -74,4 +74,16 @@ color:rgb(31, 97, 31);
 
 #entrylist {
     background-color: rgb(216, 236, 216);
+}
+#td_plan_event{
+    padding-inline-end: 2em;
+}
+
+@media only screen and (max-width:800px) {
+    body {
+        max-width: 25em;
+    }
+    .scroller {
+        width: 25em;
+    }
 }
