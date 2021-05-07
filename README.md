@@ -1,16 +1,13 @@
 # scheduler - aikatauluapulainen
 
-2. välipalautus:
-Tällä hetkellä sovelluksen toiminnallisuuksista jäsenenä kirjautuneen käyttäjän toiminnallisuudet ovat suurimmaksi osin valmiina ja kaikki nyt jäsenenä kirjautuneelle näkyvät toiminnot ovat testattavissa ja niiden tulisi toimia täysin (keskeneräiset toiminnallisuudet on poistettu näkymästä).
-Admin -toiminnallisuudet ovat osittain valmiina ja testailtavaksi valmiit toiminnallisuudet on kirjoitettu asetukset -näkymässä violetilla ja löytyvät myös alla luetteloituna. (Jotain puutteita määrityksissä siellä saattaa olla, ei pitäisi olla kuitenkaan mitään rikkovaa, joten uskaltaa testailla myös niitä.)
-Käyttöoikeuksien tarkastaminen on edelleen köykäistä ja seuraavaksi lisäilen csrf -tarkistukset, tällä hetkellä tarkistuksia on vain joissain adminin toiminnoissa. Poikkeuksista suurin osa käsitellään jo, voi mahdollisesti olla joitain yksittäisiä vielä ilman poikkeuskäsittelyä. Koodi vaatii vielä hieman selkeyttä ja routes -tiedosto useampaan tiedostoon jakamista.
+Loppupalautus:
+Sovelluksen toiminnallisuuksien tulisi toimia täysin.
 
 Sovelluksen kuvaus:
 
-Sovelluksen avulla voidaan etsiä käyttäjien omiin aikatauluihin sopivat ajankohdat
-tapahtumille, niin että sama ajankohta sopii riittävän monelle.
-Sovellus on ajateltu erityisesti harrasteryhmien käyttöön esim. pelien (beach volley, padel, jne.)
-ajankohdan sopimiseen.
+Sovelluksen avulla voidaan etsiä käyttäjien omiin aikatauluihin sopivat ajankohdat tapahtumille, niin että
+sama ajankohta sopii riittävän monelle. Sovellus on ajateltu erityisesti harrasteryhmien käyttöön
+esim. pelien (beach volley, padel, jne.) ajankohdan sopimiseen.
 Jokainen käyttäjä voi sovelluksessa merkitä itselleen sopivat ajankohdat kahdeksi viikoksi eteenpäin.
 "Kalenterinäkymässä" näkyy seuraavien päivien osallistujatilanne viikon verran eteenpäin.
 
@@ -24,21 +21,39 @@ sovelluksen ominaisuuksia ovat:
       käyttäjä voi ilmoittaa lisäosallistujia ilmoittautuessaan erillisessä ilmoittautumisnäkymässä
       käyttäjä voi kommentoida ilmoittautuessaan erillisessä ilmoittautumisnäkymässä
       käyttäjä voi viestitellä muiden käyttäjien kanssa vapaasti kalenterinäkymässä
-      käyttäjä näkee kalenterinäkymässä viikon osallistujatilanteen ja suunnittelunäkymässä hahmotelmaa seuraavasta viikosta
+      käyttäjä näkee kalenterinäkymässä viikon osallistujatilanteen
+      käyttäjä näkee erillisessä ilmoittautumisnäkymässä päivän osallistujat, tapahtumat ja osallistumisajat
+      käyttäjä näkee suunnittelunäkymässä hahmotelmaa seuraavasta viikosta
+      käyttäjä näkee suunnittelunäkymässä kaveriensa alustavien suunnitelmien tapahtumat ja osallistumisajat
       käyttäjä voi vaihtaa kalenterissa näkyvän nimensä
       käyttäjä voi antaa adminille yhteystietonsa
       käyttäjä voi vaihtaa salasanansa
+      käyttäjä voi valita viikottaisia tapahtumakohtaisia vakioaikoja, joihin ilmoittautuminen on automaattista
+      käyttäjä voi valita kalenterinäkymässään näkyvät tapahtumat
+      käyttäjä voi tehdä kaveripyyntöjä
+      käyttäjä voi hyväksyä kaveripyyntöjä
+      käyttäjä voi poistaa kavereitaan ja omia kaveripyyntöjään
 
-    • admin voi valita kalenterinäkymässään näkyvät tapahtumat (tämä tulee myös jäsenen ominaisuudeksi)
-      admin voi vaihtaa ryhmän nimen
+    • admin voi vaihtaa ryhmän nimen
       admin voi vaihtaa ryhmän kuvauksen
       admin voi vaihtaa ryhmän liittymissalasanan
       admin voi luoda uusia tapahtumia
       admin voi muuttaa tapahtuman nimen, kuvauksen, minimi- ja maksimiosallistujamäärän ja tasomäärityksen
       admin voi poistaa tapahtuman käytöstä (ei poistu kokonaan)
       admin voi kirjoittaa kalenterinäkymässä erikseen näkyvän admin -viestin
-      admin voi muuttaa jäsenen tasomääritystä tapahtumakohtaisesti tapahtumaan sopivaksi
+      admin voi muuttaa käyttäjän tasomääritystä tapahtumakohtaisesti tapahtumaan sopivaksi
       admin voi vaihtaa käyttäjän roolia jäsenestä adminiksi ja administa jäseneksi
       admin voi resetoida käyttäjän salasanan vastaamaan käyttäjän tunnusta
+      admin voi poistaa käyttäjän tapahtumasta ja myös lisätä takaisin tapahtumaan
+      admin voi estää käyttäjän kaikista tapahtumista ja myös palauttaa oikeudet takaisin kaikkiin tapahtumiin
+      admin näkee käyttäjistä listan, jossa on käyttäjän rooli, tunnus, kalenterinimi, yhteystiedot ja liittymisaika
 
 Sovellus on testattavissa [Herokussa](https://hobby-event-scheduler.herokuapp.com/).
+Kaikki ominaisuudet ovat testattavissa, tarvittaessa admin -käyttäjätunnukset löytyvät labtoolin viestistä
+viikolta kaksi.
+
+Kaikkia suunniteltuja ominaisuuksia en ole ehtinyt vielä toteuttaa. Tulevat ominaisuudet on jo osittain koodissa otettu
+huomioon ja siksi mainitsen niistä tässä:
+Projekti jatkuu loppukesästä, jolloin mm. muutan sovelluksen moniryhmäiseksi,
+minimi ja maksimiosallistujamäärät on tarkoitus hyödyntää jonotuksessa, osallistujatilanteen seurannassa ja tilanteen
+värikoodauksessa css:n puolella, myös jäsenten hallinta odottelee vielä lisäkehitystä jäsenlistan osalta.
