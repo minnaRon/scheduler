@@ -54,12 +54,12 @@ def change_group_description(description:str):
     except:
         return False
 
-def change_group_password(new_password:str, old_password:str):
+def change_group_password(new_password, own_password, own_id):
     hash_value = generate_password_hash(new_password)
     try:
-        sql = """SELECT password FROM group_info"""
-        password = db.session.execute(sql).fetchone()[0]
-        if check_password_hash(password, old_password):
+        sql = """SELECT password FROM users WHERE id=:own_id"""
+        password = db.session.execute(sql, {"own_id":own_id}).fetchone()[0]
+        if check_password_hash(password, own_password):
             sql = """UPDATE group_info
                         SET password=:new_password"""
             db.session.execute(sql, {"new_password":hash_value})

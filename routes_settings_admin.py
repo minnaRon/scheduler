@@ -1,12 +1,14 @@
 from app import app
 from flask import redirect, render_template, request, session
-import users, group, events
+import users, group, events, subfunctions
 
 @app.route("/settings/change_group_name", methods=["POST"])
 def change_group_name():
     users.check_csrf()
     users.require_role(1)
     if group.change_group_name(request.form["name_group"]):
+        if len(request.form["name_group"]) < 2 or len(request.form["name_group"]) > 30:
+            return render_template("error.html", message="Nimen tulee sisältää 2-30 merkkiä")
         return redirect("/settings")
     return render_template("error.html", message="Nimenvaihto ei onnistunut")
  
@@ -15,19 +17,20 @@ def change_group_description():
     users.check_csrf()
     users.require_role(1)
     if group.change_group_description(request.form["group_description"]):
+        if len(request.form["group_description"]) > 400:
+            return render_template("error.html", message="Kuvaus on liian pitkä, kuvauksen tulee sisältää enintään 400 merkkiä")
         return redirect("/settings")
     return render_template("error.html", message="Ryhmän kuvauksen vaihto ei onnistunut")
- 
+
 @app.route("/settings/change_group_password", methods=["POST"])
 def change_group_password():
     users.check_csrf()
     users.require_role(1)
-    new_password = request.form["new_password1"]
-    if  new_password != request.form["new_password2"]:
-        return render_template("error.html", message="Uusissa salasanoissa oli eroa")
-    if new_password == "":
-        return render_template("error.html", message="Uusi salasana oli tyhjä")
-    if group.change_group_password(new_password, request.form["old_password"]):
+    if not users.check_password(session["user_id"], request.form["own_password"]):
+        return render_template("error.html", message="Oma salasanasi oli virheellinen, tarkista salasana")
+    if subfunctions.check_password(request.form["new_password1"], request.form["new_password2"]) != "ok":
+            return render_template("error.html", message=subfunctions.check_password(request.form["new_password1"], request.form["new_password2"]))
+    if group.change_group_password(request.form["new_password1"], request.form["own_password"], session["user_id"]):
         return redirect("/settings")
     return render_template("error.html", message="Uuden salasanan rekisteröinti ei onnistunut")
     

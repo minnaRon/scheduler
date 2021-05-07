@@ -26,10 +26,10 @@ def change_name():
     user_id = session["user_id"]  
     changed_name = request.form["name"]
     if changed_name:
-        if len(changed_name) < 1 or len(changed_name) > 35:
-            return render_template("error.html", message="Nimen tulee sisältää 1-35 merkkiä")
+        if subfunctions.check_name(changed_name, user_id) != "ok":
+            return render_template("error.html", message=subfunctions.check_name(changed_name, user_id))
         if not users.change_name(user_id, changed_name):
-            return render_template("error.html", message="Nimen vaihtaminen ei onnistunut, nimi on jo käytössä")
+            return render_template("error.html", message="Nimen vaihtaminen ei onnistunut")
     return redirect("/settings")
 
 @app.route("/settings/change_contact_info", methods=["POST"])
@@ -50,10 +50,8 @@ def change_password():
     changing_password = [request.form["old_password"], request.form["new_password1"], request.form["new_password2"]]
     if not users.check_password(user_id, changing_password[0]):
         return render_template("error.html", message="Vanha salasana meni väärin, tarkista salasana")
-    if changing_password[1] != changing_password[2]:
-        return render_template("error.html", message="Uusissa salasanoissa oli eroa")
-    if changing_password[1] == "":
-        return render_template("error.html", message="Uusi salasana oli tyhjä")
+    if subfunctions.check_password(changing_password[1], changing_password[2]) != "ok":
+            return render_template("error.html", message=("Uusi salasana:",subfunctions.check_password(changing_password[1],changing_password[2])))
     if not users.change_password(user_id, changing_password[1]):
         return render_template("error.html", message="Uuden salasanan rekisteröinti ei onnistunut")
     return redirect("/settings")

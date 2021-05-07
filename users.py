@@ -51,7 +51,7 @@ def get_username(user_id):
     sql = """SELECT username
                 FROM users
                 WHERE id=:user_id"""
-    return db.session.execute(sql, {"user_id":user_id}).fetchone[0]
+    return db.session.execute(sql, {"user_id":user_id}).fetchone()[0]
 
 def get_user_id(name):
     try:
