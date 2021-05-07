@@ -10,7 +10,7 @@ Tapahtuman peruminen hukkaa tallentamattomat ajat, joten tallenna ennen perumist
 {% for i in range(7) %}
   <p id="dayrow">{{days_i[i]}} {{week[i][-1].strftime("%d/%m")}}
 
-<!--omat osallistumiset-->
+<!--omat osallistumiset-------------------------->
   <p><b>Omat mahdolliset osallistumiseni :</b>
   <ul>
   {% for entry in all_own_entries[i] %}
@@ -38,7 +38,7 @@ Tapahtuman peruminen hukkaa tallentamattomat ajat, joten tallenna ennen perumist
   <input class="button" type="submit" value="Tallenna">
   </form>
 
-<!--ryhmän suunnitelmat--->
+<!--ryhmän suunnitelmat--------------------------->
   <p>
   ryhmän alustavia suunnitelmia..
   {% if not week[i][1] %}
@@ -63,7 +63,7 @@ Tapahtuman peruminen hukkaa tallentamattomat ajat, joten tallenna ennen perumist
 {% endfor %} 
 <p>
 
-<!--kaverien suunnitelmat--->
+<!--kaverien suunnitelmat------------------------->
 <h4>Kaverien alustavia suunnitelmia:</h4>
 <table>
 {% for friend in friends_plans %}

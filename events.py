@@ -12,13 +12,6 @@ def add_new_event(event_info:dict):
     except:
         return -1
 
-def get_all_0_level_events():
-    sql = """SELECT id, name, description, min_participants, max_participants
-                FROM events
-                WHERE event_level = 0
-                ORDER BY name"""
-    return db.session.execute(sql).fetchall()
-
 def get_all_events_for_register():
     sql = """SELECT id, name, description, min_participants, max_participants
                 FROM events
@@ -127,11 +120,3 @@ def change_level(event_id, level):
         return True
     except:
         return False
-
-def delete(group_id):
-    sql = """DELETE 
-            FROM groups 
-            WHERE id=:group_id"""
-    db.session.execute(sql, {"group_id":group_id})
-    db.session.commit()
-    return

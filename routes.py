@@ -16,9 +16,13 @@ def login():
         else:
             return render_template("error.html", message="Tunnus tai salasana meni väärin")
 
+@app.route("/logout")
+def logout():
+    users.logout()
+    return redirect("/")
+
 @app.route("/register", methods=["GET","POST"])
 def register():
-    
     if request.method == "GET":
         group_info = group.get_info()
         event_list = events.get_all_events_for_register()
@@ -87,8 +91,3 @@ def register_new_group():
             group.delete()
             users.delete_user(username)
     return render_template("error.html", message="Rekisteröinti ei onnistunut")
-
-@app.route("/logout")
-def logout():
-    users.logout()
-    return redirect("/")

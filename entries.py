@@ -1,6 +1,6 @@
 from db import db
 import datetime
-        
+
 def add_entry(date, user_id, event_id, time1, time2):
     try:
         sql = """INSERT INTO entries (user_id, event_id, date, start_time, finish_time)
@@ -33,18 +33,80 @@ def add_weekly_entry(user_id, event_id, time_start, time_end, dow):
     except:
         return False
 
-
 def get_weekly_entries_for_user(user_id):
     sql = """SELECT en.weekly, e.id, e.name, en.start_time, en.finish_time, en.id
                 FROM entries en LEFT JOIN events e ON en.event_id=e.id
                 WHERE en.user_id=:user_id
                 AND en.weekly IS NOT NULL
                 ORDER BY en.weekly """
-    return db.session.execute(sql, {"user_id":user_id})
+    return db.session.execute(sql, {"user_id":user_id}).fetchall()
 
+def get_times_of_own_entries_for_week(user_id, week_wanted):
+    first_day = 0 if week_wanted == 1 else 6
+    last_day = 6 if week_wanted == 1 else 13
+    sql = """SELECT DISTINCT COALESCE(en.weekly, (SELECT DATE_PART('dow', en.date))) dow,
+                        en.start_time, en.finish_time, en.event_id
+                FROM entries en
+                LEFT JOIN users_in_events ue ON en.user_id=ue.user_id
+                WHERE ((en.date BETWEEN ((SELECT CURRENT_DATE) + INTEGER ':first_day') AND ((SELECT CURRENT_DATE) + INTEGER ':last_day'))
+                        OR en.weekly IS NOT NULL)
+                AND en.user_id=:user_id
+                AND ue.role < 4
+                AND en.active > 0
+                ORDER BY dow, en.event_id"""
+    return db.session.execute(sql, {"user_id":user_id, "first_day":first_day, "last_day":last_day}).fetchall()
+
+def delete_own_entry(entry_id, user_id):
+    try:
+        sql = """DELETE FROM entries WHERE id=:entry_id AND user_id=:user_id"""
+        db.session.execute(sql, {"entry_id":entry_id, "user_id":user_id})
+        db.session.commit()
+        return True
+    except:
+        return False
+
+def friends_planning(user_id):
+    first_day = 7
+    last_day = 13
+    sql = """SELECT DISTINCT u.name, e.name, en.start_time, en.finish_time,
+                COALESCE(weekly, (SELECT DATE_PART('dow', en.date))) dow, en.event_id, en.date, en.weekly
+                FROM users_in_events ue
+                JOIN friends f ON ue.user_id=f.user_id1 OR ue.user_id=f.user_id2
+                JOIN entries en ON en.user_id=f.user_id1 OR en.user_id=f.user_id2
+                JOIN users u ON u.id=en.user_id
+                JOIN events e ON en.event_id=e.id
+                WHERE ue.user_id=:user_id
+                AND ue.role < 4
+                AND u.id <> :user_id
+                AND ((en.date BETWEEN ((SELECT CURRENT_DATE) + INTEGER ':first_day') AND ((SELECT CURRENT_DATE) + INTEGER ':last_day'))
+                        OR en.weekly IS NOT NULL)
+                AND (f.user_id1=:user_id OR f.user_id2=:user_id)
+                AND (f.active=1 AND (f.user_id1=:user_id OR f.user_id2=:user_id))
+                AND en.active > 0
+                ORDER BY dow, en.event_id, u.name"""
+    return db.session.execute(sql, {"user_id":user_id, "first_day":first_day, "last_day":last_day}).fetchall()
+
+def get_participants(user_id, date):
+    sql = """SELECT e.name, u.name, en.start_time, en.finish_time, extra_participants, m.content
+                FROM entries en LEFT JOIN users u ON en.user_id=u.id
+                LEFT JOIN events e ON en.event_id=e.id
+                LEFT JOIN messages m ON en.id=m.entries_id
+                WHERE (EXTRACT (day from en.date)=EXTRACT(day from :date)
+                OR en.weekly=(SELECT DATE_PART('dow', :date)))
+                AND en.active=1
+                AND e.id IN (SELECT event_id
+                                FROM users_in_events
+                                WHERE user_id=:user_id
+                                AND role < 4)
+                ORDER BY e.name, en.start_time"""
+    return db.session.execute(sql, {"user_id":user_id, "date":date}).fetchall()
+
+#----------------------------------------------------------------------------------------------------------------------
 #-KALENTERIN "MOOTTORI"------------------------------------------------------------------------------------------------
 #haetaan tietokannasta yhdellä kyselyllä kaikkien osallistumiset viikoksi eteenpäin kaikille päiville niistä tapahtumista,
 #joita käyttäjä seuraa, sekä eritellään käyttäjän omat ilmoittautumiset omaksi listakseen.
+#----------------------------------------------------------------------------------------------------------------------
+
 #1/5 haetaan tiedot
 def get_week(user_id:int, week_wanted:int) -> dict:
     first_day = 0 if week_wanted == 1 else 6
@@ -121,82 +183,14 @@ def match_day_to_dict_week7i(dow) -> int:
 #5/5 lasketaan yksittäisen tapahtuman osallistujien määrä
 def calc_participants(sorted_times_and_changes:list) -> list:
     participant_count = 0
-    times_and_changes = []
+    times_and_participants = []
     for i in range(len(sorted_times_and_changes)-1):
         participant_count = participant_count + sorted_times_and_changes[i][3]
         sorted_times_and_changes[i][3] = participant_count
         sorted_times_and_changes[i].append(sorted_times_and_changes[i+1][0])
         if sorted_times_and_changes[i][0] != sorted_times_and_changes[i][5] and sorted_times_and_changes[i][3] != 0:
-            times_and_changes.append(sorted_times_and_changes[i])
-    return times_and_changes
+            times_and_participants.append(sorted_times_and_changes[i])
+    return times_and_participants
+
 #--------------------------------------------------------------------------------
-
-def get_all_own_entries_dict(all_entries:list) -> dict:
-    all_own_entries = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]}
-    for entry in all_entries:
-        all_own_entries[entry[5]].append(entry)
-    return all_own_entries
-
-def get_all_own_entries_dict_with_dow(all_entries:list) -> dict:
-    all_own_entries = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]}
-    for entry in all_entries:
-        all_own_entries[entry[4]].append(entry)
-    return all_own_entries
-
-def delete_own_entry(entry_id, user_id):
-    try:
-        sql = """DELETE FROM entries WHERE id=:entry_id AND user_id=:user_id"""
-        db.session.execute(sql, {"entry_id":entry_id, "user_id":user_id})
-        db.session.commit()
-        return True
-    except:
-        return False
-
-def friends_planning(user_id):
-    first_day = 7
-    last_day = 13
-    sql = """SELECT DISTINCT u.name, e.name, en.start_time, en.finish_time,
-                COALESCE(weekly, (SELECT DATE_PART('dow', en.date))) dow, en.event_id, en.date, en.weekly
-                FROM users_in_events ue
-                JOIN friends f ON ue.user_id=f.user_id1 OR ue.user_id=f.user_id2
-                JOIN entries en ON en.user_id=f.user_id1 OR en.user_id=f.user_id2
-                JOIN users u ON u.id=en.user_id
-                JOIN events e ON en.event_id=e.id
-                WHERE ue.user_id=:user_id
-                AND ue.role < 4
-                AND u.id <> :user_id
-                AND ((en.date BETWEEN ((SELECT CURRENT_DATE) + INTEGER ':first_day') AND ((SELECT CURRENT_DATE) + INTEGER ':last_day'))
-                        OR en.weekly IS NOT NULL)
-                AND (f.user_id1=:user_id OR f.user_id2=:user_id)
-                AND (f.active=1 AND (f.user_id1=:user_id OR f.user_id2=:user_id))
-                AND en.active > 0
-                ORDER BY dow, en.event_id, u.name"""
-    return db.session.execute(sql, {"user_id":user_id, "first_day":first_day, "last_day":last_day}).fetchall()
-
-def find_entry(all_event_entries, entry_i):
-    for entry in all_event_entries:
-        if entry[7] == entry_i:
-            return entry
-
-def change_days_dow_to_i_dict(days, today):
-    days_i = {}
-    for i in range(7):
-        dow_wanted = (today + datetime.timedelta(days=i)).strftime("%w")
-        days_i[i] = days[int(dow_wanted)]
-    return days_i
-
-def get_participants(user_id, date) -> list:
-    print("---date",date)
-    sql = """SELECT e.name, u.name, en.start_time, en.finish_time, extra_participants, m.content
-                FROM entries en LEFT JOIN users u ON en.user_id=u.id
-                LEFT JOIN events e ON en.event_id=e.id
-                LEFT JOIN messages m ON en.id=m.entries_id
-                WHERE (EXTRACT (day from en.date)=EXTRACT(day from :date)
-                OR en.weekly=(SELECT DATE_PART('dow', :date)))
-                AND en.active=1
-                AND e.id IN (SELECT event_id
-                                FROM users_in_events
-                                WHERE user_id=:user_id
-                                AND role < 4)
-                ORDER BY e.name, en.start_time"""
-    return db.session.execute(sql, {"user_id":user_id, "date":date}).fetchall()
+#--------------------------------------------------------------------------------

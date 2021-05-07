@@ -70,7 +70,6 @@ def check_exist(name):
                 WHERE username=:name
                 OR name=:name"""
         id = db.session.execute(sql, {"name":name}).fetchone()[0]
-        print("---id", id)
         return id
     except:
         return -1
@@ -150,7 +149,6 @@ def add_event_for_everyone(event_id):
         sql = """SELECT id
                     FROM users"""
         users = db.session.execute(sql).fetchall()
-        #print("---id:t", users)
         for user in users:
             sql = """INSERT INTO users_in_events (event_id, user_id)
                         VALUES (:event_id, :user_id)"""
@@ -165,7 +163,6 @@ def change_level(users_changing, event_id):
         sql = """SELECT event_level FROM events
                     WHERE id=:event_id"""
         level = db.session.execute(sql, {"event_id":event_id}).fetchone()[0]
-        #print("---level", level, users_changing, event_id)
         for user_id in users_changing:
             sql = """UPDATE users_in_events SET user_level=:event_level
                         WHERE user_id=:user_id

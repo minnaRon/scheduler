@@ -101,17 +101,13 @@ def get_all_users_in_events_info_dict() -> dict:
                 FROM users
                 ORDER BY role, name"""
     user_id_list = db.session.execute(sql).fetchall()
-    print("---user_id lista", user_id_list)
     for u_id in user_id_list:
         user = u_id[0]
-        print("---user_id", user)
         sql = """SELECT e.name, e.event_level, ue.user_level, ue.role
                     FROM events e LEFT JOIN users_in_events ue ON e.id = ue.event_id
                     WHERE ue.user_id=:user_id
                     ORDER BY e.name"""
         info[user] = db.session.execute(sql, {"user_id":user}).fetchall()
-        print("---info[user]",info[user])
-        print("---info", info)
     return info
 
 def get_admin_info() -> list:
@@ -142,8 +138,6 @@ def change_all_participation_rights(users_changing, role):
     except:
         return False
 
-#jos perustaa uuden ryhmän ja rekisteröityminen ei onnistu kokonaisuudessaan
-#silloin ryhmä poistetaan tietokannasta tällä
 def delete():
     sql = """DELETE 
              FROM group_info"""

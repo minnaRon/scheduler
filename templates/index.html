@@ -2,6 +2,7 @@
 {% block content %}
 
 <h2>Kirjaudu sisään</h2>
+<!----------------------------------------------------->
 <form action="/login" method="POST">
 <p>
 {% if session.user_name %}
@@ -15,6 +16,7 @@
   </form>
   <p>
   <hr>
+  <!----------------------------------------------------->
   Jos sinulla ei vielä ole tunnuksia, niin <a href="/register"> rekisteröidy tästä</a>
   <p>
 {% endif %}

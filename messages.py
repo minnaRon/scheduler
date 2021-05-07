@@ -1,7 +1,6 @@
 from db import db
 from flask import render_template
 
-#lisää scheman tauluun messages, sarakkeeseen entries_id, määritys ON DELETE CASCADE ja ota entry_id kyselyssä käyttöön
 def add_entry_comment(user_id:int, entry_id:int, event_id:int, comment:str):
     try:
         sql = """INSERT INTO messages (user_id, event_id, content, sent_at)

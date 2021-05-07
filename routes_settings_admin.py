@@ -54,7 +54,6 @@ def add_new_event():
     if users.add_event_for_everyone(event_id):
         return redirect("/settings")
     return render_template("error.html", message="Uuden tapahtuman rekisteröinti jäsenille ei onnistunut")
-###pitäisikö tässä poistaa tapahtuma kokonaan, jos ei rekisteröi jäsenille vai näkyykö valittavissa silti???
 
 @app.route("/settings/change_event_info", methods=["POST"])
 def change_event_info():
@@ -108,7 +107,6 @@ def userlist():
 
     if request.method == "POST":
         users.check_csrf()
-        users.require_role(1)
         action = request.form["action"]
         users_changing = request.form.getlist("user_id")
         if action == "1":

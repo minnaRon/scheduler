@@ -51,7 +51,7 @@ Tapahtumien ajankohdat muodostuvat ilmoittautumisien perusteella<br>(tapahtuma t
 <!--suunnittele seuraava viikko------------------------------>
 <a href="/plan"><h4>Suunnittele seuraava viikko</h4></a>
 
-<!--viestit-------------------------------------------------->
+<!--viestin lähetys----------------------------------------------->
 <form action="/calendar_message" method="POST">
 <p>
 Viestittele tässä muiden ryhmän jäsenien kanssa tapahtumiin liittyen:<br>
@@ -59,9 +59,11 @@ Viestittele tässä muiden ryhmän jäsenien kanssa tapahtumiin liittyen:<br>
 <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
 <input class="button" type="submit" value="Lähetä">
 <p>
+<!--admin -viesti----------------------------------------------->
 {% if group_info[2] %}
   <b>Huom! {{group_info[2]}} </b>
 {% endif %}
+<!--viestit----------------------------------------------->
 {% if messages %}
   <p>
   Viimeisimmät viestit:
