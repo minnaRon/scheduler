@@ -13,7 +13,7 @@ def settings():
     friend_requests_own = friends.get_own_requests(user_id)
     weekdays = {0:"SU", 1:"MA", 2:"TI", 3:"KE", 4:"TO", 5:"PE", 6:"LA"}
     user_info = users.get_user_info(user_id)
-    if session["user_role"] == 1:
+    if session["user_role"] == 1 or session["user_role"] == 0:
         all_events = events.get_all_events()
         return render_template("settings.html", all_events=all_events, friend_requests_own=friend_requests_own, user_info=user_info, days=weekdays, events_with_own_level=events_with_own_level, own_weekly_entries= own_weekly_entries, friends=friends_list, friend_requests=friend_requests)
     else:

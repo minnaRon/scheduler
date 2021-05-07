@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-
+{% if session["user_role"] == 1 or session["user_role"] == 0 %}
 <h2>Jäsenten hallinta</h2>
 <p>
 voit:
