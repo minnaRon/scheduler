@@ -21,23 +21,35 @@ def check_password(password1, password2):
     if password1 == "":
         return "Salasana oli tyhjä"
     return "ok"
-  
-def check_times_dow(times_of_own_entries_for_week, dow, start_time, finish_time):
-    if start_time == "" or finish_time == "":
-        return "Aikojen valinta oli puutteellinen, aika puuttui, tarkista ajat"
-    if start_time < finish_time:
-        if times_of_own_entries_for_week[dow]:
-            start_time = datetime.datetime.strptime(start_time, "%H:%M").time()
-            finish_time = datetime.datetime.strptime(finish_time, "%H:%M").time()
-            for earlier_entry in times_of_own_entries_for_week[dow]:
-                start = earlier_entry[1]
-                end = earlier_entry[2]
-                if not (start_time >= end or finish_time <= start):
-                    return "Aika menee päällekkäin päivän toisen ilmoittautumisesi kanssa, peru ilmoittautumisia tarvittaessa"
-                times_of_own_entries_for_week[dow] = times_of_own_entries_for_week[dow] + [(0,start_time,finish_time)]
-        return "ok"
-    else:
-        return "Osallistumisesi lisäys ei onnistunut, aloitusaika oli suurempi tai yhtäsuuri kuin lopetusaika tai toinen ajoista puuttui, tarkista valitsemasi ajat"
+
+def check_times_one(times_of_own_entries_for_day, new_time):
+    for entry_time in times_of_own_entries_for_day:
+        if entry_time[1] >= new_time[0] and entry_time[0] >= new_time[1]:
+            return "ok"
+        if entry_time[1] >= new_time[0] and entry_time[0] < new_time[1]:
+            return "Aika menee päällekkäin päivän toisen ilmoittautumisesi kanssa, peru ilmoittautumisia tarvittaessa"
+    return "ok"
+
+def check_times_many(earlier_entry_times, new_entry_times):
+    all_times = earlier_entry_times + new_entry_times
+    all_times.sort()
+    for times in new_entry_times:
+        if times[0] >= times[1]:
+            return "Ilmoittautumisia ei voinut tallentaa, ilmoittautumisen alku ja loppuaika oli sama tai alkuaika oli suurempi kuin loppuaika"
+    for i in range(1, len(all_times)):
+        if all_times[i-1][1] > all_times[i][0]:
+            return "Aika menee päällekkäin päivän toisen ilmoittautumisesi kanssa, peru ilmoittautumisia tarvittaessa"
+    return "ok"
+
+def get_new_entry_times(start_times, finish_times):
+    new_entry_times = []
+    for i in range(len(start_times)):
+        if start_times[i] == "" and finish_times[i] == "":
+            continue
+        if (start_times[i] == "" and finish_times[i] != "") or (start_times[i] != "" and finish_times[i] == ""):
+            return []
+        new_entry_times.append((datetime.datetime.strptime(start_times[i], "%H:%M").time(), datetime.datetime.strptime(finish_times[i], "%H:%M").time(), i))
+    return new_entry_times
 
 def change_list_to_dict(wanted_key, all_entries):
     all_own_entries = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]}
@@ -60,3 +72,11 @@ def add_weekday(friends_plans:list) -> list:
         entry[4] = days[entry[4]]
         friends_plans_w.append(entry)
     return friends_plans_w
+
+def match_day_to_dict_week7i(dow) -> int:
+    dow_now = datetime.date.today().weekday() + 1
+    if dow < dow_now:
+        day = 7 - (dow_now - dow)
+    else:
+        day = dow - dow_now
+    return day

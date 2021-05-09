@@ -61,23 +61,23 @@ def weekly_entries():
     users.check_csrf()
     users.require_role(2)
     user_id = session["user_id"]
-    times_of_own_entries_for_week1 = subfunctions.change_list_to_dict(0, entries.get_times_of_own_entries_for_week(user_id, 1))
-    times_of_own_entries_for_week2 = subfunctions.change_list_to_dict(0, entries.get_times_of_own_entries_for_week(user_id, 2))
-    if request.form["weekly_time_start"] and request.form["weekly_time_end"]:
-        start_time = request.form["weekly_time_start"]
-        finish_time = request.form["weekly_time_end"]
+    if request.form["weekly_time_start"] and request.form["weekly_time_end"] and request.form["weekly_time_start"] < request.form["weekly_time_end"]:
+        start_time = datetime.datetime.strptime(request.form["weekly_time_start"], "%H:%M").time()
+        finish_time = datetime.datetime.strptime(request.form["weekly_time_end"], "%H:%M").time()
         dow = int(request.form["weekly_dow"])
-        time_check_errors = subfunctions.check_times_dow(times_of_own_entries_for_week1, dow, start_time, finish_time)
-        if time_check_errors != "ok":
-            return render_template("error.html", message=time_check_errors)
-        time_check_errors = subfunctions.check_times_dow(times_of_own_entries_for_week2, dow, start_time, finish_time)
-        if time_check_errors != "ok":
-            return render_template("error.html", message=time_check_errors)
+        day_i = subfunctions.match_day_to_dict_week7i(dow)
+        times_of_own_entries_for_week1_day = entries.get_times_of_own_entries_for_day(user_id, dow, day_i)
+        times_of_own_entries_for_week2_day = entries.get_times_of_own_entries_for_day(user_id, dow, day_i+7)
+        if times_of_own_entries_for_week1_day:
+            if subfunctions.check_times_one(times_of_own_entries_for_week1_day, (start_time, finish_time)) != "ok":
+                return render_template("error.html", message=subfunctions.check_times_one(times_of_own_entries_for_week1_day, (start_time, finish_time)))
+        if times_of_own_entries_for_week2_day:
+            if subfunctions.check_times_one(times_of_own_entries_for_week2_day, (start_time, finish_time)) != "ok":
+                return render_template("error.html", message=subfunctions.check_times_one(times_of_own_entries_for_week2_day, (start_time, finish_time)))
         if entries.add_weekly_entry(user_id, request.form["weekly_event"], start_time, finish_time, dow):
             return redirect("/settings")
         return render_template("error.html", message="Uuden vakioajan lisääminen ei onnistunut")
-    else:
-        return render_template("error.html", message="Osallistumisesi lisäys ei onnistunut, ajat olivat puutteellisia, tarkista valitsemasi ajat ja tallenna uudelleen")
+    return render_template("error.html", message="Osallistumisesi lisäys ei onnistunut, aikojen valinta oli puutteellinen tai ajat olivat virheellisiä, tarkista valitsemasi ajat ja tallenna uudelleen")
 
 @app.route("/settings/weekly_cancel", methods=["POST"])
 def weekly_cancel():

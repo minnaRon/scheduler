@@ -25,22 +25,24 @@ def plan():
         start_times = request.form.getlist("time_start")
         finish_times = request.form.getlist("time_finish")
         days_list = request.form.getlist("day")
-        times_of_own_entries_for_week = subfunctions.change_list_to_dict(0, entries.get_times_of_own_entries_for_week(user_id, 2))
         if len(event_indices) == len(start_times) and len(start_times) == len(finish_times):
-            for i in range(len(event_indices)-1):
-                if start_times[i] == "" and finish_times[i] == "":
-                    continue
-                date = today1 + datetime.timedelta(days=7+int(float(days_list[i])))
-                time_check_errors = subfunctions.check_times_dow(times_of_own_entries_for_week, int(datetime.datetime.strftime(date,"%w")), start_times[i], finish_times[i])
-                if time_check_errors != "ok":
-                    return render_template("error.html", message=time_check_errors)
-                else:
-                    entry_id = entries.add_entry(date, user_id, event_list[int(event_indices[i])][0], start_times[i], finish_times[i])
-                    if entry_id == -1:
-                        return render_template("error.html", message="Kaikkien tapahtumien lisäys ei onnistunut, tarkista valitsemasi ajat")
-        else:
-            return render_template("error.html", message="Tapahtumien lisäys ei onnistunut, tarkista valitsemasi ajat")
-        return redirect("/plan")
+            day_i = int(float(days_list[0]))
+            dow = int(datetime.datetime.strftime(today1 + datetime.timedelta(days=day_i + 7), "%w"))
+            times_of_own_entries_for_day = entries.get_times_of_own_entries_for_day(user_id, dow, day_i + 7)
+            new_entry_times_list = subfunctions.get_new_entry_times(start_times, finish_times)
+            if not new_entry_times_list:
+                return render_template("error.html", message="Tapahtumien lisäys ei onnistunut, tarkista valitsemasi ajat, aikojen valitsemisessa oli puutteita")
+            if times_of_own_entries_for_day or len(new_entry_times_list) > 1:
+                if subfunctions.check_times_many(times_of_own_entries_for_day, new_entry_times_list) != "ok":
+                    return render_template("error.html", message=subfunctions.check_times_many(times_of_own_entries_for_day, new_entry_times_list))
+            elif new_entry_times_list[0][0] >= new_entry_times_list[0][1]:
+                    return render_template("error.html", message="Antamasi ajat olivat samat tai alkuaika oli suurempi kuin loppuaika, tarkista ajat ja tallenna uudelleen")
+            for entry in new_entry_times_list:
+                date = today1 + datetime.timedelta(days=7+int(float(days_list[entry[2]])))
+                index = entry[2]
+                if entries.add_entry(date, user_id, event_list[int(event_indices[index])][0], start_times[index], finish_times[index]) > 0:
+                    return redirect("/plan")
+        return render_template("error.html", message="Tapahtumien lisäys ei onnistunut, tarkista valitsemasi ajat ja tallenna uudelleen")
 
 @app.route("/plan/entry_cancel", methods=["POST"])
 def cancel_plan_entry():
@@ -55,14 +57,17 @@ def cancel_plan_entry():
 def add_plan_pick():
     users.check_csrf()
     users.require_role(2)
+    user_id = session["user_id"]
     entry = request.form["plan_pick"].split(",")
     entry_date = datetime.datetime.strptime(request.form["date"], "%Y-%m-%d").date()
-    times_of_own_entries_for_week = subfunctions.change_list_to_dict(0, entries.get_times_of_own_entries_for_week(session["user_id"], 2))
-    start_time = entry[0][2:-1]
-    finish_time = entry[5][2:-2]
-    time_errors = subfunctions.check_times_dow(times_of_own_entries_for_week, int(datetime.datetime.strftime(entry_date,"%w")), start_time, finish_time)
-    if time_errors != "ok":
-        return render_template("error.html", message=time_errors)
-    if entries.add_entry(entry_date, session["user_id"], entry[4], start_time, finish_time) > 0:
+    start_time = datetime.datetime.strptime(entry[0][2:-1], "%H:%M").time()
+    finish_time = datetime.datetime.strptime(entry[5][2:-2], "%H:%M").time()
+    dow = int(float(entry[2]))
+    day_i = entry_date - datetime.date.today()
+    times_of_own_entries_for_day = entries.get_times_of_own_entries_for_day(user_id, dow, day_i.days)
+    if times_of_own_entries_for_day:
+        if subfunctions.check_times_one(times_of_own_entries_for_day, (start_time, finish_time)) != "ok":
+            return render_template("error.html", message=subfunctions.check_times_one(times_of_own_entries_for_day, (start_time, finish_time)))
+    if entries.add_entry(entry_date, user_id, entry[4], start_time, finish_time) > 0:
         return redirect("/plan")
     return render_template("error.html", message="Osallistumisesi lisäys ei onnistunut")

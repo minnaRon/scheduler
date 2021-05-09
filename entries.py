@@ -41,20 +41,16 @@ def get_weekly_entries_for_user(user_id):
                 ORDER BY en.weekly """
     return db.session.execute(sql, {"user_id":user_id}).fetchall()
 
-def get_times_of_own_entries_for_week(user_id, week_wanted):
-    first_day = 0 if week_wanted == 1 else 6
-    last_day = 6 if week_wanted == 1 else 13
-    sql = """SELECT DISTINCT COALESCE(en.weekly, (SELECT DATE_PART('dow', en.date))) dow,
-                        en.start_time, en.finish_time, en.event_id
+def get_times_of_own_entries_for_day(user_id, dow, day_i):
+    sql = """SELECT DISTINCT en.start_time, en.finish_time
                 FROM entries en
                 LEFT JOIN users_in_events ue ON en.user_id=ue.user_id
-                WHERE ((en.date BETWEEN ((SELECT CURRENT_DATE) + INTEGER ':first_day') AND ((SELECT CURRENT_DATE) + INTEGER ':last_day'))
-                        OR en.weekly IS NOT NULL)
+                WHERE (en.date=(SELECT CURRENT_DATE) + INTEGER ':day_i' OR en.weekly=:dow)
                 AND en.user_id=:user_id
                 AND ue.role < 4
                 AND en.active > 0
-                ORDER BY dow, en.event_id"""
-    return db.session.execute(sql, {"user_id":user_id, "first_day":first_day, "last_day":last_day}).fetchall()
+                ORDER BY en.start_time"""
+    return db.session.execute(sql, {"user_id":user_id, "dow":dow, "day_i":day_i}).fetchall()
 
 def delete_own_entry(entry_id, user_id):
     try:
