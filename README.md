@@ -62,8 +62,8 @@ Viikon kaksi suunnittelu (plan) virheen sattuessa ei tallenna uusista ajoista mi
 muuttaa niin, että kaikille päiville voi lisätä uusia ilmoittautumisia ja tallentaa kaikki kerralla ja vain virheelliset
 ajat jäävät tallentamatta, joista sitten virheviestissä lista. Tätä en ehtinyt vielä laittamaan kuntoon.
 Vakioaikojen peruminen poistaa nyt vakioajat myös kalenterista ja suunnittelusta, mikä on joko hyvä tai huono, selvinnee
-kesän aikana. Valittu vakioaika jää näkyville, vaikka kalenterinäkymästä poistaa kyseisen tapahtuman näkymisen ja
-vakioaikailmoittautuminen ei näin ollen näy myöskään muille, mikä on joko hyvä tai huono, selvinnee myös kesän aikana.
+kesän aikana. Valittu vakioaika jää näkyville ja voimaan, vaikka omasta kalenterinäkymästä poistaa kyseisen tapahtuman näkymisen ja
+vakioaikailmoittautuminen näkyy edelleen muille heidän omissa kalentereissaan, mikä on joko hyvä tai huono, selvinnee myös kesän aikana.
 Tämän ominaisuuden toiminnallisuuden mietin vielä uusiksi kesän loppupuolella, nyt ei toimi vielä riittävän hyvin.
 Uuden tapahtuman luomisessa voi luoda monta samannimistä tapahtumaa, jotta tapahtumat voidaan erotella eri tasoille.
 Tämä ajatus on vielä kesken ja nykyinen toteutus ei ole riittävän toimiva, jotta voisi käyttää käytännössä. Tätä mietin vielä.
