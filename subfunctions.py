@@ -23,12 +23,19 @@ def check_password(password1, password2):
     return "ok"
 
 def check_times_one(times_of_own_entries_for_day, new_time):
-    for entry_time in times_of_own_entries_for_day:
-        if entry_time[1] >= new_time[0] and entry_time[0] >= new_time[1]:
+    #for entry_time in times_of_own_entries_for_day:
+    #    if entry_time[1] >= new_time[0] and entry_time[0] >= new_time[1]:
+     #       return "ok"
+     #   if not (new_time[0] >= entry_time[1] or new_time[1] <= entry_time[0]):
+     #       return "Aika menee päällekkäin päivän toisen ilmoittautumisesi kanssa, peru ilmoittautumisia tarvittaessa"
+   # return "ok"
+    if new_time[1] <= times_of_own_entries_for_day[0][0] or new_time[0] >= times_of_own_entries_for_day[-1][1]:
+        return "ok"
+    for i in range(1, len(times_of_own_entries_for_day)):
+        print("--",times_of_own_entries_for_day[i])
+        if (times_of_own_entries_for_day[i-1][1] <= new_time[0] and new_time[1] <= times_of_own_entries_for_day[i][0]):
             return "ok"
-        if entry_time[1] >= new_time[0] and entry_time[0] < new_time[1]:
-            return "Aika menee päällekkäin päivän toisen ilmoittautumisesi kanssa, peru ilmoittautumisia tarvittaessa"
-    return "ok"
+    return "Aika menee päällekkäin päivän toisen ilmoittautumisesi kanssa, peru ilmoittautumisia tarvittaessa"
 
 def check_times_many(earlier_entry_times, new_entry_times):
     all_times = earlier_entry_times + new_entry_times
