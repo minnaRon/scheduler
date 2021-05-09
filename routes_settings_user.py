@@ -48,9 +48,9 @@ def change_password():
     user_id = session["user_id"]
     changing_password = [request.form["old_password"], request.form["new_password1"], request.form["new_password2"]]
     if not users.check_password(user_id, changing_password[0]):
-        return render_template("error.html", message="Vanha salasana meni väärin, tarkista salasana")
+        return render_template("error.html", message="Vanha salasana meni väärin tai oli tyhjä, tarkista salasana")
     if subfunctions.check_password(changing_password[1], changing_password[2]) != "ok":
-            return render_template("error.html", message=("Uusi salasana:",subfunctions.check_password(changing_password[1],changing_password[2])))
+            return render_template("error.html", message=subfunctions.check_password(changing_password[1],changing_password[2]))
     if not users.change_password(user_id, changing_password[1]):
         return render_template("error.html", message="Uuden salasanan rekisteröinti ei onnistunut")
     return redirect("/settings")

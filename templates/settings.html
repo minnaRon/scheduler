@@ -192,14 +192,14 @@ Ryhmän kuvaus: <br><textarea name ="group_description" rows="3" cols="50" maxle
 </form>
 <!--A------------------------------------------------------------------->
 <form action="/settings/change_group_password" method="POST">
-<b>Salasanan vaihto:</b><br>
+<b>Muuta ryhmän liittymissalasana:</b><br>
 Huom! muuta takaisin ryhmän salasanaksi tsoha jos kokeilet.. :)
 <p>
 Oma kirjautumissalasanasi:<br><input type="password" name="own_password">
 <p>
-Uusi ryhmän salasana:<br><input type="password" name="new_password1">
+Uusi liittymissalasana:<br><input type="password" name="new_password1">
 <p>
-Uusi ryhmän salasana uudelleen: <br><input type="password" name="new_password2">
+Uusi liittymissalasana uudelleen: <br><input type="password" name="new_password2">
 <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
 <p>
 <input class="button" type="submit" value="Tallenna muutos">
