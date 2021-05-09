@@ -41,6 +41,7 @@ def calendar_message():
         if messages.add(session["user_id"], request.form["comment"]):
             return redirect("/calendar")
         return render_template("error.html", message="Viestin lähetys ei onnistunut, yritä uudelleen")
+    return redirect("/calendar")
 
 @app.route("/entry/<day>", methods=["GET","POST"])
 def entry(day):
