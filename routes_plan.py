@@ -40,8 +40,9 @@ def plan():
             for entry in new_entry_times_list:
                 date = today1 + datetime.timedelta(days=7+int(float(days_list[entry[2]])))
                 index = entry[2]
-                if entries.add_entry(date, user_id, event_list[int(event_indices[index])][0], start_times[index], finish_times[index]) > 0:
-                    return redirect("/plan")
+                if entries.add_entry(date, user_id, event_list[int(event_indices[index])][0], start_times[index], finish_times[index]) < 0:
+                    return render_template("error.html", message="Tapahtumien lisäys ei onnistunut, tallenna uudelleen")
+            return redirect("/plan")
         return render_template("error.html", message="Tapahtumien lisäys ei onnistunut, tarkista valitsemasi ajat ja tallenna uudelleen")
 
 @app.route("/plan/entry_cancel", methods=["POST"])
