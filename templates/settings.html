@@ -278,7 +278,7 @@ muuta taso: <input type="number" name="number_value2" min="0" max="99">
 <h2>Admin -viesti</h2>
 Lyhyt viesti, joka näkyy jäsenille ensimmäisen viikon näkymässä ja on päivitettävissä.
 <p>
-Viestisi: <input type="text" name="admin_info">
+Viestisi: <input type="text" name="admin_info" maxlength="150">
 <p>
 <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
 <input class="button" type="submit" value="Tallenna viesti">

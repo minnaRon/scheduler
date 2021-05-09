@@ -95,6 +95,8 @@ def change_event_info():
 def admin_message():
     users.check_csrf()
     users.require_role(1)
+    if len(request.form["admin_info"]) > 150:
+        return render_template("error.html", message="viestin tallentaminen ei onnistunut, viestisi oli liian pitkä")
     if group.add_admin_message(request.form["admin_info"]):
         return redirect("/settings")
     return render_template("error.html", message="viestin tallentaminen ei onnistunut")
