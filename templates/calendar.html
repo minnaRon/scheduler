@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <h2> {{group_info[0]|upper}}</h2>
-<h2>päivittäinen osallistumistilanne:</h2>
+<span class="green_text">päivittäinen osallistumistilanne:</span>
 <p>
 <hr>
 {% for i in range(7) %}
@@ -21,7 +21,7 @@
   </ul>
 
 <!--kaikkien jäsenien osallistumistilanne:----------------->
-  kaikkien jäsenien osallistumistilanne:<br>
+  <span class="green_text">kaikkien jäsenien osallistumistilanne:</span><br>
   {% if not week[i][1] %}
     <select name="no_entries">
       <option> ei ilmoittautumisia vielä<br>
@@ -45,8 +45,9 @@
   {% endif %}
   <hr>
   </form>
-{% endfor %} 
-Tapahtumien ajankohdat muodostuvat ilmoittautumisien perusteella<br>(tapahtuma toteutuu, kun on sopivasti osallistujia).<br>
+{% endfor %}
+<hr>
+<span id="ginfo">Tapahtumien ajankohdat muodostuvat ilmoittautumisien perusteella<br>(tapahtuma toteutuu, kun on sopivasti osallistujia).<br></span>
 
 <!--suunnittele seuraava viikko------------------------------>
 <a href="/plan"><h4>Suunnittele seuraava viikko</h4></a>
@@ -54,7 +55,7 @@ Tapahtumien ajankohdat muodostuvat ilmoittautumisien perusteella<br>(tapahtuma t
 <!--viestin lähetys----------------------------------------------->
 <form action="/calendar_message" method="POST">
 <p>
-Viestittele tässä muiden ryhmän jäsenien kanssa tapahtumiin liittyen:<br>
+Viestittele tapahtumiin liittyen:<br>
 <input type="text" name="comment" minlength="1" maxlength="150">
 <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
 <input class="button" type="submit" value="Lähetä">

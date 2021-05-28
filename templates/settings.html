@@ -7,14 +7,14 @@
 <p>
 Tunnuksesi on: {{ user_info[0] }}<br>
 Kalenterissa näkyvä nimesi on: {{ user_info[1] }}<br>
-Yhteystietosi adminille: {% if user_info[2] %} {{ user_info[2] }} {% endif %}<br>
+<!--Yhteystietosi adminille: {% if user_info[2] %} {{ user_info[2] }} {% endif %}<br>-->
 <p>
 <hr>
 <b>Vaihda kalenterissa näkyvä nimesi*</b> <br>
 Anna uusi nimi:<br>
 <input type="text" name="name" minlength="2" maxlength="35">
-<br>*Huom! tunnuksesi ei muutu, vain kalenterissa näkyvä nimesi muuttuu.<br>
-Nimesi päivittyy kaikkialle seuraavassa sisäänkirjautumisessa.
+<br><span id="ginfo">*Huom! tunnuksesi ei muutu, vain kalenterissa näkyvä nimesi muuttuu.
+ Nimesi päivittyy kaikkialle seuraavassa sisäänkirjautumisessa.</span>
 <br>
 <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
 <input class="button" type="submit" value="Tallenna muutos">
@@ -31,7 +31,7 @@ Nimesi päivittyy kaikkialle seuraavassa sisäänkirjautumisessa.
 <input class="button" type="submit" value="Tallenna muutos">
 <p>
 </form>
-<hr>
+<hr>-->
 <!--U------------------------------------------------------------------->
 <form action="/settings/change_password" method="POST">
 <b>Salasanan vaihto:</b>
@@ -52,7 +52,8 @@ Uusi salasana uudelleen: <br><input type="password" name="new_password2">
 <form action="/settings/weekly_entries" method="POST">
 <h2>Viikottaiset vakio-osallistumisajat</h2>
 <p>
-Lisään uuden viikottaisen vakioajan tapahtumalle:<br>
+Lisään uuden viikottaisen vakioajan<br>
+tapahtumalle:
 <select name="weekly_event">
 {% for event in events_with_own_level %}
 {% if event[6] == 2 %}
@@ -60,6 +61,7 @@ Lisään uuden viikottaisen vakioajan tapahtumalle:<br>
 {% endif %}
 {% endfor %}
 </select>
+<p>
 viikonpäivä
 <select name="weekly_dow">
   <option value="1">MA
@@ -70,7 +72,8 @@ viikonpäivä
   <option value="6">LA
   <option value="0">SU
 </select>
-aika: <input type="time" name="weekly_time_start"> - <input type="time" name="weekly_time_end">
+<p>
+klo <input type="time" name="weekly_time_start"> - <input type="time" name="weekly_time_end">
 <p>
 <input type="hidden" name="csrf_token" value="{{session.csrf_token}}">
 <input class="button" type="submit" value="Tallenna muutokset">
@@ -90,10 +93,10 @@ Vakioaikani:
   {% endfor %}
 {% endif %}
 </Ul>
-<p>
-  Huom! Vakioajan käyttäminen vaatii käyttäjältään tarkkuutta:
-  Vakioaika peruuntuu automaattisesti kaikkialta, kun se perutaan missä tahansa, joten käytä harkiten.<br>
-  Lisää ajankohta tarvittaessa kalenterinäkymään tavallisena ilmoittautumisena.
+<p><span id="ginfo">
+  Huom! Vakioaika peruuntuu automaattisesti kaikkialta, kun se perutaan missä tahansa.<br>
+  Lisää ajankohta tarvittaessa kalenterinäkymään tavallisena ilmoittautumisena.<br>
+  Tapahtuman poistaminen kalenterinäkymästä (alla) ei poista vakioilmoittautumistasi.</span>
 <p>
 <hr>
 <!--U--------------------------------------------------------------->
@@ -109,12 +112,12 @@ Tapahtuman nimi:
   {% if event[6] == 2 %}
     <td><input type="checkbox" name="event_pick" value="{{event[0]}}" checked ></td>
     <td><label for="event_pick"> {{event[1]}}</label></td>
-    <td>taso {{event[5]}}</td>
+   <!-- <td>taso {{event[5]}}</td>-->
     <td>..{{event[2]}}</td>
   {% else %}
     <td><input type="checkbox" name="event_pick" value="{{event[0]}}"></td>
     <td><label for="event_pick"> {{event[1]}}</label></td>
-    <td>taso {{event[5]}}</td>
+   <!-- <td>taso {{event[5]}}</td>-->
     <td>..{{event[2]}}</td>
   {% endif %}
 </tr>

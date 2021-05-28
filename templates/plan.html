@@ -3,9 +3,9 @@
 
 <h3>{{group_info[0]|upper}}</h3>
 <b>Suunnittele seuraavia osallistumisia</b>
-<p>
+<p><span id="ginfo">
 Lisää niiden tapahtumien kohdalle aika, joihin osallistut ja tallenna yksitellen tai päivän kaikki osallistumiset kerralla.<br>
-Tapahtuman peruminen hukkaa tallentamattomat ajat, joten tallenna ennen perumista.
+Tapahtuman peruminen hukkaa tallentamattomat ajat, joten tallenna ennen perumista.</span>
 <hr>
 {% for i in range(7) %}
   <p id="dayrow">{{days_i[i]}} {{week[i][-1].strftime("%d/%m")}}
@@ -29,7 +29,7 @@ Tapahtuman peruminen hukkaa tallentamattomat ajat, joten tallenna ennen perumist
   {% for j in range(events|length) %}
     <tr>
       <td id="td_plan_event">{{events[j][1]}}</td>
-      <td>   klo <input id="timefield" type="time" name="time_start"> - <input id="timefield" type="time" name="time_finish"></td>
+      <td> klo <input id="timefield" type="time" name="time_start"> - <input id="timefield" type="time" name="time_finish"></td>
       <input type="hidden" name="day" value={{i}}> <input type="hidden" name="event_index" value={{j}}>
     </tr>
   {% endfor %}

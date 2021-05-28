@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>menossa mukana myös täällä!</h2>
+<!--<h2>menossa mukana myös täällä!</h2>-->
 <!----------------------------------------------------->
 <form action="/entry/{{day}}" method="POST">
 <p>
@@ -13,11 +13,11 @@
 </select>
 <p>
 <b>valitse kellonaika:</b>
-<input type="time" name="time1">
- - <input type="time" name="time2">
+<input id="timefield_entry" type="time" name="time1">
+ - <input id="timefield_entry" type="time" name="time2">
 <p>
 <b>mukanani tulee lisäosallistujia:</b>
-<input type="number" name="extra_participants" min="0" max="99" value="0">
+<input class= "field_number" type="number" name="extra_participants" min="0" max="99" value="0">
 <p>
 <b>kommenttia osallistumiseeni liittyen: </b><br>
 <input type="text" name="comment" maxlength="150"><br>
@@ -30,11 +30,12 @@
 <p>
 <!----------------------------------------------------->
 <b>Osallistujat tänään:</b>
+{% if participants %}
 <table>
   <th>tapahtuma</th>
   <th>mukana</th>
   <th>klo</th>
-  <th>lisäos.</th>
+  <th>+</th>
 {% for participant in participants %}
   <tr>
   <td> {{participant[0]}} </td>
@@ -49,6 +50,7 @@
   </tr>
 {% endfor %}
 </table>
+{% endif %}
 <p>
 </form>
 {% endblock %}

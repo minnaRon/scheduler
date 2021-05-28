@@ -20,8 +20,14 @@ hr {
 
 th {
     text-align: left;
+    color:rgb(66, 143, 66);
 }
-
+.green_text {
+    color:rgb(31, 97, 31);
+}
+.field_number {
+    width: 4em;
+}
 .scroller {
     width: 40em;
     height: 25em;
@@ -40,7 +46,9 @@ th {
 
 .cancel_button {
     color: white;
+    font-size: .8em;
     background-color: rgb(192, 221, 192);
+    padding:0px;
 }
 
 #linkbutton {
@@ -55,6 +63,7 @@ th {
 
 #ginfo {
     color:rgb(48, 46, 46);
+    font-size: .8em;
 }
 
 #dayrow {
@@ -81,9 +90,18 @@ color:rgb(31, 97, 31);
 
 @media only screen and (max-width:800px) {
     body {
-        max-width: 25em;
+        max-width: 20em;
     }
     .scroller {
-        width: 25em;
+        width: 20em;
+    }
+    #td_plan_event{
+        padding-inline-end: 4px;
+    }
+    #timefield {
+        font-size: 1em;
+    }
+    #timefield_entry{
+        font-size: 1em;
     }
 }
