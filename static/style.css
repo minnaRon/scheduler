@@ -100,8 +100,10 @@ color:rgb(31, 97, 31);
     }
     #timefield {
         font-size: 1em;
+        width: 5em;
     }
     #timefield_entry{
         font-size: 1em;
+        width: 5em;
     }
 }
